@@ -160,10 +160,12 @@
             </div>
         </div>
         <div class="tab-pane" id="newbusinessmodelai" role="tabpanel">
-            <!-- Module Licence Order Details -->
-            <div style="width: 100%; display: inline-block; margin-left: 5px">
-                <h4 style="margin-left: 5px"><i class="bi bi-2-square"></i>Licence Order</h4>
-                <asp:GridView ID="GridView1" runat="server"></asp:GridView>
+            <div style="padding: 20px 0px 40px 10px; border: solid 1px; border-color: #fff #dee2e6 #dee2e6">
+                <!-- Module Licence Order Details -->
+                <div style="width: 100%; display: inline-block; margin-left: 5px">
+                    <h4 style="margin-left: 5px"><i class="bi bi-2-square"></i>Licence Order</h4>
+                    <asp:GridView ID="GridView1" runat="server"></asp:GridView>
+                </div>
             </div>
         </div>
         <div class="tab-pane" id="activationkeybypo" role="tabpanel">
