@@ -213,7 +213,7 @@
                         <!-- Module Licence Pool -->
                         <asp:UpdatePanel ID="UpdatePanel3" runat="server">
                             <ContentTemplate>
-                                <div><h4 style="margin-left:5px">Distributor Main Licence Pool</h4></div>
+                                <h4 style="margin-left: 5px">Distributor Main Pool</h4>
                                 <asp:GridView ID="GridView3" runat="server"></asp:GridView>
 
                                 <!-- Guide to add Licence Pool for customer under local DIGI Singapore -->
@@ -239,7 +239,7 @@
                         <!-- Module Licence Pool - New businesss model -->
                         <asp:UpdatePanel ID="UpdatePanel7" runat="server">
                             <ContentTemplate>
-                                <div><h4 style="margin-left:5px">Customer Licence Pool</h4></div>
+                                <h4 style="margin-left: 5px">Customer Pool</h4>
                                 <asp:GridView ID="GridView7" runat="server"></asp:GridView>
                             </ContentTemplate>
                         </asp:UpdatePanel>
