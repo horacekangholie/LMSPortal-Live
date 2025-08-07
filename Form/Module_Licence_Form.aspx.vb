@@ -105,7 +105,7 @@ Partial Class Form_Module_Licence_Form
             GridView6.DataSource = GetDataTable(sqlStr(5))
             GridView6.DataBind()
 
-            BuildGridView(GridView7, "GridView7", "ID")
+            BuildGridView(GridView7, "GridView7", "Customer_ID")
             GridView7.DataSource = GetDataTable(sqlStr(6))
             GridView7.DataBind()
 
