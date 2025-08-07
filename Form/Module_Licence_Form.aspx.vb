@@ -32,11 +32,11 @@ Partial Class Form_Module_Licence_Form
         End If
         PopulateGridViewData()
 
-        UpdatePanel1.Attributes.CssStyle.Add("width", "60%")
-        UpdatePanel1.Attributes.CssStyle.Add("display", "inline-block")
-        UpdatePanel1.Attributes.CssStyle.Add("margin-left", "5px")
-        UpdatePanel3.Attributes.CssStyle.Add("width", "39.6%")
-        UpdatePanel3.Attributes.CssStyle.Add("float", "left")
+        'UpdatePanel1.Attributes.CssStyle.Add("width", "60%")
+        'UpdatePanel1.Attributes.CssStyle.Add("display", "inline-block")
+        'UpdatePanel1.Attributes.CssStyle.Add("margin-left", "5px")
+        'UpdatePanel3.Attributes.CssStyle.Add("width", "39.6%")
+        'UpdatePanel3.Attributes.CssStyle.Add("float", "left")
 
         '' Display the notes when login user is administrator
         AddLicencePoolGuide.Visible = IIf(Session("Login_Name") = "administrator", True, False)
@@ -75,10 +75,11 @@ Partial Class Form_Module_Licence_Form
                                       ") TBL " &
                                       "GROUP BY [Customer ID], [PO No], [PO Date], [Chargeable], [Invoice No] " &
                                       "ORDER BY [Chargeable] DESC, [PO Date] DESC ",
-                                      "SELECT * FROM R_LMS_Module_Licence_Pool WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' ORDER BY Customer_ID, No, Module_Type DESC ",
+                                      "SELECT * FROM R_LMS_Module_Licence_Pool WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' AND Name LIKE '%Licence Pool%' ORDER BY Customer_ID, No, Module_Type DESC ",
                                       "SELECT * FROM I_AI_Licence_Renewal WHERE [Customer ID] = '" & Request.QueryString("Customer_ID") & "' ORDER BY [Expired Date] ",
                                       "SELECT [UID], [PO No], [PO Date], [Invoice No], [Invoice Date], [Currency], SUM(Fee) AS [Total Amount], [Renewal Date] FROM R_AI_Licence_Renewal WHERE [Customer ID] = '" & Request.QueryString("Customer_ID") & "' GROUP BY [UID], [PO No], [PO Date], [Invoice No], [Invoice Date], [Currency], [Renewal Date] ORDER BY [UID] DESC ",
-                                      "SELECT *, CASE WHEN DATEDIFF(D, Added_Date, GETDATE()) > 90 THEN 1 ELSE 0 END AS Is_Locked FROM DB_Account_Notes WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' AND Notes_For = 'Module Licence' ORDER BY Added_Date DESC, ID DESC "}
+                                      "SELECT *, CASE WHEN DATEDIFF(D, Added_Date, GETDATE()) > 90 THEN 1 ELSE 0 END AS Is_Locked FROM DB_Account_Notes WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' AND Notes_For = 'Module Licence' ORDER BY Added_Date DESC, ID DESC ",
+                                      "SELECT * FROM R_LMS_Module_Licence_Pool WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' AND Name NOT LIKE '%Licence Pool%' ORDER BY Customer_ID, No, Module_Type DESC "}
 
             BuildGridView(GridView1, "GridView1", "PO No")
             GridView1.DataSource = GetDataTable(sqlStr(0))
@@ -103,6 +104,10 @@ Partial Class Form_Module_Licence_Form
             BuildGridView(GridView6, "GridView6", "ID")
             GridView6.DataSource = GetDataTable(sqlStr(5))
             GridView6.DataBind()
+
+            BuildGridView(GridView7, "GridView7", "ID")
+            GridView7.DataSource = GetDataTable(sqlStr(6))
+            GridView7.DataBind()
 
         Catch ex As Exception
             Response.Write("Error:  " & ex.Message)
@@ -160,7 +165,7 @@ Partial Class Form_Module_Licence_Form
                 '' Build GridView Content
                 GridViewObj.AutoGenerateColumns = False
                 GridViewObj.AllowPaging = True
-                GridViewObj.PageSize = 5
+                GridViewObj.PageSize = 20
                 GridViewObj.Columns.Clear()
                 Dim ColName() As String = {"PO No", "PO Date", "Invoice No", "Invoice Date", "Created Date", "Requested By", "e.Sense", "BYOC", "AI"}
                 Dim ColData() As String = {"PO No", "PO Date", "Invoice No", "Invoice Date", "Created Date", "Requested By", "e.Sense", "BYOC", "AI"}
@@ -189,7 +194,7 @@ Partial Class Form_Module_Licence_Form
                 '' Build GridView Content
                 GridViewObj.AutoGenerateColumns = False
                 GridViewObj.AllowPaging = True
-                GridViewObj.PageSize = 10
+                GridViewObj.PageSize = 20
                 GridViewObj.Columns.Clear()
                 Dim ColName() As String = {"PO No", "PO Date", "Invoice No", "Activated / No of Licence Key", "Requested By"}
                 Dim ColData() As String = {"PO No", "PO Date", "Invoice No", "No of Licence Key Issued", "Requested By"}
@@ -343,6 +348,28 @@ Partial Class Form_Module_Licence_Form
                 TField.ItemStyle.Wrap = False
                 TField.ItemTemplate = New GridViewItemTemplateControl()
                 GridViewObj.Columns.Add(TField)
+
+            Case "GridView7"
+                '' Build GridView Content
+                GridViewObj.AutoGenerateColumns = False
+                GridViewObj.AllowPaging = False
+                GridViewObj.Columns.Clear()
+                Dim ColData() As String = {"Name", "Module_Type", "Balance", "Used"}
+                Dim ColSize() As Integer = {200, 100, 50, 50}
+
+                For i = 0 To ColData.Length - 1
+                    Dim Bfield As BoundField = New BoundField()
+                    Bfield.DataField = ColData(i)
+                    Bfield.HeaderText = ColData(i).Replace("_", " ")
+                    Bfield.HeaderStyle.Width = ColSize(i)
+                    If Bfield.HeaderText.Contains("Balance") Or Bfield.HeaderText.Contains("Used") Then
+
+                    End If
+                    Bfield.HeaderStyle.Wrap = False
+                    Bfield.ItemStyle.Wrap = False
+                    GridViewObj.Columns.Add(Bfield)
+                Next
+                GridViewObj.ShowFooter = False
 
         End Select
     End Sub
@@ -622,8 +649,13 @@ Partial Class Form_Module_Licence_Form
         End If
     End Sub
 
+    Protected Sub GridView7_RowDataBound(ByVal sender As Object, ByVal e As GridViewRowEventArgs) Handles GridView7.RowDataBound
+        Dim GridViewObj As GridView = CType(sender, GridView)
+        GridViewObj.ShowFooter = False
+    End Sub
+
     Protected Sub GridView_PageIndexChanging(sender As Object, e As GridViewPageEventArgs) _
-        Handles GridView1.PageIndexChanging, GridView2.PageIndexChanging, GridView3.PageIndexChanging, GridView4.PageIndexChanging, GridView5.PageIndexChanging, GridView6.PageIndexChanging
+        Handles GridView1.PageIndexChanging, GridView2.PageIndexChanging, GridView3.PageIndexChanging, GridView4.PageIndexChanging, GridView5.PageIndexChanging, GridView6.PageIndexChanging, GridView7.PageIndexChanging
 
         Dim CurrActiveGV As GridView = CType(sender, GridView)
         CurrActiveGV.PageIndex = e.NewPageIndex

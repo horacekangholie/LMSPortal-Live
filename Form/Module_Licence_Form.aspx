@@ -198,14 +198,56 @@
     <!-- Module Licence Content -->
     <div id="ModuleLicenceContent" runat="server" style="margin-top: 40px">
         <ul class='nav nav-tabs' id="myTab" role="tablist">
-            <li id="tab_link1" class="nav-item" role="presentation"><a id="link1" class="nav-link active" data-toggle="tab" href="#licencepoolandorder" aria-selected="true" role="tab"  style="font-size: 15px; width: 200px; text-align: center">Licence Pool / Order</a></li>
-            <li id="tab_link2" class="nav-item" role="presentation"><a id="link2" class="nav-link" data-toggle="tab" href="#activationkeybypo" aria-selected="false" tabindex="-1" role="tab" style="font-size: 15px; width: 200px; text-align: center">Activation Key by PO</a></li>
-            <li id="tab_link3" class="nav-item" role="presentation"><a id="link3" class="nav-link" data-toggle="tab" href="#activatedailicence" aria-selected="false" tabindex="-1" role="tab" style="font-size: 15px; width: 200px; text-align: center">Activated AI Licences</a></li>
-            <li id="tab_link4" class="nav-item" role="presentation"><a id="link4" class="nav-link" data-toggle="tab" href="#ailicencerenewal" aria-selected="false" tabindex="-1" role="tab" style="font-size: 15px; width: 200px; text-align: center">AI Licence Renewal</a></li>
+            <li id="tab_link1" class="nav-item" role="presentation"><a id="link1" class="nav-link active" data-toggle="tab" href="#licencepoolandorder" aria-selected="true" role="tab"  style="font-size: 15px; width: 200px; text-align: center">Licence Pool</a></li>
+            <li id="tab_link2" class="nav-item" role="presentation"><a id="link2" class="nav-link" data-toggle="tab" href="#newbusinessmodelai" aria-selected="false" tabindex="-1" role="tab" style="font-size: 15px; width: 200px; text-align: center">Licence Order</a></li>
+            <li id="tab_link3" class="nav-item" role="presentation"><a id="link3" class="nav-link" data-toggle="tab" href="#activationkeybypo" aria-selected="false" tabindex="-1" role="tab" style="font-size: 15px; width: 200px; text-align: center">Activation Key by PO</a></li>
+            <li id="tab_link4" class="nav-item" role="presentation"><a id="link4" class="nav-link" data-toggle="tab" href="#activatedailicence" aria-selected="false" tabindex="-1" role="tab" style="font-size: 15px; width: 200px; text-align: center">Activated AI Licences</a></li>
+            <li id="tab_link5" class="nav-item" role="presentation"><a id="link5" class="nav-link" data-toggle="tab" href="#ailicencerenewal" aria-selected="false" tabindex="-1" role="tab" style="font-size: 15px; width: 200px; text-align: center">AI Licence Renewal</a></li>
         </ul>
     </div>
     <div class="tab-content" id="myTabContent">
         <div class="tab-pane active" id="licencepoolandorder" role="tabpanel">
+            <div style="padding: 20px 0px 40px 10px; border: solid 1px; border-color: #fff #dee2e6 #dee2e6">
+                <div class="row">
+                    <div class="col-md-6">
+                        <!-- Module Licence Pool -->
+                        <asp:UpdatePanel ID="UpdatePanel3" runat="server">
+                            <ContentTemplate>
+                                <asp:GridView ID="GridView3" runat="server"></asp:GridView>
+
+                                <!-- Guide to add Licence Pool for customer under local DIGI Singapore -->
+                                <div id="AddLicencePoolGuide" runat="server" visible="false" class="alert alert-dismissible alert-secondary"
+                                    style="background-color: #f2f2f3; border: solid 1px #f3f3f3; width: 99%">
+                                    <h4>Notes:</h4>
+                                    <p>If Licence Pool not appear in above list, do the following:</p>
+                                    <p>Go to [Settings] > [Lookup Table] > Search <b>Module Licence Bind</b> to add Licence Pool.</p>
+                                </div>
+
+                                <!--Add a refresh linkbutton to sync latest license status-->
+                                <div style="margin-top: 20px">
+                                    <asp:LinkButton ID="AILicenceRefresh" runat="server" CssClass="btn btn-default"></asp:LinkButton>
+                                </div>
+                            </ContentTemplate>
+
+                            <Triggers>
+                                <asp:PostBackTrigger ControlID="AILicenceRefresh" />
+                            </Triggers>
+                        </asp:UpdatePanel>
+                    </div>
+                    <div class="col-md-6">
+                        <!-- Module Licence Pool - New businesss model -->
+                        <asp:UpdatePanel ID="UpdatePanel7" runat="server">
+                            <ContentTemplate>
+                                <asp:GridView ID="GridView7" runat="server"></asp:GridView>
+                            </ContentTemplate>
+                        </asp:UpdatePanel>
+                    </div>
+                </div>
+
+                <div style="clear: both"></div>
+            </div>
+        </div>
+        <div class="tab-pane" id="newbusinessmodelai" role="tabpanel">
             <div style="padding: 20px 0px 40px 10px; border: solid 1px; border-color: #fff #dee2e6 #dee2e6">
                 <!-- Module Licence Order Details -->
                 <asp:UpdatePanel ID="UpdatePanel1" runat="server">
@@ -411,31 +453,6 @@
                     </Triggers>
 
                 </asp:UpdatePanel>
-
-                <!-- Module Licence Pool -->
-                <asp:UpdatePanel ID="UpdatePanel3" runat="server">
-                    <ContentTemplate>
-                        <asp:GridView ID="GridView3" runat="server"></asp:GridView>
-
-                        <!-- Guide to add Licence Pool for customer under local DIGI Singapore -->
-                        <div id="AddLicencePoolGuide" runat="server" visible="false" class="alert alert-dismissible alert-secondary" style="background-color: #f2f2f3; border: solid 1px #f3f3f3; width: 99%">
-                            <h4>Notes:</h4>
-                            <p>If Licence Pool not appear in above list, do the following:</p>
-                            <p>Go to [Settings] > [Lookup Table] > Search <b>Module Licence Bind</b> to add Licence Pool.</p>
-                        </div>
-
-                        <!--Add a refresh linkbutton to sync latest license status-->
-                        <div style="margin-top: 20px">
-                            <asp:LinkButton ID="AILicenceRefresh" runat="server" CssClass="btn btn-default"></asp:LinkButton>
-                        </div>
-                    </ContentTemplate>
-
-                    <Triggers>
-                        <asp:PostBackTrigger ControlID="AILicenceRefresh" />
-                    </Triggers>
-                </asp:UpdatePanel>
-
-                <div style="clear: both"></div>
             </div>
         </div>
         <div class="tab-pane" id="activationkeybypo" role="tabpanel">
