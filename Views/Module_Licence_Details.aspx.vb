@@ -143,7 +143,7 @@ Partial Class Views_Module_Licence_Details
                 '' Build GridView Content
                 GridViewObj.AutoGenerateColumns = False
                 GridViewObj.AllowPaging = True
-                GridViewObj.PageSize = 5
+                GridViewObj.PageSize = 20
                 GridViewObj.Columns.Clear()
                 Dim ColName() As String = {"PO No", "PO Date", "Invoice No", "Invoice Date", "Created Date", "Requested By", "e.Sense", "BYOC", "AI"}
                 Dim ColData() As String = {"PO No", "PO Date", "Invoice No", "Invoice Date", "Created Date", "Requested By", "e.Sense", "BYOC", "AI"}
