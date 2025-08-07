@@ -131,25 +131,39 @@
     <div id="ModuleLicenceContent" runat="server" style="margin-top: 40px">
         <ul class='nav nav-tabs' id="myTab" role="tablist">
             <li id="tab_link1" class="nav-item" role="presentation"><a id="link1" class="nav-link active" data-toggle="tab" href="#licencepoolandorder" aria-selected="true" role="tab"  style="font-size: 15px; width: 200px; text-align: center">Licence Pool / Order</a></li>
-            <li id="tab_link2" class="nav-item" role="presentation"><a id="link2" class="nav-link" data-toggle="tab" href="#activationkeybypo" aria-selected="false" tabindex="-1" role="tab" style="font-size: 15px; width: 200px; text-align: center">Activation Key by PO</a></li>
-            <li id="tab_link3" class="nav-item" role="presentation"><a id="link3" class="nav-link" data-toggle="tab" href="#activatedailicence" aria-selected="false" tabindex="-1" role="tab" style="font-size: 15px; width: 200px; text-align: center">Activated AI Licences</a></li>
-            <li id="tab_link4" class="nav-item" role="presentation"><a id="link4" class="nav-link" data-toggle="tab" href="#ailicencerenewal" aria-selected="false" tabindex="-1" role="tab" style="font-size: 15px; width: 200px; text-align: center">AI Licence Renewal</a></li>
+            <li id="tab_link2" class="nav-item" role="presentation"><a id="link2" class="nav-link" data-toggle="tab" href="#newbusinessmodelai" aria-selected="false" tabindex="-1" role="tab" style="font-size: 15px; width: 200px; text-align: center">Licence Order</a></li>
+            <li id="tab_link3" class="nav-item" role="presentation"><a id="link3" class="nav-link" data-toggle="tab" href="#activationkeybypo" aria-selected="false" tabindex="-1" role="tab" style="font-size: 15px; width: 200px; text-align: center">Activation Key by PO</a></li>
+            <li id="tab_link4" class="nav-item" role="presentation"><a id="link4" class="nav-link" data-toggle="tab" href="#activatedailicence" aria-selected="false" tabindex="-1" role="tab" style="font-size: 15px; width: 200px; text-align: center">Activated AI Licences</a></li>
+            <li id="tab_link5" class="nav-item" role="presentation"><a id="link5" class="nav-link" data-toggle="tab" href="#ailicencerenewal" aria-selected="false" tabindex="-1" role="tab" style="font-size: 15px; width: 200px; text-align: center">AI Licence Renewal</a></li>
         </ul>
     </div>
     <div class="tab-content" id="myTabContent">
         <div class="tab-pane active" id="licencepoolandorder" role="tabpanel">
             <div style="padding: 10px 0px 40px 10px; border: solid 1px; border-color: #fff #dee2e6 #dee2e6">
-                <!-- Module Licence Pool -->
-                <div style="width: 39.6%; float: left">
-                    <h4 style="margin-left:5px">Licence Pool</h4>
-                    <asp:GridView ID="GridView3" runat="server"></asp:GridView>
-                </div>
-                <!-- Module Licence Order Details -->
-                <div style="width: 60%; display: inline-block; margin-left: 5px">
-                    <h4 style="margin-left:5px"><i class="bi bi-2-square"></i>Licence Order</h4>
-                    <asp:GridView ID="GridView1" runat="server"></asp:GridView>
+                <div class="row">
+                    <div class="col-md-6">
+                        <!-- Module Licence Pool -->
+                        <div style="width: 49.6%; float: left">
+                            <h4 style="margin-left: 5px">Licence Pool</h4>
+                            <asp:GridView ID="GridView3" runat="server"></asp:GridView>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <!-- Module Licence Pool - New businesss model -->
+                        <div style="width: 50%; float: left">
+                            <h4 style="margin-left: 5px">Licence Pool</h4>
+                            <asp:GridView ID="GridView7" runat="server"></asp:GridView>
+                        </div>
+                    </div>
                 </div>
                 <div style="clear: both"></div>
+            </div>
+        </div>
+        <div class="tab-pane" id="newbusinessmodelai" role="tabpanel">
+            <!-- Module Licence Order Details -->
+            <div style="width: 100%; display: inline-block; margin-left: 5px">
+                <h4 style="margin-left: 5px"><i class="bi bi-2-square"></i>Licence Order</h4>
+                <asp:GridView ID="GridView1" runat="server"></asp:GridView>
             </div>
         </div>
         <div class="tab-pane" id="activationkeybypo" role="tabpanel">

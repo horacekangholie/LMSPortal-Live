@@ -352,7 +352,8 @@ Partial Class Form_Module_Licence_Form
             Case "GridView7"
                 '' Build GridView Content
                 GridViewObj.AutoGenerateColumns = False
-                GridViewObj.AllowPaging = False
+                GridViewObj.AllowPaging = True
+                GridViewObj.PageSize = 10
                 GridViewObj.Columns.Clear()
                 Dim ColData() As String = {"Name", "Module_Type", "Balance", "Used"}
                 Dim ColSize() As Integer = {200, 100, 50, 50}
