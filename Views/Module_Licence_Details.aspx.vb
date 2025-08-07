@@ -165,7 +165,7 @@ Partial Class Views_Module_Licence_Details
                 '' Build GridView Content
                 GridViewObj.AutoGenerateColumns = False
                 GridViewObj.AllowPaging = True
-                GridViewObj.PageSize = 10
+                GridViewObj.PageSize = 20
                 GridViewObj.Columns.Clear()
                 Dim ColName() As String = {"PO No", "PO Date", "Invoice No", "Activated / No of Licence Key", "Requested By"}
                 Dim ColData() As String = {"PO No", "PO Date", "Invoice No", "No of Licence Key Issued", "Requested By"}
