@@ -143,14 +143,14 @@
                 <div class="row">
                     <div class="col-md-6">
                         <!-- Module Licence Pool -->
-                        <div style="width: 49.6%; float: left">
+                        <div style="width: 100%; float: left">
                             <h4 style="margin-left: 5px">Licence Pool</h4>
                             <asp:GridView ID="GridView3" runat="server"></asp:GridView>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <!-- Module Licence Pool - New businesss model -->
-                        <div style="width: 50%; float: left">
+                        <div style="width: 100%; float: left">
                             <h4 style="margin-left: 5px">Licence Pool</h4>
                             <asp:GridView ID="GridView7" runat="server"></asp:GridView>
                         </div>
