@@ -460,7 +460,7 @@ Partial Class _Default
                         GridViewObj.Columns.Clear()
                         Dim ColName() As String = {"Licensee", "PO No", "PO Date", "Created Date", "Chargeable", "e.Sense", "BYOC", "AI", "AIW", "Requested By", "Invoice No", "Invoice Date"}
                         Dim ColData() As String = {"Licensee", "PO No", "PO Date", "Created Date", "Chargeable", "e.Sense", "BYOC", "AI", "AIW", "Requested By", "Invoice No", "Invoice Date"}
-                        Dim ColSize() As Integer = {300, 100, 50, 50, 50, 60, 60, 60, 200, 100, 50}
+                        Dim ColSize() As Integer = {300, 100, 50, 50, 50, 60, 60, 60, 60, 200, 100, 50}
 
                         For i = 0 To ColName.Length - 1
                             Dim Bfield As BoundField = New BoundField()
