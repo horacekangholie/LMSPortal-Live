@@ -875,7 +875,7 @@ Partial Class Form_Module_Licence_Form
     Protected Sub DDL_Module_Licence_Type_Load(sender As Object, e As EventArgs) Handles DDL_Module_Licence_Type.Load
         If Not IsPostBack Then
             Try
-                Dim sqlStr As String = "SELECT DISTINCT Value_3 AS Module_Type FROM DB_Lookup WHERE Value_4 = 'SM Module Licence' AND Value_3 IN ('AI', 'BYOC', 'e.Sense') ORDER BY Value_3 "
+                Dim sqlStr As String = "SELECT DISTINCT Value_3 AS Module_Type FROM DB_Lookup WHERE Value_4 = 'SM Module Licence' AND Value_3 IN ('AI', 'BYOC', 'e.Sense', 'AIW') ORDER BY Value_3 "
 
                 DDL_Module_Licence_Type.DataSource = GetDataTable(sqlStr)
                 DDL_Module_Licence_Type.DataTextField = "Module_Type"
