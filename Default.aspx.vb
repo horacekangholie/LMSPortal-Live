@@ -1076,7 +1076,7 @@ Partial Class _Default
             Dim UID As String = GridViewObj.DataKeys(e.Row.RowIndex).Value.ToString()
             Dim PO_No As String = e.Row.Cells(GetColumnIndexByName(e.Row, "PO No")).Text
             Dim Requested_By As String = e.Row.Cells(GetColumnIndexByName(e.Row, "Requested By")).Text
-            Dim Licence_Code As GridView = TryCast(e.Row.FindControl("gvModuleLicenceList"), GridView)
+            Dim Licence_Code As GridView = TryCast(e.Row.FindControl("gvLicenceList"), GridView)
 
             Dim query As String = " SELECT [Customer ID] " &
                                   "      , ISNULL([Application Type] + ' (' + Activated_Module_Type + ') ', [Application Type]) AS [Application Type] " &
@@ -1102,7 +1102,7 @@ Partial Class _Default
             End Try
 
             '' display the Child Gridview Requested By column when the PO No is NA
-            Licence_Code.Columns(GetColumnIndexByColumnName(Licence_Code, "Requested By")).Visible = IIf(PO_No = "NA", True, False)
+            'Licence_Code.Columns(GetColumnIndexByColumnName(Licence_Code, "Requested By")).Visible = IIf(PO_No = "NA", True, False)
 
             e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Text = "Pending"
             e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice Date")).Text = "TBA"
