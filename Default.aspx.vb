@@ -1078,6 +1078,17 @@ Partial Class _Default
             Dim Requested_By As String = e.Row.Cells(GetColumnIndexByName(e.Row, "Requested By")).Text
             Dim Licence_Code As GridView = TryCast(e.Row.FindControl("gvModuleLicenceList"), GridView)
 
+            'Dim query As String = " SELECT [Customer ID] " &
+            '                      "      , ISNULL([Application Type] + ' (' + Activated_Module_Type + ') ', [Application Type]) AS [Application Type] " &
+            '                      "      , [OS Type], [Chargeable] " &
+            '                      "      , [Created Date], [Licence Code], [Status], [MAC Address], [Email] " &
+            '                      "      , [Activated Date], [Expired Date], [Remarks], [Requested By] " &
+            '                      " FROM R_LMS_Module_Licence " &
+            '                      " LEFT JOIN LMS_Module_Licence_Activated ON LMS_Module_Licence_Activated.[Licence_Code] = REPLACE(R_LMS_Module_Licence.[Licence Code], '-', '') " &
+            '                      " WHERE [Customer ID] = '" & Customer_ID & "'" &
+            '                      "   AND [PO No] = '" & PO_No & "'" &
+            '                      " ORDER BY [Created Date] DESC "
+
             Dim query As String = " SELECT [Customer ID] " &
                                   "      , ISNULL([Application Type] + ' (' + Activated_Module_Type + ') ', [Application Type]) AS [Application Type] " &
                                   "      , [OS Type], [Chargeable] " &
@@ -1086,8 +1097,7 @@ Partial Class _Default
                                   " FROM R_LMS_Module_Licence " &
                                   " LEFT JOIN LMS_Module_Licence_Activated ON LMS_Module_Licence_Activated.[Licence_Code] = REPLACE(R_LMS_Module_Licence.[Licence Code], '-', '') " &
                                   " WHERE [Customer ID] = '" & Customer_ID & "'" &
-                                  "   AND [PO No] = '" & PO_No & "'" &
-                                  " ORDER BY [Created Date] DESC "
+                                  "   AND [PO No] = '" & PO_No & "'"
 
             '' Separated record based requestor
             If Len(RemoveHTMLWhiteSpace(Requested_By)) > 0 Then
