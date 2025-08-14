@@ -1067,7 +1067,7 @@ Partial Class _Default
         GridViewObj.ShowFooter = False
 
         If e.Row.RowType = DataControlRowType.DataRow Then
-            e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Text = "Pending"
+            e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Text = "Pending11"
             e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice Date")).Text = "TBA"
         End If
     End Sub
