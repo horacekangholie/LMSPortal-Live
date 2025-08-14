@@ -297,7 +297,7 @@
                                 <tr style="vertical-align: top">
                                     <td style="width: 45%; padding: 0px 10px 20px 0px">
                                         <label>Requestor</label>
-                                        <asp:DropDownList ID="DDL_Order_Sales_Representative" runat="server" AppendDataBoundItems="true" CssClass="form-control" CssClass="form-control">
+                                        <asp:DropDownList ID="DDL_Order_Sales_Representative" runat="server" AppendDataBoundItems="true" CssClass="form-control">
                                             <asp:ListItem Text="" Value="-1"></asp:ListItem>
                                         </asp:DropDownList>
                                         <asp:CompareValidator ID="CompareValidator_DDL_Order_Sales_Representative" runat="server" ValidationGroup="ModuleLicenceOrder"
