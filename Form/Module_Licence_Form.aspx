@@ -297,7 +297,16 @@
                                 <tr style="vertical-align: top">
                                     <td style="width: 45%; padding: 0px 10px 20px 0px">
                                         <label>Requestor</label>
-                                        <asp:DropDownList ID="DDL_Order_Sales_Representative" runat="server" CssClass="form-control"></asp:DropDownList>
+                                        <asp:DropDownList ID="DDL_Order_Sales_Representative" runat="server" AppendDataBoundItems="true" CssClass="form-control" CssClass="form-control">
+                                            <asp:ListItem Text="" Value="-1"></asp:ListItem>
+                                        </asp:DropDownList>
+                                        <asp:CompareValidator ID="CompareValidator_DDL_Order_Sales_Representative" runat="server" ValidationGroup="ModuleLicenceOrder"
+                                            ErrorMessage="Please select requestor" CssClass="invalid-feedback"
+                                            Display="Dynamic"
+                                            SetFocusOnError="true"
+                                            Operator="NotEqual" ValueToCompare="-1"
+                                            ControlToValidate="DDL_Order_Sales_Representative" Type="String">
+                                        </asp:CompareValidator>
                                     </td>
                                     <td style="width: 55%; padding: 0px 10px 20px 0px" colspan="2">
                                         <label>Remarks</label>
