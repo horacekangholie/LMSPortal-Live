@@ -462,6 +462,12 @@ Partial Class _Default
                         Dim ColData() As String = {"Licensee", "PO No", "PO Date", "Created Date", "Chargeable", "e.Sense", "BYOC", "AI", "AIW", "Requested By", "Invoice No", "Invoice Date"}
                         Dim ColSize() As Integer = {300, 100, 50, 50, 50, 60, 60, 60, 60, 200, 100, 50}
 
+                        '' Add a templatefield for the nexted gridview
+                        Dim Tfield As TemplateField = New TemplateField()
+                        Tfield.ItemTemplate = New LicenceNestedGridViewItemTemplate()
+                        Tfield.HeaderStyle.Width = Unit.Percentage(1)
+                        GridViewObj.Columns.Add(Tfield)
+
                         For i = 0 To ColName.Length - 1
                             Dim Bfield As BoundField = New BoundField()
                             Bfield.DataField = ColData(i)
@@ -1067,9 +1073,48 @@ Partial Class _Default
         GridViewObj.ShowFooter = False
 
         If e.Row.RowType = DataControlRowType.DataRow Then
-            e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Text = "Pending11"
+            Dim Customer_ID As String = GridViewObj.DataKeys(e.Row.RowIndex).Value.ToString()
+            Dim PO_No As String = e.Row.Cells(GetColumnIndexByName(e.Row, "PO No")).Text
+            Dim Requested_By As String = e.Row.Cells(GetColumnIndexByName(e.Row, "Requested By")).Text
+            Dim Licence_Code As GridView = TryCast(e.Row.FindControl("gvModuleLicenceList"), GridView)
+
+            Dim query As String = " SELECT [Customer ID] " &
+                                  "      , ISNULL([Application Type] + ' (' + Activated_Module_Type + ') ', [Application Type]) AS [Application Type] " &
+                                  "      , [OS Type], [Chargeable] " &
+                                  "      , [Created Date], [Licence Code], [Status], [MAC Address], [Email] " &
+                                  "      , [Activated Date], [Expired Date], [Remarks], [Requested By] " &
+                                  " FROM R_LMS_Module_Licence " &
+                                  " LEFT JOIN LMS_Module_Licence_Activated ON LMS_Module_Licence_Activated.[Licence_Code] = REPLACE(R_LMS_Module_Licence.[Licence Code], '-', '') " &
+                                  " WHERE [Customer ID] = '" & Customer_ID & "'" &
+                                  "   AND [PO No] = '" & PO_No & "'" &
+                                  " ORDER BY [Created Date] DESC "
+
+            '' Separated record based requestor
+            If Len(RemoveHTMLWhiteSpace(Requested_By)) > 0 Then
+                query += " AND [Requested By] = '" & Requested_By & "'"
+            End If
+            query += " ORDER BY [Created Date] DESC "
+
+            Try
+                Licence_Code.DataSource = GetDataTable(query)
+                Licence_Code.DataBind()
+            Catch ex As Exception
+                Response.Write("Error:  " & ex.Message)
+            End Try
+
+            '' display the Child Gridview Requested By column when the PO No is NA
+            Licence_Code.Columns(GetColumnIndexByColumnName(Licence_Code, "Requested By")).Visible = IIf(PO_No = "NA", True, False)
+
+            e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Text = "Pending"
             e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice Date")).Text = "TBA"
         End If
+
+        For i = 0 To e.Row.Cells.Count - 1
+            If i = 5 Then
+                e.Row.Cells(i).Style.Add("text-align", "right !important")
+            End If
+        Next
+
     End Sub
 
     Private Sub GridView10_RowCreated(sender As Object, e As GridViewRowEventArgs)
