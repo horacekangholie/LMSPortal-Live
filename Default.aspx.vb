@@ -1104,15 +1104,15 @@ Partial Class _Default
             '' display the Child Gridview Requested By column when the PO No is NA
             Licence_Code.Columns(GetColumnIndexByColumnName(Licence_Code, "Requested By")).Visible = IIf(PO_No = "NA", True, False)
 
-            e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Text = "Pending"
-            e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice Date")).Text = "TBA"
+            'e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Text = "Pending"
+            'e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice Date")).Text = "TBA"
         End If
 
-        'For i = 0 To e.Row.Cells.Count - 1
-        '    If i = 5 Then
-        '        e.Row.Cells(i).Style.Add("text-align", "right !important")
-        '    End If
-        'Next
+        For i = 0 To e.Row.Cells.Count - 1
+            If i = 5 Then
+                e.Row.Cells(i).Style.Add("text-align", "right !important")
+            End If
+        Next
 
     End Sub
 
