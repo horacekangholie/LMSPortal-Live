@@ -1073,7 +1073,7 @@ Partial Class _Default
         GridViewObj.ShowFooter = False
 
         If e.Row.RowType = DataControlRowType.DataRow Then
-            Dim Customer_ID As String = GridViewObj.DataKeys(e.Row.RowIndex).Value.ToString()
+            Dim UID As String = GridViewObj.DataKeys(e.Row.RowIndex).Value.ToString()
             Dim PO_No As String = e.Row.Cells(GetColumnIndexByName(e.Row, "PO No")).Text
             Dim Requested_By As String = e.Row.Cells(GetColumnIndexByName(e.Row, "Requested By")).Text
             Dim Licence_Code As GridView = TryCast(e.Row.FindControl("gvModuleLicenceList"), GridView)
@@ -1085,7 +1085,7 @@ Partial Class _Default
                                   "      , [Activated Date], [Expired Date], [Remarks], [Requested By] " &
                                   " FROM R_LMS_Module_Licence " &
                                   " LEFT JOIN LMS_Module_Licence_Activated ON LMS_Module_Licence_Activated.[Licence_Code] = REPLACE(R_LMS_Module_Licence.[Licence Code], '-', '') " &
-                                  " WHERE [Customer ID] = '" & Customer_ID & "'" &
+                                  " WHERE [Customer ID] IN (SELECT TOP 1 Customer_ID FROM LMS_Module_Licence_Order WHERE UID = '" & UID & "') " &
                                   "   AND [PO No] = '" & PO_No & "'"
 
             '' Separated record based requestor
@@ -1104,8 +1104,8 @@ Partial Class _Default
             '' display the Child Gridview Requested By column when the PO No is NA
             Licence_Code.Columns(GetColumnIndexByColumnName(Licence_Code, "Requested By")).Visible = IIf(PO_No = "NA", True, False)
 
-            'e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Text = "Pending"
-            'e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice Date")).Text = "TBA"
+            e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Text = "Pending"
+            e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice Date")).Text = "TBA"
         End If
 
         For i = 0 To e.Row.Cells.Count - 1
