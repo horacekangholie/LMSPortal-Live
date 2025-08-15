@@ -305,16 +305,16 @@ Partial Class Views_Module_Licence_Details
                 GridViewObj.AllowPaging = True
                 GridViewObj.PageSize = 10
                 GridViewObj.Columns.Clear()
-                Dim ColData() As String = {"Name", "Module_Type", "Balance", "Used"}
-                Dim ColSize() As Integer = {200, 100, 50, 50}
+                Dim ColData() As String = {"Name", "Module_Type", "Store Account", "Access Key", "Balance", "Used"}
+                Dim ColSize() As Integer = {200, 50, 80, 80, 50, 50}
 
                 For i = 0 To ColData.Length - 1
                     Dim Bfield As BoundField = New BoundField()
                     Bfield.DataField = ColData(i)
                     Bfield.HeaderText = Replace(ColData(i), "_", " ")
                     Bfield.HeaderStyle.Width = ColSize(i)
-                    If Bfield.HeaderText.Contains("Balance") Or Bfield.HeaderText.Contains("Used") Then
-
+                    If Bfield.HeaderText.Contains("Store Account") Or Bfield.HeaderText.Contains("Access Key") Then
+                        Bfield.ItemStyle.Font.Name = "Consolas"
                     End If
                     Bfield.HeaderStyle.Wrap = False
                     Bfield.ItemStyle.Wrap = False
