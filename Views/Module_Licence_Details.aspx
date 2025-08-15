@@ -141,14 +141,14 @@
         <div class="tab-pane active" id="licencepoolandorder" role="tabpanel">
             <div style="padding: 10px 0px 40px 10px; border: solid 1px; border-color: #fff #dee2e6 #dee2e6">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <!-- Module Licence Pool -->
                         <div style="width: 100%; float: left">
                             <h4 style="margin-left: 5px">Distributor Main Pool</h4>
                             <asp:GridView ID="GridView3" runat="server"></asp:GridView>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-8">
                         <!-- Module Licence Pool - New businesss model -->
                         <div style="width: 100%; float: left">
                             <h4 style="margin-left: 5px">Customer Pool</h4>

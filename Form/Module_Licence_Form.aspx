@@ -209,7 +209,7 @@
         <div class="tab-pane active" id="licencepoolandorder" role="tabpanel">
             <div style="padding: 20px 0px 40px 10px; border: solid 1px; border-color: #fff #dee2e6 #dee2e6">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <!-- Module Licence Pool -->
                         <asp:UpdatePanel ID="UpdatePanel3" runat="server">
                             <ContentTemplate>
@@ -235,7 +235,7 @@
                             </Triggers>
                         </asp:UpdatePanel>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-8">
                         <!-- Module Licence Pool - New businesss model -->
                         <asp:UpdatePanel ID="UpdatePanel7" runat="server">
                             <ContentTemplate>
