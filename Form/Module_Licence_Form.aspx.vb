@@ -355,8 +355,8 @@ Partial Class Form_Module_Licence_Form
                 GridViewObj.AllowPaging = True
                 GridViewObj.PageSize = 10
                 GridViewObj.Columns.Clear()
-                Dim ColData() As String = {"Name", "Module_Type", "Store Account", "Access Key", "Balance", "Used"}
-                Dim ColSize() As Integer = {200, 50, 80, 80, 50, 50}
+                Dim ColData() As String = {"Name", "Module_Type", "AI Account Name", "Model", "Store Account", "Access Key", "Balance", "Used"}
+                Dim ColSize() As Integer = {100, 50, 100, 50, 80, 80, 50, 50}
 
                 For i = 0 To ColData.Length - 1
                     Dim Bfield As BoundField = New BoundField()
