@@ -356,12 +356,13 @@ Partial Class Form_Module_Licence_Form
                 GridViewObj.PageSize = 10
                 GridViewObj.Columns.Clear()
                 Dim ColData() As String = {"Name", "Module_Type", "AI Account Name", "Model", "Store Account", "Access Key", "Balance", "Used"}
+                Dim ColName() As String = {"Store Name", "Module_Type", "AI Account Name", "Model", "Store Account", "Access Key", "Balance", "Used"}
                 Dim ColSize() As Integer = {100, 50, 100, 50, 80, 80, 50, 50}
 
                 For i = 0 To ColData.Length - 1
                     Dim Bfield As BoundField = New BoundField()
                     Bfield.DataField = ColData(i)
-                    Bfield.HeaderText = ColData(i).Replace("_", " ")
+                    Bfield.HeaderText = ColName(i).Replace("_", " ")
                     Bfield.HeaderStyle.Width = ColSize(i)
                     If Bfield.HeaderText.Contains("Store Account") Or Bfield.HeaderText.Contains("Access Key") Then
                         Bfield.ItemStyle.Font.Name = "Consolas"
