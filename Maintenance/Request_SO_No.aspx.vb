@@ -20,11 +20,14 @@ Partial Class Maintenance_Request_SO_No
         Dim keyword As String = EscapeChar(TB_Search)
         Try
             'If chk_empty_account.Checked Then
-            Dim sqlStr As String = "SELECT A.[Customer ID], A.[Name], A.[Requestor ID], A.[Requested By], B.[Category], A.[PO No], A.[PO Date], A.[SO No] " &
+            Dim sqlStr As String = "SELECT A.[Customer ID], A.[Name], A.[Requestor ID], A.[Requested By] " &
+                                   "     , STRING_AGG(B.[Category], ', ') AS [Category] " &
+                                   "     , A.[PO No], A.[PO Date], A.[SO No] " &
                                    "FROM I_DB_SO_No_By_PO A " &
                                    "INNER JOIN _PO_No_Ref_Invoice_For_All_Type_Of_Request B ON B.PO_No = A.[PO No] " &
-                                   "WHERE LEN(B.Invoice_No) <= 0 AND (A.Name LIKE '%" & keyword & "%' OR A.[Requested By] LIKE '%" & keyword & "%' OR A.[PO No] LIKE '%" & keyword & "%') " & IIf(chk_empty_so_no.Checked, "AND [SO No] IS NULL ", "") &
-                                   "ORDER BY [PO Date] DESC"
+                                   "WHERE LEN(B.Invoice_No) <= 0 And (A.Name Like '%" & keyword & "%' OR A.[Requested By] LIKE '%" & keyword & "%' OR A.[PO No] LIKE '%" & keyword & "%') " & IIf(chk_empty_so_no.Checked, "AND [SO No] IS NULL ", "") &
+                                   "GROUP BY A.[Customer ID], A.[Name], A.[Requestor ID], A.[Requested By], A.[PO No], A.[PO Date], A.[SO No] " &
+                                   "ORDER BY A.[PO Date] DESC; "
 
             ''Response.Write(sqlStr)
             BuildGridView()
