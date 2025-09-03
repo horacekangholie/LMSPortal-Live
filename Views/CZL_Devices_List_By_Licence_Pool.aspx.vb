@@ -3,7 +3,9 @@ Partial Class Views_CZL_Devices_List_By_Licence_Pool
     Inherits LMSPortalBaseCode
 
     Dim PageTitle As String = "Device List By Licence Pool"
-    Dim sqlStr As String = "SELECT A.Customer_ID AS [Customer ID], B.Name AS [Name], B.Country AS [Country], B.Type AS [Licensee Group], Module_Type AS [Licence Type] " &
+    Dim sqlStr As String = "SELECT A.Customer_ID AS [Customer ID] " &
+                           "    , CASE WHEN A.[AI Account Name] IS NOT NULL THEN A.[Name] ELSE B.Name END AS [Name] " &
+                           "    , B.Country AS [Country], B.Type AS [Licensee Group], Module_Type AS [Licence Type] " &
                            "    , (A.Balance + A.Used) AS [Total], A.Balance AS [Available], A.Used AS [Used] " &
                            "    , C.[Activated], C.[Expired], C.[Renew], C.[Blocked] " &
                            "FROM R_LMS_Module_Licence_Pool A  " &
