@@ -277,8 +277,18 @@ Partial Class Listings_Recovered_Invoices_Details
         Dim Amount As TextBox = pnlAddEditBilledItem.FindControl("TB_Amount")
 
         Try
+            Dim formattedDate As String = ""
+            If Not String.IsNullOrWhiteSpace(Invoice_Date.Text) Then
+                Dim parsedDate As DateTime
+                If DateTime.TryParse(Invoice_Date.Text, parsedDate) Then
+                    formattedDate = parsedDate.ToString("yyyy-MM-dd")
+                Else
+                    Throw New Exception("Invalid date format.")
+                End If
+            End If
+
             Dim sqlStr As String = "EXEC SP_CRUD_Recovered_Invoice_Bill_Items N'" & Invoice_No &
-                                                                          "', N'" & Invoice_Date.Text &
+                                                                          "', N'" & formattedDate &
                                                                           "', N'" & Old_Item_Code.Text &
                                                                           "', N'" & Item_Code.SelectedValue &
                                                                           "', N'" & Currency.SelectedValue &
