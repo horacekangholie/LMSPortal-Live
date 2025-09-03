@@ -277,12 +277,12 @@ Partial Class Listings_Recovered_Invoices_Details
         Dim Amount As TextBox = pnlAddEditBilledItem.FindControl("TB_Amount")
 
         Try
-            Dim sqlStr As String = "EXEC SP_CRUD_Recovered_Invoice_Bill_Items '" & Invoice_No &
-                                                                          "', '" & Invoice_Date.Text &
-                                                                          "', '" & Old_Item_Code.Text &
-                                                                          "', '" & Item_Code.SelectedValue &
-                                                                          "', '" & Currency.SelectedValue &
-                                                                          "', '" & Amount.Text & "' "
+            Dim sqlStr As String = "EXEC SP_CRUD_Recovered_Invoice_Bill_Items N'" & Invoice_No &
+                                                                          "', N'" & Invoice_Date.Text &
+                                                                          "', N'" & Old_Item_Code.Text &
+                                                                          "', N'" & Item_Code.SelectedValue &
+                                                                          "', N'" & Currency.SelectedValue &
+                                                                          "', N'" & Amount.Text & "' "
 
             RunSQL(sqlStr)
         Catch ex As Exception
