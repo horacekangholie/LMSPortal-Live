@@ -7,9 +7,12 @@ Partial Class Views_CZL_Devices_List_By_Licence_Pool
                            "    , CASE WHEN A.[AI Account Name] IS NOT NULL THEN A.[Name] ELSE B.Name END AS [Name] " &
                            "    , B.Country AS [Country], B.Type AS [Licensee Group], Module_Type AS [Licence Type] " &
                            "    , (A.Balance + A.Used) AS [Total], A.Balance AS [Available], A.Used AS [Used] " &
-                           "    , C.[Activated], C.[Expired], C.[Renew], C.[Blocked] " &
+                           "    , ISNULL(C.[Activated], 0) AS [Activated] " &
+                           "    , ISNULL(C.[Expired], 0) AS [Expired] " &
+                           "    , ISNULL(C.[Renew], 0) AS [Renew] " &
+                           "    , ISNULL(C.[Blocked], 0) AS [Blocked] " &
                            "FROM R_LMS_Module_Licence_Pool A  " &
-                           "INNER JOIN _AllRegisteredAILicencePivot C On C.[Customer ID] = A.Customer_ID " &
+                           "LEFT JOIN _AllRegisteredAILicencePivot C On C.[Customer ID] = A.Customer_ID And C.Synced_dmcmobiletoken_hqid = A.Headquarter_ID And C.Synced_dmcmobiletoken_storeid = A.Synced_dmcstore_storeid " &
                            "LEFT JOIN Master_Customer B On B.Customer_ID = A.Customer_ID  " &
                            "WHERE Module_Type = 'AI' AND B.Type NOT IN ('DIGI') " &
                            "ORDER BY B.Country "
