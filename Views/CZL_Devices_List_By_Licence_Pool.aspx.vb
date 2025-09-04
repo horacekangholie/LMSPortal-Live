@@ -3,7 +3,7 @@ Partial Class Views_CZL_Devices_List_By_Licence_Pool
     Inherits LMSPortalBaseCode
 
     Dim PageTitle As String = "Device List By Licence Pool"
-    Dim sqlStr As String = "SELECT A.Customer_ID AS [Customer ID] " &
+    Dim sqlStr As String = "SELECT A.Customer_ID AS [Customer ID], A.Headquarter_ID AS [HQID], A.Synced_dmcstore_storeid AS [StoreID] " &
                            "    , CASE WHEN A.[AI Account Name] IS NOT NULL THEN A.[Name] ELSE B.Name END AS [Name] " &
                            "    , B.Country AS [Country], B.Type AS [Licensee Group], Module_Type AS [Licence Type] " &
                            "    , (A.Balance + A.Used) AS [Total], A.Balance AS [Available], A.Used AS [Used] " &
@@ -140,10 +140,12 @@ Partial Class Views_CZL_Devices_List_By_Licence_Pool
             For i = 0 To e.Row.Cells.Count - 1
                 If i > 6 Then
                     Dim Customer_ID As String = Replace(DataBinder.Eval(e.Row.DataItem, "Customer ID"), " ", "_")
+                    Dim HQID As String = DataBinder.Eval(e.Row.DataItem, "HQID")
+                    Dim StoreID As String = DataBinder.Eval(e.Row.DataItem, "StoreID")
                     Dim HyperLinkValue As HyperLink = TryCast(e.Row.Cells(i).Controls(0), HyperLink)
                     HyperLinkValue.Text = IIf(drv(reportColName(i)) <= 0, "", drv(reportColName(i)))
-                    HyperLinkValue.Attributes.Add("Onclick", "window.open('/Views/SubReport_AI_Licences.aspx?Customer_ID=" & Customer_ID & "&ColNo=" & i - 6 & "', '_blank', 'titlebar=no', 'status=no', 'directories=no', 'width=800px, height=600px');")
-                        HyperLinkValue.Target = "_blank"
+                    HyperLinkValue.Attributes.Add("Onclick", "window.open('/Views/SubReport_AI_Licences.aspx?Customer_ID=" & Customer_ID & "&HQID=" & HQID & "&StoreID=" & StoreID & "&ColNo=" & i - 6 & "', '_blank', 'titlebar=no', 'status=no', 'directories=no', 'width=800px, height=600px');")
+                    HyperLinkValue.Target = "_blank"
                         HyperLinkValue.Style.Add("cursor", "pointer")
                     HyperLinkValue.Style.Add("color", "blue")
                 End If

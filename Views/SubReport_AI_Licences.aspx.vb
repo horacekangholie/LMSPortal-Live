@@ -23,13 +23,17 @@ Partial Class Views_SubReport_AI_Licences
     Protected Sub BuildPageContent(Optional ByVal TB_Search As String = "")
         Dim keyword As String = EscapeChar(TB_Search)
         Dim Customer_ID As String = Replace(Request.QueryString("Customer_ID"), "_", " ")
+        Dim HQID As String = Request.QueryString("HQID")
+        Dim StoreID As String = Request.QueryString("StoreID")
         Dim ColNo As Integer = Request.QueryString("ColNo")
 
         Try
             Dim sqlStr As String = "SELECT [Serial No], [MAC Address], [Licence Code], [AI Device Serial No], [AI Device ID], [Activated Date] " &
                                    "     , CASE WHEN [Activated Date] IS NULL THEN NULL ELSE [Expired Date] END [Expired Date] " &
                                    "FROM _AllRegisteredAILicence " &
-                                   "WHERE [Customer ID] = '" & Customer_ID & "' "
+                                   "WHERE [Customer ID] = '" & Customer_ID & "' " &
+                                   "  AND Synced_dmcmobiletoken_hqid = '" & HQID & "' " &
+                                   "  AND Synced_dmcmobiletoken_storeid = '" & StoreID & "' "
 
             Select Case ColNo
                 Case 1
