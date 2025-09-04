@@ -360,10 +360,10 @@ Partial Class Form_Module_Licence_Form
                 Dim ColSize() As Integer = {100, 50, 100, 50, 80, 80, 50, 50}
 
                 For i = 0 To ColData.Length - 1
-                    If ColData(i) = "AI Account Name" Then
+                    If ColData(i) = "Name" Then
                         Dim colhyperLink As New HyperLinkField()
                         colhyperLink.HeaderText = ColName(i).Replace("_", " ")
-                        colhyperLink.DataTextField = "AI Account Name"
+                        colhyperLink.DataTextField = "Name"
                         colhyperLink.DataNavigateUrlFields = New String() {"Customer_ID", "Headquarter_ID", "Synced_dmcstore_storeid"}  ' both exist in the DataSource
                         colhyperLink.DataNavigateUrlFormatString = "~/Views/AIAccountDeviceList.aspx?customer_id={0}&hqid={1}&storeid={2}"
                         colhyperLink.Target = "_blank"
