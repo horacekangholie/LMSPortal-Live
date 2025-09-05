@@ -156,13 +156,13 @@ Partial Class Maintenance_Licence_Code_Reset
         LicenceValidityDiv.Visible = True
         If CInt(LicenceInfo.Length - 1) > 0 Then
             LicenceValidityDiv.Attributes.Add("class", "alert alert-dismissible alert-success")
-            LicenceValidity.Text = "Licence is valid"
+            LicenceValidity.Text = "Licence has been verified to be <b>valid</b>.<br><br>Please proceed to DMC and reset the key."
             TB_Customer_ID.Text = LicenceInfo(0)
             TB_Customer_Name.Text = LicenceInfo(1)
             RequiredField_TB_Remarks.Enabled = IIf(LicenceValidityTr.Visible, True, False)  '' Enable to valid Remarks field after license verified valid
         Else
             LicenceValidityDiv.Attributes.Add("class", "alert alert-dismissible alert-danger")
-            LicenceValidity.Text = "Licence is invalid"
+            LicenceValidity.Text = "Licence is <b>invalid</b>.<br><br>Activation key and MAC are not matched.<br>Please check and try again."
             TB_Customer_ID.Text = String.Empty
             TB_Customer_Name.Text = String.Empty
         End If

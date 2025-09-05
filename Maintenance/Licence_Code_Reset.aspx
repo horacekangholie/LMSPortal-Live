@@ -69,12 +69,20 @@
                                     SetFocusOnError="True"
                                     ControlToValidate="TB_MAC_Address">
                                 </asp:RequiredFieldValidator>
-                                <asp:RegularExpressionValidator ID="RegExValidator_TB_MAC_Address" runat="server" ValidationGroup="ValidateLicenceCodeReset"
+                                <%--<asp:RegularExpressionValidator ID="RegExValidator_TB_MAC_Address" runat="server" ValidationGroup="ValidateLicenceCodeReset"
                                     ErrorMessage="Invalid MAC address format. Please enter a valid MAC address." CssClass="invalid-feedback"
                                     Display="Dynamic"
                                     SetFocusOnError="True"
                                     ControlToValidate="TB_MAC_Address"
                                     ValidationExpression="^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$">
+                                </asp:RegularExpressionValidator>--%>
+                                <asp:RegularExpressionValidator ID="RegExValidator_TB_MAC_Address" runat="server" ValidationGroup="ValidateLicenceCodeReset"
+                                    ErrorMessage="Invalid format. Please enter a MAC address (00:60:03:09:59:3D) or a 64-character device ID." 
+                                    CssClass="invalid-feedback"
+                                    Display="Dynamic"
+                                    SetFocusOnError="True"
+                                    ControlToValidate="TB_MAC_Address"
+                                    ValidationExpression="^(?:([0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}|[0-9A-Fa-f]{64})$">
                                 </asp:RegularExpressionValidator>
                             </td>
                         </tr>
