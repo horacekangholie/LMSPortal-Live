@@ -165,6 +165,7 @@ Public Class LMSPortalBaseCode
     'End Function
 
     ' Execute SQL Command and return SqlDataReader (connection will close when reader closes)
+
     Protected Function RunSQLExecuteReader(ByVal sqlStr As String) As SqlDataReader
         Dim cn As New SqlConnection(Constr)
         Dim cmd As New SqlCommand(sqlStr, cn)
@@ -431,6 +432,7 @@ Public Class LMSPortalBaseCode
     'End Function
 
     ' Execute SQL and return the value of ColName from the first row (or "" if none)
+
     Protected Function Get_Value(ByVal query As String, ByVal ColName As String) As String
         Using cn As New SqlConnection(Constr)
             Using cmd As New SqlCommand(query, cn)
