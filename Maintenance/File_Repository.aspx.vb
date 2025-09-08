@@ -200,6 +200,7 @@ Partial Class Maintenance_File_Repository
             bytes = GetBinaryData(dr("ID"))
             zip.AddEntry(dr("File_Name"), bytes)
         End While
+        dr.Close()
 
         Response.Clear()
         Response.BufferOutput = False

@@ -132,28 +132,47 @@ Public Class LMSPortalBaseCode
     End Sub
 
     ' Execute SQL Command and return number of rows affected
+    'Protected Function RunSQL(ByVal sqlStr As String) As Integer
+    '    Conn = New SqlConnection(Constr)
+    '    Cmd = New SqlCommand(sqlStr, Conn)
+    '    Conn.Open()
+    '    Return Cmd.ExecuteNonQuery()
+    '    If Conn.State = ConnectionState.Open Then
+    '        Conn.Close()
+    '        Conn.Dispose()    '' add dispose function
+    '    End If
+    'End Function
+
     Protected Function RunSQL(ByVal sqlStr As String) As Integer
-        Conn = New SqlConnection(Constr)
-        Cmd = New SqlCommand(sqlStr, Conn)
-        Conn.Open()
-        Return Cmd.ExecuteNonQuery()
-        If Conn.State = ConnectionState.Open Then
-            Conn.Close()
-            Conn.Dispose()    '' add dispose function
-        End If
+        Using cn As New SqlConnection(Constr)
+            Using cmd As New SqlCommand(sqlStr, cn)
+                cn.Open()
+                Return cmd.ExecuteNonQuery()
+            End Using
+        End Using
     End Function
 
     ' Execute SQL Command and return sqlDataReader
+    'Protected Function RunSQLExecuteReader(ByVal sqlStr As String) As SqlDataReader
+    '    Conn = New SqlConnection(Constr)
+    '    Cmd = New SqlCommand(sqlStr, Conn)
+    '    Conn.Open()
+    '    Return Cmd.ExecuteReader()
+    '    If Conn.State = ConnectionState.Open Then   '' Add in
+    '        Conn.Close()
+    '        Conn.Dispose()   '' add dispose function
+    '    End If
+    'End Function
+
+    ' Execute SQL Command and return SqlDataReader (connection will close when reader closes)
     Protected Function RunSQLExecuteReader(ByVal sqlStr As String) As SqlDataReader
-        Conn = New SqlConnection(Constr)
-        Cmd = New SqlCommand(sqlStr, Conn)
-        Conn.Open()
-        Return Cmd.ExecuteReader()
-        If Conn.State = ConnectionState.Open Then   '' Add in
-            Conn.Close()
-            Conn.Dispose()   '' add dispose function
-        End If
+        Dim cn As New SqlConnection(Constr)
+        Dim cmd As New SqlCommand(sqlStr, cn)
+        cn.Open()
+        ' IMPORTANT: CloseConnection ensures closing the reader also closes the connection
+        Return cmd.ExecuteReader(CommandBehavior.CloseConnection)
     End Function
+
 
     ' Excecute SQL and return DataSet
     Protected Function GetDataSet(ByVal sqlStr As String) As DataSet
