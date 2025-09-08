@@ -62,58 +62,109 @@ Partial Class Views_DMC_Account_Revenue_By_Account_Type_Base_USD
 
     End Sub
 
-    Protected Sub BuildContencPage(Optional ByVal ReportMonth As String = Nothing, Optional ByVal Country As String = Nothing, Optional DeviceType As String = Nothing)
-        '' if ReportMonth value is empty then use the default month
-        ReportMonth = IIf(ReportMonth Is Nothing, DateSerial(Year(Now), Month(Now) - 1, 1).ToString("yyyy-MM-dd"), ReportMonth)
+    'Protected Sub BuildContencPage(Optional ByVal ReportMonth As String = Nothing, Optional ByVal Country As String = Nothing, Optional DeviceType As String = Nothing)
+    '    '' if ReportMonth value is empty then use the default month
+    '    ReportMonth = IIf(ReportMonth Is Nothing, DateSerial(Year(Now), Month(Now) - 1, 1).ToString("yyyy-MM-dd"), ReportMonth)
 
-        '' Get the Headquarter_Count, Store_Count, Total_Amount_Per_Month on Report Month
-        Dim dReader = RunSQLExecuteReader("SELECT COUNT(Headquarter_ID) AS Headquarter_Count, SUM(Owned_Store) AS Store_Count, SUM(Total_Amount_Per_Month) AS Total_Amount FROM dbo.DMC_Monthly_Subscription_By_Account_Type_Base_USD('" & GetEndOfMonthDate(ReportMonth).ToString("yyyy-MM-dd") & "') ")
-        While dReader.Read()
-            HeadquarterCount = String.Format("{0:0}", dReader("Headquarter_Count"))
-            StoreCount = String.Format("{0:0}", dReader("Store_Count"))
-            TotalAmount = String.Format("{0:#,##0.00}", dReader("Total_Amount"))
-        End While
-        dReader.Close()
+    '    '' Get the Headquarter_Count, Store_Count, Total_Amount_Per_Month on Report Month
+    '    Dim dReader = RunSQLExecuteReader("SELECT COUNT(Headquarter_ID) AS Headquarter_Count, SUM(Owned_Store) AS Store_Count, SUM(Total_Amount_Per_Month) AS Total_Amount FROM dbo.DMC_Monthly_Subscription_By_Account_Type_Base_USD('" & GetEndOfMonthDate(ReportMonth).ToString("yyyy-MM-dd") & "') ")
+    '    While dReader.Read()
+    '        HeadquarterCount = String.Format("{0:0}", dReader("Headquarter_Count"))
+    '        StoreCount = String.Format("{0:0}", dReader("Store_Count"))
+    '        TotalAmount = String.Format("{0:#,##0.00}", dReader("Total_Amount"))
+    '    End While
+    '    dReader.Close()
+
+    '    Try
+    '        '' Run store procedured to populate data to Temptable_DMC_Monthly_Revenue_Summary in SQL
+    '        Dim StartMonth As String = DateSerial(Year(Now) - 5, Month(Now), 1).ToString("yyyy-MM-dd")
+    '        Dim EndMonth As String = DateSerial(Year(Now), Month(Now), 0).ToString("yyyy-MM-dd")
+
+    '        '' Insert data to temp table
+    '        RunSQL("EXEC dbo.SP_Insert_TempTable_DMC_Monthly_Revenue_By_Account_Type_Base_USD_Summary '" & StartMonth & "', '" & EndMonth & "', '" & Country & "', '" & DeviceType & "' ")
+
+    '        Dim sqlStr() As String = {"SELECT * FROM dbo.DMC_Monthly_Subscription_By_Account_Type_Base_USD('" & GetEndOfMonthDate(ReportMonth).ToString("yyyy-MM-dd") & "') ",
+    '                                  "SELECT * FROM R_DMC_Subscription_Revenue_By_Account_Type_Base_USD_Overview ORDER BY [Year] DESC, CASE Col WHEN 'Amount' THEN 1 WHEN 'No of Store' THEN 2 ELSE 3 END ",
+    '                                  "SELECT Category AS Country, Stores, Total, Average FROM DMC_Monthly_Subscription_Statistics_USD ('ByCountry', '" & GetEndOfMonthDate(ReportMonth).ToString("yyyy-MM-dd") & "') ORDER BY CASE Category WHEN 'Total' THEN 1 ELSE 0 END ",
+    '                                  "SELECT Category AS Customer, Stores, Total, Average FROM DMC_Monthly_Subscription_Statistics_USD ('ByCustomer', '" & GetEndOfMonthDate(ReportMonth).ToString("yyyy-MM-dd") & "') ORDER BY CASE Category WHEN 'Total' THEN 2 WHEN 'Others' THEN 1 ELSE 0 END ",
+    '                                  "SELECT Category AS Segment, Stores, Total, Average FROM DMC_Monthly_Subscription_Statistics_USD ('BySegment', '" & GetEndOfMonthDate(ReportMonth).ToString("yyyy-MM-dd") & "') ORDER BY CASE Category WHEN 'Total' THEN 1 ELSE 0 END "}
+
+    '        ' Build and bind Gridview
+    '        BuildGridView(GridView1, "GridView1", "Headquarter_ID")
+    '        GridView1.DataSource = GetDataTable(sqlStr(0))
+    '        GridView1.DataBind()
+
+    '        BuildGridView(GridView2, "GridView2", "Year")
+    '        GridView2.DataSource = GetDataTable(sqlStr(1))
+    '        GridView2.DataBind()
+
+    '        BuildGridView(GridView3, "GridView3", "Country")
+    '        GridView3.DataSource = GetDataTable(sqlStr(2))
+    '        GridView3.DataBind()
+
+    '        BuildGridView(GridView4, "GridView4", "Customer")
+    '        GridView4.DataSource = GetDataTable(sqlStr(3))
+    '        GridView4.DataBind()
+
+    '        BuildGridView(GridView5, "GridView5", "Segment")
+    '        GridView5.DataSource = GetDataTable(sqlStr(4))
+    '        GridView5.DataBind()
+
+    '    Catch ex As Exception
+    '        Response.Write("Error:  " & ex.Message)
+    '    End Try
+    'End Sub
+
+    Protected Sub BuildContencPage(Optional ByVal ReportMonth As String = Nothing,
+                               Optional ByVal Country As String = Nothing,
+                               Optional DeviceType As String = Nothing)
+
+        ' Choose month; default = first day of previous month
+        Dim monthToUse As Date = If(String.IsNullOrEmpty(ReportMonth),
+                                New Date(Year(Now), Month(Now) - 1, 1),
+                                CDate(ReportMonth))
+        Dim reportEom As String = GetEndOfMonthDate(monthToUse).ToString("yyyy-MM-dd")
 
         Try
-            '' Run store procedured to populate data to Temptable_DMC_Monthly_Revenue_Summary in SQL
-            Dim StartMonth As String = DateSerial(Year(Now) - 5, Month(Now), 1).ToString("yyyy-MM-dd")
-            Dim EndMonth As String = DateSerial(Year(Now), Month(Now), 0).ToString("yyyy-MM-dd")
+            ' Get or build a single DataSet with all 5 result sets + footer
+            Dim ds As DataSet = GetOrBuildDataSet(reportEom, Country, DeviceType)
 
-            '' Insert data to temp table
-            RunSQL("EXEC dbo.SP_Insert_TempTable_DMC_Monthly_Revenue_By_Account_Type_Base_USD_Summary '" & StartMonth & "', '" & EndMonth & "', '" & Country & "', '" & DeviceType & "' ")
+            ' Footer counts (from ds.Tables("Footer"))
+            If ds.Tables("Footer").Rows.Count > 0 Then
+                Dim r = ds.Tables("Footer").Rows(0)
+                HeadquarterCount = String.Format("{0:0}", r("Headquarter_Count"))
+                StoreCount = String.Format("{0:0}", r("Store_Count"))
+                TotalAmount = String.Format("{0:#,##0.00}", r("Total_Amount"))
+            Else
+                HeadquarterCount = "0" : StoreCount = "0" : TotalAmount = "0.00"
+            End If
 
-            Dim sqlStr() As String = {"SELECT * FROM dbo.DMC_Monthly_Subscription_By_Account_Type_Base_USD('" & GetEndOfMonthDate(ReportMonth).ToString("yyyy-MM-dd") & "') ",
-                                      "SELECT * FROM R_DMC_Subscription_Revenue_By_Account_Type_Base_USD_Overview ORDER BY [Year] DESC, CASE Col WHEN 'Amount' THEN 1 WHEN 'No of Store' THEN 2 ELSE 3 END ",
-                                      "SELECT Category AS Country, Stores, Total, Average FROM DMC_Monthly_Subscription_Statistics_USD ('ByCountry', '" & GetEndOfMonthDate(ReportMonth).ToString("yyyy-MM-dd") & "') ORDER BY CASE Category WHEN 'Total' THEN 1 ELSE 0 END ",
-                                      "SELECT Category AS Customer, Stores, Total, Average FROM DMC_Monthly_Subscription_Statistics_USD ('ByCustomer', '" & GetEndOfMonthDate(ReportMonth).ToString("yyyy-MM-dd") & "') ORDER BY CASE Category WHEN 'Total' THEN 2 WHEN 'Others' THEN 1 ELSE 0 END ",
-                                      "SELECT Category AS Segment, Stores, Total, Average FROM DMC_Monthly_Subscription_Statistics_USD ('BySegment', '" & GetEndOfMonthDate(ReportMonth).ToString("yyyy-MM-dd") & "') ORDER BY CASE Category WHEN 'Total' THEN 1 ELSE 0 END "}
-
-            ' Build and bind Gridview
+            ' Build and bind each grid (column setup stays as you had it)
             BuildGridView(GridView1, "GridView1", "Headquarter_ID")
-            GridView1.DataSource = GetDataTable(sqlStr(0))
+            GridView1.DataSource = ds.Tables("G1")
             GridView1.DataBind()
 
             BuildGridView(GridView2, "GridView2", "Year")
-            GridView2.DataSource = GetDataTable(sqlStr(1))
+            GridView2.DataSource = ds.Tables("G2")
             GridView2.DataBind()
 
             BuildGridView(GridView3, "GridView3", "Country")
-            GridView3.DataSource = GetDataTable(sqlStr(2))
+            GridView3.DataSource = ds.Tables("G3")
             GridView3.DataBind()
 
             BuildGridView(GridView4, "GridView4", "Customer")
-            GridView4.DataSource = GetDataTable(sqlStr(3))
+            GridView4.DataSource = ds.Tables("G4")
             GridView4.DataBind()
 
             BuildGridView(GridView5, "GridView5", "Segment")
-            GridView5.DataSource = GetDataTable(sqlStr(4))
+            GridView5.DataSource = ds.Tables("G5")
             GridView5.DataBind()
 
         Catch ex As Exception
             Response.Write("Error:  " & ex.Message)
         End Try
     End Sub
+
 
     Protected Sub BuildGridView(ByVal ControlObj As Object, ByVal ControlName As String, ByVal DataKeyName As String)
         Dim GridViewObj As GridView = CType(ControlObj, GridView)
@@ -283,33 +334,60 @@ Partial Class Views_DMC_Account_Revenue_By_Account_Type_Base_USD
         End If
     End Sub
 
+    'Protected Sub GridView1_Sorting(sender As Object, e As GridViewSortEventArgs) Handles GridView1.Sorting
+    '    Dim GridViewObj As GridView = CType(sender, GridView)
+
+    '    ' Read selected month and load footer summary counts
+    '    Dim reportMonth = GetSelectedReportMonth()
+
+    '    ' Repopulate the footer count when table is sorted
+    '    LoadFooterCounts(reportMonth)
+
+    '    ' Rebuild grid definition (columns, styles, etc.)
+    '    BuildGridView(GridViewObj, "GridView1", "Headquarter_ID")
+
+    '    ' Fetch the full dataset for that month
+    '    Dim eom As String = GetEndOfMonthDate(reportMonth).ToString("yyyy-MM-dd")
+    '    Dim sqlStr As String = "SELECT * FROM dbo.DMC_Monthly_Subscription_By_Account_Type_Base_USD('" & eom & "') "
+    '    Dim dt As DataTable = GetDataTable(sqlStr)
+    '    Dim dataView As New DataView(dt)
+
+    '    ' Toggle/view‐state logic for sorting, then apply to DataView
+    '    Dim defaultFirstExpr As String = GridViewObj.Columns(0).SortExpression
+    '    Dim fullSortExpr As String = BuildSortExpression(e.SortExpression, defaultFirstExpr)
+    '    dataView.Sort = fullSortExpr
+
+    '    ' Bind sorted DataView back to the GridView
+    '    GridViewObj.DataSource = dataView
+    '    GridViewObj.DataBind()
+    'End Sub
+
     Protected Sub GridView1_Sorting(sender As Object, e As GridViewSortEventArgs) Handles GridView1.Sorting
-        Dim GridViewObj As GridView = CType(sender, GridView)
+        Dim gv As GridView = CType(sender, GridView)
 
-        ' Read selected month and load footer summary counts
-        Dim reportMonth = GetSelectedReportMonth()
+        ' Resolve selected report month and cache key
+        Dim reportMonthStr As String = GetSelectedReportMonth()
+        Dim reportEom As String = GetEndOfMonthDate(CDate(reportMonthStr)).ToString("yyyy-MM-dd")
 
-        ' Repopulate the footer count when table is sorted
-        LoadFooterCounts(reportMonth)
+        ' Refresh footer numbers from cached ds (fast)
+        LoadFooterCounts(reportMonthStr)
 
-        ' Rebuild grid definition (columns, styles, etc.)
-        BuildGridView(GridViewObj, "GridView1", "Headquarter_ID")
+        ' Rebuild basic grid props (same as before)
+        BuildGridView(gv, "GridView1", "Headquarter_ID")
 
-        ' Fetch the full dataset for that month
-        Dim eom As String = GetEndOfMonthDate(reportMonth).ToString("yyyy-MM-dd")
-        Dim sqlStr As String = "SELECT * FROM dbo.DMC_Monthly_Subscription_By_Account_Type_Base_USD('" & eom & "') "
-        Dim dt As DataTable = GetDataTable(sqlStr)
+        ' Use cached DataSet
+        Dim ds As DataSet = GetOrBuildDataSet(reportEom, DDL_Country.SelectedValue, DDL_Account_Type.SelectedValue)
+        Dim dt As DataTable = ds.Tables("G1").Copy()
         Dim dataView As New DataView(dt)
 
-        ' Toggle/view‐state logic for sorting, then apply to DataView
-        Dim defaultFirstExpr As String = GridViewObj.Columns(0).SortExpression
+        Dim defaultFirstExpr As String = gv.Columns(0).SortExpression
         Dim fullSortExpr As String = BuildSortExpression(e.SortExpression, defaultFirstExpr)
         dataView.Sort = fullSortExpr
 
-        ' Bind sorted DataView back to the GridView
-        GridViewObj.DataSource = dataView
-        GridViewObj.DataBind()
+        gv.DataSource = dataView
+        gv.DataBind()
     End Sub
+
 
     Protected Sub GridView2_RowDataBound(ByVal sender As Object, ByVal e As GridViewRowEventArgs) Handles GridView2.RowDataBound
         Dim GridViewObj As GridView = CType(sender, GridView)
@@ -391,70 +469,113 @@ Partial Class Views_DMC_Account_Revenue_By_Account_Type_Base_USD
         End If
     End Sub
 
+    'Protected Sub GridView3_4_5_Sorting(ByVal sender As Object, ByVal e As GridViewSortEventArgs) Handles GridView3.Sorting, GridView4.Sorting, GridView5.Sorting
+    '    Dim GridViewObj As GridView = CType(sender, GridView)
+
+    '    ' Re‐fetch ReportMonth
+    '    Dim reportMonth As String = GetSelectedReportMonth()
+    '    Dim eom As String = GetEndOfMonthDate(reportMonth).ToString("yyyy-MM-dd")
+
+    '    ' Pick the correct SQL string & data‐key name based on which GridView called
+    '    Dim sqlStr As String = ""
+    '    Dim dataKeyName As String = ""
+    '    Select Case GridViewObj.ID
+    '        Case "GridView3"
+    '            sqlStr = "SELECT Category AS Country, Stores, Total, Average " &
+    '                     "FROM DMC_Monthly_Subscription_Statistics_USD('ByCountry','" & eom & "') " &
+    '                     "ORDER BY CASE Category WHEN 'Total' THEN 1 ELSE 0 END"
+    '            dataKeyName = "Country"
+
+    '        Case "GridView4"
+    '            sqlStr = "SELECT Category AS Customer, Stores, Total, Average " &
+    '                     "FROM DMC_Monthly_Subscription_Statistics_USD('ByCustomer','" & eom & "') " &
+    '                     "ORDER BY CASE Category WHEN 'Total' THEN 2 WHEN 'Others' THEN 1 ELSE 0 END"
+    '            dataKeyName = "Customer"
+
+    '        Case "GridView5"
+    '            sqlStr = "SELECT Category AS Segment, Stores, Total, Average " &
+    '                     "FROM DMC_Monthly_Subscription_Statistics_USD('BySegment','" & eom & "') " &
+    '                     "ORDER BY CASE Category WHEN 'Total' THEN 1 ELSE 0 END"
+    '            dataKeyName = "Segment"
+
+    '        Case Else
+    '            Return
+    '    End Select
+
+    '    ' Re‐build the grid’s columns & styling exactly as in BuildContencPage
+    '    BuildGridView(GridViewObj, GridViewObj.ID, dataKeyName)   ' use "GridView3"/"GridView4"/"GridView5" for name
+
+    '    ' Load DataTable
+    '    Dim dt As DataTable = GetDataTable(sqlStr)
+
+    '    ' Add an “IsTotal” column to each row: 1 if Category="Total", else 0
+    '    dt.Columns.Add("IsTotal", GetType(Integer))
+    '    For Each row As DataRow In dt.Rows
+    '        If String.Equals(row(dataKeyName).ToString(), "Total", StringComparison.OrdinalIgnoreCase) Then
+    '            row("IsTotal") = 1
+    '        Else
+    '            row("IsTotal") = 0
+    '        End If
+    '    Next
+
+    '    ' Wrap DataView
+    '    Dim dataView As New DataView(dt)
+
+    '    ' Toggle the sort expression in ViewState & get full "ColName ASC/DESC"
+    '    Dim defaultFirstExpr As String = GridViewObj.Columns(0).SortExpression
+    '    Dim userSortExpr As String = BuildSortExpression(e.SortExpression, defaultFirstExpr)
+
+    '    ' Prepend “IsTotal ASC” so that non-Total rows (IsTotal=0) come first,
+    '    ' then apply the user's column sort on the remainder.
+    '    dataView.Sort = "IsTotal ASC, " & userSortExpr
+
+    '    ' Bind the sorted DataView back
+    '    GridViewObj.DataSource = dataView
+    '    GridViewObj.DataBind()
+    'End Sub
+
     Protected Sub GridView3_4_5_Sorting(ByVal sender As Object, ByVal e As GridViewSortEventArgs) Handles GridView3.Sorting, GridView4.Sorting, GridView5.Sorting
-        Dim GridViewObj As GridView = CType(sender, GridView)
+        Dim gv As GridView = CType(sender, GridView)
 
-        ' Re‐fetch ReportMonth
-        Dim reportMonth As String = GetSelectedReportMonth()
-        Dim eom As String = GetEndOfMonthDate(reportMonth).ToString("yyyy-MM-dd")
+        Dim reportMonthStr As String = GetSelectedReportMonth()
+        Dim reportEom As String = GetEndOfMonthDate(CDate(reportMonthStr)).ToString("yyyy-MM-dd")
 
-        ' Pick the correct SQL string & data‐key name based on which GridView called
-        Dim sqlStr As String = ""
+        ' Pick table name by grid ID
+        Dim tableName As String = ""
         Dim dataKeyName As String = ""
-        Select Case GridViewObj.ID
-            Case "GridView3"
-                sqlStr = "SELECT Category AS Country, Stores, Total, Average " &
-                         "FROM DMC_Monthly_Subscription_Statistics_USD('ByCountry','" & eom & "') " &
-                         "ORDER BY CASE Category WHEN 'Total' THEN 1 ELSE 0 END"
-                dataKeyName = "Country"
-
-            Case "GridView4"
-                sqlStr = "SELECT Category AS Customer, Stores, Total, Average " &
-                         "FROM DMC_Monthly_Subscription_Statistics_USD('ByCustomer','" & eom & "') " &
-                         "ORDER BY CASE Category WHEN 'Total' THEN 2 WHEN 'Others' THEN 1 ELSE 0 END"
-                dataKeyName = "Customer"
-
-            Case "GridView5"
-                sqlStr = "SELECT Category AS Segment, Stores, Total, Average " &
-                         "FROM DMC_Monthly_Subscription_Statistics_USD('BySegment','" & eom & "') " &
-                         "ORDER BY CASE Category WHEN 'Total' THEN 1 ELSE 0 END"
-                dataKeyName = "Segment"
-
-            Case Else
-                Return
+        Select Case gv.ID
+            Case "GridView3" : tableName = "G3" : dataKeyName = "Country"
+            Case "GridView4" : tableName = "G4" : dataKeyName = "Customer"
+            Case "GridView5" : tableName = "G5" : dataKeyName = "Segment"
+            Case Else : Return
         End Select
 
-        ' Re‐build the grid’s columns & styling exactly as in BuildContencPage
-        BuildGridView(GridViewObj, GridViewObj.ID, dataKeyName)   ' use "GridView3"/"GridView4"/"GridView5" for name
+        ' Rebuild columns as before
+        BuildGridView(gv, gv.ID, dataKeyName)
 
-        ' Load DataTable
-        Dim dt As DataTable = GetDataTable(sqlStr)
+        ' Use cached DataSet
+        Dim ds As DataSet = GetOrBuildDataSet(reportEom, DDL_Country.SelectedValue, DDL_Account_Type.SelectedValue)
+        Dim dt As DataTable = ds.Tables(tableName).Copy()
 
-        ' Add an “IsTotal” column to each row: 1 if Category="Total", else 0
-        dt.Columns.Add("IsTotal", GetType(Integer))
-        For Each row As DataRow In dt.Rows
-            If String.Equals(row(dataKeyName).ToString(), "Total", StringComparison.OrdinalIgnoreCase) Then
-                row("IsTotal") = 1
-            Else
-                row("IsTotal") = 0
-            End If
-        Next
+        ' Add IsTotal flag once to the copied table
+        If Not dt.Columns.Contains("IsTotal") Then
+            dt.Columns.Add("IsTotal", GetType(Integer))
+            For Each row As DataRow In dt.Rows
+                Dim keyVal As String = row(dataKeyName).ToString()
+                row("IsTotal") = If(String.Equals(keyVal, "Total", StringComparison.OrdinalIgnoreCase), 1, 0)
+            Next
+        End If
 
-        ' Wrap DataView
-        Dim dataView As New DataView(dt)
-
-        ' Toggle the sort expression in ViewState & get full "ColName ASC/DESC"
-        Dim defaultFirstExpr As String = GridViewObj.Columns(0).SortExpression
+        Dim dv As New DataView(dt)
+        Dim defaultFirstExpr As String = gv.Columns(0).SortExpression
         Dim userSortExpr As String = BuildSortExpression(e.SortExpression, defaultFirstExpr)
 
-        ' Prepend “IsTotal ASC” so that non-Total rows (IsTotal=0) come first,
-        ' then apply the user's column sort on the remainder.
-        dataView.Sort = "IsTotal ASC, " & userSortExpr
+        dv.Sort = "IsTotal ASC, " & userSortExpr
 
-        ' Bind the sorted DataView back
-        GridViewObj.DataSource = dataView
-        GridViewObj.DataBind()
+        gv.DataSource = dv
+        gv.DataBind()
     End Sub
+
 
 
     '' Dropdownlist
@@ -476,11 +597,17 @@ Partial Class Views_DMC_Account_Revenue_By_Account_Type_Base_USD
         End If
     End Sub
 
+    'Protected Sub DDL_ReportMonth_SelectedIndexChanged(sender As Object, e As EventArgs) Handles DDL_ReportMonth.SelectedIndexChanged
+    '    RefreshAllGridViews()   '' Reset sortExpression whenever the ReportMonth dropdownlist selectedindex is changed
+    'End Sub
+
     Protected Sub DDL_ReportMonth_SelectedIndexChanged(sender As Object, e As EventArgs) Handles DDL_ReportMonth.SelectedIndexChanged
-        RefreshAllGridViews()   '' Reset sortExpression whenever the ReportMonth dropdownlist selectedindex is changed
+        InvalidateCachedData()
+        RefreshAllGridViews()
     End Sub
 
     Protected Sub DDL_Country_SelectedIndexChanged(sender As Object, e As EventArgs) Handles DDL_Country.SelectedIndexChanged
+        InvalidateCachedData()
         '' Set the start and end of yearly report month
         Dim StartMonth As String = New Date(DateSerial(Year(Now) - 5, 1, 1).Year, 1, 1).ToString("yyyy-MM-dd")    '' One year early to track those contract start at one year earlier
         Dim EndMonth As String = DateSerial(Year(Now), Month(Now), 0).ToString("yyyy-MM-dd")
@@ -507,6 +634,7 @@ Partial Class Views_DMC_Account_Revenue_By_Account_Type_Base_USD
     End Sub
 
     Protected Sub DDL_Account_Type_SelectedIndexChanged(sender As Object, e As EventArgs) Handles DDL_Account_Type.SelectedIndexChanged
+        InvalidateCachedData()
         RefreshAllGridViews()   '' Reset sortExpression whenever the ReportMonth dropdownlist selectedindex is changed
     End Sub
 
@@ -551,6 +679,95 @@ Partial Class Views_DMC_Account_Revenue_By_Account_Type_Base_USD
         Dim Page_Origin As String = Get_Value("SELECT TOP 1 Page_Origin FROM DMC_Account_Reports_List WHERE ID = " & Request.QueryString("ID"), "Page_Origin")
         Response.Redirect(Page_Origin)
     End Sub
+
+
+    ' --------- STEP 1 HELPERS (SESSION-CACHED DATASET) ----------
+
+    Private Function MakeDsKey(reportEom As String, country As String, deviceType As String) As String
+        Return $"USD:{reportEom}:{If(country, "")}:{If(deviceType, "")}"
+    End Function
+
+    Private Function BuildAllTables(reportEom As String, country As String, deviceType As String) As DataSet
+        ' 5 tables total (plus footer counts derived from table 0)
+        Dim ds As New DataSet()
+
+        ' Table 0: GridView1 base
+        Dim sql0 As String =
+        "SELECT * FROM dbo.DMC_Monthly_Subscription_By_Account_Type_Base_USD('" & reportEom & "')"
+
+        ' Table 1: Footer counts (derived from the same function, but computed by SQL here)
+        Dim sql1 As String =
+        "SELECT COUNT(Headquarter_ID) AS Headquarter_Count, " &
+        "       SUM(Owned_Store)      AS Store_Count,       " &
+        "       SUM(Total_Amount_Per_Month) AS Total_Amount " &
+        "FROM dbo.DMC_Monthly_Subscription_By_Account_Type_Base_USD('" & reportEom & "')"
+
+        ' Table 2: GridView2
+        Dim sql2 As String =
+        "SELECT * FROM R_DMC_Subscription_Revenue_By_Account_Type_Base_USD_Overview " &
+        "ORDER BY [Year] DESC, CASE Col WHEN 'Amount' THEN 1 WHEN 'No of Store' THEN 2 ELSE 3 END"
+
+        ' Table 3: GridView3
+        Dim sql3 As String =
+        "SELECT Category AS Country, Stores, Total, Average " &
+        "FROM DMC_Monthly_Subscription_Statistics_USD('ByCountry','" & reportEom & "') " &
+        "ORDER BY CASE Category WHEN 'Total' THEN 1 ELSE 0 END"
+
+        ' Table 4: GridView4
+        Dim sql4 As String =
+        "SELECT Category AS Customer, Stores, Total, Average " &
+        "FROM DMC_Monthly_Subscription_Statistics_USD('ByCustomer','" & reportEom & "') " &
+        "ORDER BY CASE Category WHEN 'Total' THEN 2 WHEN 'Others' THEN 1 ELSE 0 END"
+
+        ' Table 5: GridView5
+        Dim sql5 As String =
+        "SELECT Category AS Segment, Stores, Total, Average " &
+        "FROM DMC_Monthly_Subscription_Statistics_USD('BySegment','" & reportEom & "') " &
+        "ORDER BY CASE Category WHEN 'Total' THEN 1 ELSE 0 END"
+
+        ' NOTE: We still use your existing GetDataTable helper for 100% compatibility.
+        ds.Tables.Add(GetDataTable(sql0)) : ds.Tables(0).TableName = "G1"
+        ds.Tables.Add(GetDataTable(sql1)) : ds.Tables(1).TableName = "Footer"
+        ds.Tables.Add(GetDataTable(sql2)) : ds.Tables(2).TableName = "G2"
+        ds.Tables.Add(GetDataTable(sql3)) : ds.Tables(3).TableName = "G3"
+        ds.Tables.Add(GetDataTable(sql4)) : ds.Tables(4).TableName = "G4"
+        ds.Tables.Add(GetDataTable(sql5)) : ds.Tables(5).TableName = "G5"
+
+        Return ds
+    End Function
+
+    Private Function GetOrBuildDataSet(reportEom As String, country As String, deviceType As String) As DataSet
+        Dim key = MakeDsKey(reportEom, country, deviceType)
+        Dim ds As DataSet = TryCast(Session(key), DataSet)
+        If ds Is Nothing Then
+            ' Populate your temp table using your existing stored proc call (unchanged)
+            Dim startMonth As String = New Date(Year(Now) - 5, Month(Now), 1).ToString("yyyy-MM-dd")
+            Dim endMonth As String = DateSerial(Year(Now), Month(Now), 0).ToString("yyyy-MM-dd")
+            RunSQL("EXEC dbo.SP_Insert_TempTable_DMC_Monthly_Revenue_By_Account_Type_Base_USD_Summary '" &
+               startMonth & "', '" & endMonth & "', '" & country & "', '" & deviceType & "' ")
+
+            ' Build and cache dataset
+            ds = BuildAllTables(reportEom, country, deviceType)
+            Session(key) = ds
+        End If
+        Return ds
+    End Function
+
+    Private Sub InvalidateCachedData()
+        ' Optional: clear any USD:* entries from Session when filters change.
+        ' For simplicity we’ll clear all keys we might have used.
+        Dim keys As New List(Of String)
+        For Each k As String In Session.Keys
+            If k IsNot Nothing AndAlso k.StartsWith("USD:", StringComparison.OrdinalIgnoreCase) Then
+                keys.Add(k)
+            End If
+        Next
+        For Each k In keys
+            Session.Remove(k)
+        Next
+    End Sub
+    ' ------------------------------------------------------------
+
 
 
 
