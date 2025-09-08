@@ -143,6 +143,7 @@ Public Class LMSPortalBaseCode
     '    End If
     'End Function
 
+    ' Execute SQL Command and return number of rows affected
     Protected Function RunSQL(ByVal sqlStr As String) As Integer
         Using cn As New SqlConnection(Constr)
             Using cmd As New SqlCommand(sqlStr, cn)
@@ -164,8 +165,7 @@ Public Class LMSPortalBaseCode
     '    End If
     'End Function
 
-    ' Execute SQL Command and return SqlDataReader (connection will close when reader closes)
-
+    ' Execute SQL Command and return sqlDataReader
     Protected Function RunSQLExecuteReader(ByVal sqlStr As String) As SqlDataReader
         Dim cn As New SqlConnection(Constr)
         Dim cmd As New SqlCommand(sqlStr, cn)
