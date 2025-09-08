@@ -439,7 +439,9 @@ Public Class LMSPortalBaseCode
                 cn.Open()
                 Using dr As SqlDataReader = cmd.ExecuteReader(CommandBehavior.SingleRow)
                     If dr.Read() Then
-                        Return If(dr.IsDBNull(dr.GetOrdinal(ColName)), "", dr(ColName).ToString())
+                        Dim ord As Integer = dr.GetOrdinal(ColName)
+                        If dr.IsDBNull(ord) Then Return ""
+                        Return Convert.ToString(dr.GetValue(ord))
                     End If
                 End Using
             End Using
