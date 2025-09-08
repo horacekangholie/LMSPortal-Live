@@ -418,17 +418,35 @@ Public Class LMSPortalBaseCode
 
 
     ' Execute SQL Command to get a single value
+    'Protected Function Get_Value(ByVal query As String, ByVal ColName As String) As String
+    '    Dim dr = RunSQLExecuteReader(query)
+    '    Dim Value As String = ""
+    '    While dr.Read()
+    '        Value = dr(ColName)
+    '    End While
+    '    Cmd.Cancel()   '' Add in cancel function
+    '    dr.Close()
+    '    Conn.Dispose()
+    '    Return Value
+    'End Function
+
+    ' Execute SQL and return the value of ColName from the first row (or "" if none)
     Protected Function Get_Value(ByVal query As String, ByVal ColName As String) As String
-        Dim dr = RunSQLExecuteReader(query)
-        Dim Value As String = ""
-        While dr.Read()
-            Value = dr(ColName)
-        End While
-        Cmd.Cancel()   '' Add in cancel function
-        dr.Close()
-        Conn.Dispose()
-        Return Value
+        Using cn As New SqlConnection(Constr)
+            Using cmd As New SqlCommand(query, cn)
+                cn.Open()
+                Using dr As SqlDataReader = cmd.ExecuteReader(CommandBehavior.SingleRow)
+                    If dr.Read() Then
+                        Dim ord As Integer = dr.GetOrdinal(ColName)
+                        If dr.IsDBNull(ord) Then Return ""
+                        Return Convert.ToString(dr.GetValue(ord))
+                    End If
+                End Using
+            End Using
+        End Using
+        Return ""
     End Function
+
 
     Protected Function AlertMessage(ByVal message As String) As String
         Dim sb As New StringBuilder()
