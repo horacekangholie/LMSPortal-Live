@@ -136,7 +136,7 @@ Partial Class Form_CZL_Upcoming_Device
     Protected Sub DDL_CZL_Client_ID_Load(sender As Object, e As EventArgs) Handles DDL_CZL_Client_ID.Load
         If Not IsPostBack Then
             Try
-                Dim sqlStr = "SELECT Client_ID, Client_ID + ' - ' + User_Group AS Client_ID_User_Group FROM CZL_Account ORDER BY CAST(Client_ID AS int) "
+                Dim sqlStr = "SELECT Client_ID, Client_ID + ' - ' + User_Group AS Client_ID_User_Group FROM CZL_Account ORDER BY CAST(Client_ID AS int) DESC "
                 DDL_CZL_Client_ID.DataSource = GetDataTable(sqlStr)
                 DDL_CZL_Client_ID.DataTextField = "Client_ID_User_Group"
                 DDL_CZL_Client_ID.DataValueField = "Client_ID"
