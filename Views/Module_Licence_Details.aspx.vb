@@ -48,7 +48,7 @@ Partial Class Views_Module_Licence_Details
                                       "SELECT * FROM I_AI_Licence_Renewal WHERE [Customer ID] = '" & Request.QueryString("Customer_ID") & "' ORDER BY [Expired Date] ",
                                       "SELECT [UID], [PO No], [PO Date], [Invoice No], [Invoice Date], [Currency], SUM(Fee) AS [Total Amount], [Renewal Date] FROM R_AI_Licence_Renewal WHERE [Customer ID] = '" & Request.QueryString("Customer_ID") & "' GROUP BY [UID], [PO No], [PO Date], [Invoice No], [Invoice Date], [Currency], [Renewal Date] ORDER BY [UID] DESC ",
                                       "SELECT *, CASE WHEN DATEDIFF(D, Added_Date, GETDATE()) > 90 THEN 1 ELSE 0 END AS Is_Locked FROM DB_Account_Notes WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' AND Notes_For = 'Module Licence' ORDER BY Added_Date DESC, ID DESC ",
-                                      "SELECT * FROM R_LMS_Module_Licence_Pool WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' AND Name NOT LIKE '%Licence Pool%' ORDER BY Customer_ID, No, Module_Type DESC "}
+                                      "SELECT * FROM R_LMS_Module_Licence_Pool WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' AND Name NOT LIKE '%Licence Pool%' ORDER BY Customer_ID, Name, No "}
 
             BuildGridView(GridView1, "GridView1", "PO No")
             GridView1.DataSource = GetDataTable(sqlStr(0))
