@@ -114,6 +114,13 @@
                                 SetFocusOnError="True"
                                 ControlToValidate="TB_SO_No">
                             </asp:RequiredFieldValidator>
+                            <asp:RegularExpressionValidator ID="RegEx_TB_SO_No" runat="server" ValidationGroup="AILicenceRenewal"
+                                ErrorMessage="Invalid format. SO No e.g. 713580" CssClass="invalid-feedback"
+                                Display="Dynamic"
+                                SetFocusOnError="True"
+                                ControlToValidate="TB_SO_No"
+                                ValidationExpression="^\d{6}$">
+                            </asp:RegularExpressionValidator>
                         </td>
                     </tr>
                     <tr style="vertical-align: top">
@@ -126,6 +133,13 @@
                                 SetFocusOnError="True"
                                 ControlToValidate="TB_Invoice_No">
                             </asp:RequiredFieldValidator>
+                            <asp:RegularExpressionValidator ID="RegEx_TB_Invoice_No" runat="server" ValidationGroup="AILicenceRenewal"
+                                ErrorMessage="Invalid format. Invoice No e.g. TWS/41234567" CssClass="invalid-feedback"
+                                Display="Dynamic"
+                                SetFocusOnError="True"
+                                ControlToValidate="TB_Invoice_No"
+                                ValidationExpression="^TWS\/\d{8}$">
+                            </asp:RegularExpressionValidator>
                         </td>
                         <td style="width: 50%; padding: 0px 10px 20px 0px">
                             <label>Invoice Date</label>

@@ -130,6 +130,13 @@
                                 SetFocusOnError="True"
                                 ControlToValidate="TB_Invoice_No">
                             </asp:RequiredFieldValidator>
+                            <asp:RegularExpressionValidator ID="RegEx_TB_Invoice_No" runat="server" ValidationGroup="RecoverCZLModelUpgradeFee"
+                                ErrorMessage="Invalid format. Invoice No e.g. TWS/41234567" CssClass="invalid-feedback"
+                                Display="Dynamic"
+                                SetFocusOnError="True"
+                                ControlToValidate="TB_Invoice_No"
+                                ValidationExpression="^TWS\/\d{8}$">
+                            </asp:RegularExpressionValidator>
                         </td>
                         <td style="width: 400px; padding: 0px 10px 10px 0px">
                             <label>Invoice Date</label>

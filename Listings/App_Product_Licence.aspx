@@ -132,7 +132,7 @@
                                 ControlToValidate="TB_Invoice_No">
                             </asp:RequiredFieldValidator>
                             <asp:RegularExpressionValidator ID="RegEx_TB_Invoice_No" runat="server" ValidationGroup="AppProductLicence"
-                                ErrorMessage="Invalid format. Correct format e.g. TWS/41234567" CssClass="invalid-feedback"
+                                ErrorMessage="Invalid format. Invoice No e.g. TWS/41234567" CssClass="invalid-feedback"
                                 Display="Dynamic"
                                 SetFocusOnError="True"
                                 ControlToValidate="TB_Invoice_No"
