@@ -28,7 +28,7 @@ Partial Class Views_AIAccountDeviceList
         Dim ColNo As Integer = Request.QueryString("ColNo")
 
         Try
-            Dim sqlStr As String = "SELECT [Application Type], [Licence Code], [Created Date], Status, [Serial No], [MAC Address], [AI Device ID], [AI Device Serial No], [Activated Date], [Expired Date] " &
+            Dim sqlStr As String = "SELECT [Application Type], [Licence Code], [Created Date], Status, [Serial No], [MAC Address], [AI Device ID], [AI Device Serial No], [AI Activation Key], [Activated Date], [Expired Date] " &
                                    "FROM _AllRegisteredAILicence " &
                                    "WHERE [Customer ID] = '" & Customer_ID & "' " &
                                    "  AND Synced_dmcmobiletoken_hqid = '" & HQID & "' " &
@@ -47,7 +47,7 @@ Partial Class Views_AIAccountDeviceList
                     sqlStr = sqlStr
             End Select
 
-            sqlStr += "AND ([Serial No] LIKE N'%" & keyword & "%' OR [MAC Address] LIKE N'%" & keyword & "%' OR [Licence Code] LIKE N'%" & keyword & "%' OR [AI Device Serial No] LIKE N'%" & keyword & "%' OR [AI Device ID] LIKE N'%" & keyword & "%') "
+            sqlStr += "AND ([Serial No] LIKE N'%" & keyword & "%' OR [MAC Address] LIKE N'%" & keyword & "%' OR [Licence Code] LIKE N'%" & keyword & "%' OR [AI Device Serial No] LIKE N'%" & keyword & "%' OR [AI Device ID] LIKE N'%" & keyword & "%' OR [AI Activation Key] LIKE N'%" & keyword & "%') "
             sqlStr += "ORDER BY [Expired Date] "
 
             '' Formatting GridView
@@ -100,7 +100,7 @@ Partial Class Views_AIAccountDeviceList
 
         GridView1.Columns.Clear()  '' Clear each time page index changed
 
-        Dim reportColName As String() = {"Application Type", "Licence Code", "Created Date", "Status", "Serial No", "MAC Address", "AI Device ID", "AI Device Serial No", "Activated Date", "Expired Date"}
+        Dim reportColName As String() = {"Application Type", "Licence Code", "Created Date", "Status", "Serial No", "MAC Address", "AI Device ID", "AI Device Serial No", "AI Activation Key", "Activated Date", "Expired Date"}
         Dim reportColSize As Integer() = {50, 100, 100, 100, 250, 100, 250, 100, 100, 100}
 
         '' Create column boundfield
