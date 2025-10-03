@@ -219,8 +219,8 @@ Partial Class Views_Module_Licence_Details
                 GridViewObj.AllowPaging = True
                 GridViewObj.PageSize = 20
                 GridViewObj.Columns.Clear()
-                Dim ColData() As String = {"Licence Code", "Serial No", "MAC Address", "AI Device ID", "AI Device Serial No", "Activated Date", "Expired Date", "Status", "Requested By"}
-                Dim ColSize() As Integer = {100, 50, 50, 100, 100, 50, 50, 50, 100}
+                Dim ColData() As String = {"Licence Code", "Serial No", "MAC Address", "AI Device ID", "AI Device Serial No", "AI Activation Key", "Activated Date", "Expired Date", "Status", "Requested By"}
+                Dim ColSize() As Integer = {100, 50, 50, 100, 100, 100, 50, 50, 50, 100}
 
                 For i = 0 To ColData.Length - 1
                     Dim Bfield As BoundField = New BoundField()
