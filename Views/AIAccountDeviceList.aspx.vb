@@ -101,7 +101,7 @@ Partial Class Views_AIAccountDeviceList
         GridView1.Columns.Clear()  '' Clear each time page index changed
 
         Dim reportColName As String() = {"Application Type", "Licence Code", "Created Date", "Status", "Serial No", "MAC Address", "AI Device ID", "AI Device Serial No", "AI Activation Key", "Activated Date", "Expired Date"}
-        Dim reportColSize As Integer() = {50, 100, 100, 100, 250, 100, 250, 100, 100, 100}
+        Dim reportColSize As Integer() = {50, 100, 100, 100, 250, 100, 250, 100, 100, 100, 100}
 
         '' Create column boundfield
         For i = 0 To reportColName.Length - 1
