@@ -403,18 +403,21 @@
                             <div id="ChangeLog_Header" runat="server" style="text-align: left">
                                 <div style="margin-left: 10px">
                                     <h4 style="float: left; vertical-align: baseline;margin-right: 10px">Licence Device Log</h4>
-                                    <h5 style="float: left; vertical-align: baseline;margin-right: 10px">Serial No: </h5>
-                                    <h5 style="float: left; margin-bottom: 0px"><asp:Label ID="LB_Header_Serial_No" runat="server" Visible="false" Font-Bold="true"></asp:Label></h5>
-                                    <h5 style="float: left; vertical-align: baseline;margin-right: 10px; clear:both">Activation Key(s): </h5>
-                                    <h5 style="float: left; margin-bottom: 25px">
-                                        <table border="0" class="modalPopupTable" style="width: 100%">
-                                            <tr style="vertical-align: top">
-                                                <td style="width: 200px; white-space: nowrap">
-                                                    <asp:Label ID="LB_Header_Licence_Key" runat="server" Visible="false" Font-Bold="true"></asp:Label>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </h5>
+                                    <div>
+                                        <h5 style="float: left; vertical-align: baseline; margin-right: 10px">Serial No: </h5>
+                                        <h5 style="float: left; margin-bottom: 0px">
+                                            <asp:Label ID="LB_Header_Serial_No" runat="server" Visible="false" Font-Bold="true"></asp:Label></h5>
+                                        <h5 style="float: left; vertical-align: baseline; margin-right: 10px; clear: both">Activation Key(s): </h5>
+                                        <h5 style="float: left; margin-bottom: 25px">
+                                            <table border="0" class="modalPopupTable" style="width: 100%">
+                                                <tr style="vertical-align: top">
+                                                    <td style="width: 200px; white-space: nowrap">
+                                                        <asp:Label ID="LB_Header_Licence_Key" runat="server" Visible="false" Font-Bold="true"></asp:Label>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </h5>
+                                    </div>
                                 </div>
                                 <div style="margin-left:10px; clear:both"><h5>Comments:</h5></div>
                             </div>
