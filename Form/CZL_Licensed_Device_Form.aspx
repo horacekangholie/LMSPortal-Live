@@ -110,13 +110,13 @@
         .licence-label {
             font-weight: 600;
             white-space: nowrap;
-            font-size: 1.5rem; /* ↑ Label font */
+            font-size: 1.25rem; /* ↑ Label font */
         }
 
         /* Value styling */
         .licence-value {
-            font-weight: 700;
-            font-size: 1.5rem; /* ↑ Value font */
+            font-weight: 800;
+            font-size: 1.25rem; /* ↑ Value font */
             font-family: ui-monospace, monospace;
             overflow-wrap: anywhere;
         }
