@@ -81,77 +81,31 @@
         }
     </style>
     <style>
-        .licence-card{
-  margin:10px;
-  padding:16px;
-  border:1px solid #e5e7eb;
-  border-radius:12px;
-  background:#fff;
-  box-shadow:0 1px 2px rgba(0,0,0,0.05);
-  max-width:960px;
-}
+        /* kill floats + add spacing */
+        h5, h4 {
+            margin: 0 0 8px 0;
+        }
 
-.licence-card__header h4{
-  margin:0 0 8px 0;
-  font-size:1.125rem;
-  line-height:1.4;
-}
+        .inline-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
 
-.licence-card__body{
-  display:grid;
-  grid-template-columns: 160px 1fr;
-  gap:10px 16px;
-}
+        .block {
+            display: block;
+        }
 
-.licence-row{
-  display:contents; /* lets label/value align on the grid neatly */
-}
+        /* keys area */
+        .modalPopupTable {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
-.licence-row--top .licence-label{ align-self:start; }
-
-.licence-label{
-  font-weight:600;
-  white-space:nowrap;
-  color:#374151;
-}
-
-.licence-value{
-  min-width:0; /* enables text truncation/wrap within the grid cell */
-}
-
-.text-strong{ font-weight:700; color:#111827; }
-
-/* Keys as chips */
-.key-list{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  margin:0;
-  padding:0;
-  list-style:none;
-}
-
-.key-chip{
-  display:inline-block;
-  padding:6px 10px;
-  border-radius:999px;
-  border:1px solid #d1d5db;
-  background:#f9fafb;
-  font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  font-size:0.9rem;
-  line-height:1.2;
-  word-break:break-all;   /* long keys won’t blow the layout */
-  max-width:100%;
-}
-
-/* Small screens: stack vertically */
-@media (max-width:600px){
-  .licence-card__body{
-    grid-template-columns: 1fr;
-  }
-  .licence-label{ margin-top:8px; }
-}
-
+            .modalPopupTable td {
+                padding: 0;
+            }
     </style>
 
 </asp:Content>
@@ -492,41 +446,28 @@
                                         </h5>
                                     </div>
                                 </div>--%>
-                                <div class="licence-card">
-  <div class="licence-card__header">
-    <h4>Licence Device Log</h4>
-  </div>
+                                <div style="margin-left: 10px">
+                                    <div class="block">
+                                        <h4>Licence Device Log</h4>
+                                    </div>
 
-  <div class="licence-card__body">
-    <div class="licence-row">
-      <div class="licence-label">Serial No:</div>
-      <div class="licence-value">
-        <asp:Label ID="LB_Header_Serial_No" runat="server" CssClass="text-strong"></asp:Label>
-      </div>
-    </div>
+                                    <div class="inline-row">
+                                        <h5>Serial No:</h5>
+                                        <asp:Label ID="LB_Header_Serial_No" runat="server" CssClass="text-strong"></asp:Label>
+                                    </div>
 
-    <div class="licence-row licence-row--top">
-      <div class="licence-label">Activation Key(s):</div>
-      <div class="licence-value">
-        <!-- If you’re binding multiple keys, a repeater is ideal. If not, keep a single Label. -->
-        <asp:Repeater ID="RptActivationKeys" runat="server">
-          <HeaderTemplate>
-            <ul class="key-list">
-          </HeaderTemplate>
-          <ItemTemplate>
-            <li class="key-chip" title="<%# Eval("Key") %>"><%# Eval("Key") %></li>
-          </ItemTemplate>
-          <FooterTemplate>
-            </ul>
-          </FooterTemplate>
-        </asp:Repeater>
+                                    <div class="block" style="margin-top: 8px">
+                                        <h5>Activation Key(s):</h5>
+                                        <table border="0" class="modalPopupTable">
+                                            <tr>
+                                                <td>
+                                                    <asp:Label ID="LB_Header_Licence_Key" runat="server" CssClass="key-chip"></asp:Label>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
 
-        <!-- Fallback if you only have one label -->
-        <asp:Label ID="LB_Header_Licence_Key" runat="server" CssClass="key-chip" Visible="false"></asp:Label>
-      </div>
-    </div>
-  </div>
-</div>
 
                                 <div style="margin-left:10px; clear:both"><h5>Comments:</h5></div>
                             </div>
