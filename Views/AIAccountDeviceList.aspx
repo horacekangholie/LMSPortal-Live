@@ -33,7 +33,7 @@
             </div>
             <asp:GridView ID="GridView1" runat="server"></asp:GridView>
 
-            <!-- bottom buttons -->
+            <!-- bottom buttons --> 
             <div>
                 <asp:LinkButton ID="btnClose" runat="server" Text="Close" CssClass="btn btn-default" OnClick="btnClose_Click"></asp:LinkButton>
                 <asp:Button ID="btnRefresh" runat="server" Text="Refresh" CssClass="btn btn-default" />
