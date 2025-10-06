@@ -116,7 +116,7 @@
         /* Value styling */
         .licence-value {
             font-weight: 800;
-            font-size: 1.25rem; /* ↑ Value font */
+            font-size: 1.5rem; /* ↑ Value font */
             font-family: ui-monospace, monospace;
             overflow-wrap: anywhere;
         }
