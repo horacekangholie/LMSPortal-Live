@@ -402,10 +402,11 @@
                             <hr style="margin: 0px 15px 20px 0px"/>
                             <div id="ChangeLog_Header" runat="server" style="text-align: left">
                                 <div style="margin-left: 10px">
+                                    <h4 style="float: left; vertical-align: baseline;margin-right: 10px">Licence Device Log</h4>
                                     <h5 style="float: left; vertical-align: baseline;margin-right: 10px">Serial No: </h5>
                                     <h5 style="float: left; margin-bottom: 0px"><asp:Label ID="LB_Header_Serial_No" runat="server" Visible="false" Font-Bold="true"></asp:Label></h5>
                                     <h5 style="float: left; vertical-align: baseline;margin-right: 10px; clear:both">Activation Key(s): </h5>
-                                    <h5 style="float: left; margin-bottom: 50px">
+                                    <h5 style="float: left; margin-bottom: 25px">
                                         <table border="0" class="modalPopupTable" style="width: 100%">
                                             <tr style="vertical-align: top">
                                                 <td style="width: 200px; white-space: nowrap">
