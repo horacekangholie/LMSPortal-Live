@@ -80,38 +80,63 @@
             table-layout: fixed;
         }
     </style>
+
     <style>
-        .licence-block {
-            margin: 10px;
-            max-width: 100%;
-            font-size: 0.95rem;
-        }
+        /* Overall container */
+.licence-block {
+  margin: 10px;
+  max-width: 100%;
+  font-size: 1rem; /* ↑ Base font size for readability */
+  line-height: 1.5;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
 
-        .licence-title {
-            margin: 0 0 8px 0;
-            font-size: 1.125rem;
-            font-weight: 600;
-        }
+/* Title */
+.licence-title {
+  margin: 0 0 8px 0;
+  font-size: 1.25rem;  /* ↑ Title font */
+  font-weight: 600;
+}
 
-        .licence-row {
-            display: flex;
-            flex-wrap: nowrap;
-            align-items: center;
-            margin-bottom: 4px; /* space between rows */
-            gap: 8px;
-        }
+/* Each label-value pair row */
+.licence-row {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: baseline;
+  margin-bottom: 6px;
+  gap: 6px;
+}
 
-        .licence-label {
-            font-weight: 600;
-            white-space: nowrap;
-        }
+/* Label styling */
+.licence-label {
+  font-weight: 600;
+  white-space: nowrap;
+  font-size: 1rem;     /* ↑ Label font */
+}
 
-        .licence-value {
-            font-weight: 700;
-            white-space: nowrap;
-            font-family: ui-monospace, monospace;
-            overflow-wrap: anywhere;
-        }
+/* Value styling */
+.licence-value {
+  font-weight: 700;
+  font-size: 1rem;     /* ↑ Value font */
+  font-family: ui-monospace, monospace;
+  overflow-wrap: anywhere;
+}
+
+/* Comments section */
+.comments-label {
+  font-weight: 600;
+  margin-top: 10px;
+  margin-bottom: 4px;
+  font-size: 1rem;
+}
+
+.comment-row {
+  display: flex;
+  gap: 10px;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
     </style>
 
 </asp:Content>
@@ -452,21 +477,27 @@
                                         </h5>
                                     </div>
                                 </div>--%>
-                                <div class="licence-block">
-                                    <h4 class="licence-title">Licence Device Log</h4>
+<div class="licence-block">
+    <h4 class="licence-title">Licence Device Log</h4>
 
-                                    <div class="licence-row">
-                                        <span class="licence-label">Serial No:</span>
-                                        <asp:Label ID="LB_Header_Serial_No" runat="server" CssClass="licence-value"></asp:Label>
-                                    </div>
+    <div class="licence-row">
+        <span class="licence-label">Serial No:</span>
+        <asp:Label ID="LB_Header_Serial_No" runat="server" CssClass="licence-value"></asp:Label>
+    </div>
 
-                                    <div class="licence-row">
-                                        <span class="licence-label">Activation Key(s):</span>
-                                        <asp:Label ID="LB_Header_Licence_Key" runat="server" CssClass="licence-value"></asp:Label>
-                                    </div>
-                                </div>
-                                <div style="margin-left:10px; clear:both"><h5>Comments:</h5></div>
-                            </div>
+    <div class="licence-row">
+        <span class="licence-label">Activation Key(s):</span>
+        <asp:Label ID="LB_Header_Licence_Key" runat="server" CssClass="licence-value"></asp:Label>
+    </div>
+
+    <div class="comments-label">Comments:</div>
+
+    <div class="comment-row">
+        <span>2025-09-25</span>
+        <span>Unit SN 24909406 was registered under old PLU code</span>
+    </div>
+</div>
+
 
                             <!-- Gridview -->
                             <asp:GridView ID="GridView2" runat="server">
