@@ -85,7 +85,7 @@
         .licence-block {
             margin: 10px;
             max-width: 100%;
-            font-size: 2rem; /* ↑ Base font size for readability */
+            font-size: 1.25rem; /* ↑ Base font size for readability */
             line-height: 1.5;
             font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         }
@@ -93,7 +93,7 @@
         /* Title */
         .licence-title {
             margin: 0 0 8px 0;
-            font-size: 2.5rem; /* ↑ Title font */
+            font-size: 1.75rem; /* ↑ Title font */
             font-weight: 600;
         }
 
@@ -110,13 +110,13 @@
         .licence-label {
             font-weight: 600;
             white-space: nowrap;
-            font-size: 2rem; /* ↑ Label font */
+            font-size: 1.25rem; /* ↑ Label font */
         }
 
         /* Value styling */
         .licence-value {
             font-weight: 700;
-            font-size: 2rem; /* ↑ Value font */
+            font-size: 1.25rem; /* ↑ Value font */
             font-family: ui-monospace, monospace;
             overflow-wrap: anywhere;
         }
@@ -475,7 +475,7 @@
                                 </div>
                             </div>
 
-                            <div style="margin-left:10px; clear:both"><h5>Comments:</h5></div>
+                            <div style="margin-left:10px; margin-top:20px; clear:both"><h5>Comments:</h5></div>
 
                             <!-- Gridview -->
                             <asp:GridView ID="GridView2" runat="server">
