@@ -477,27 +477,21 @@
                                         </h5>
                                     </div>
                                 </div>--%>
-<div class="licence-block">
-    <h4 class="licence-title">Licence Device Log</h4>
+                                <div class="licence-block">
+                                    <h4 class="licence-title">Licence Device Log</h4>
 
-    <div class="licence-row">
-        <span class="licence-label">Serial No:</span>
-        <asp:Label ID="LB_Header_Serial_No" runat="server" CssClass="licence-value"></asp:Label>
-    </div>
+                                    <div class="licence-row">
+                                        <span class="licence-label">Serial No:</span>
+                                        <asp:Label ID="LB_Header_Serial_No" runat="server" CssClass="licence-value"></asp:Label>
+                                    </div>
 
-    <div class="licence-row">
-        <span class="licence-label">Activation Key(s):</span>
-        <asp:Label ID="LB_Header_Licence_Key" runat="server" CssClass="licence-value"></asp:Label>
-    </div>
-
-    <div class="comments-label">Comments:</div>
-
-    <div class="comment-row">
-        <span>2025-09-25</span>
-        <span>Unit SN 24909406 was registered under old PLU code</span>
-    </div>
-</div>
-
+                                    <div class="licence-row">
+                                        <span class="licence-label">Activation Key(s):</span>
+                                        <asp:Label ID="LB_Header_Licence_Key" runat="server" CssClass="licence-value"></asp:Label>
+                                    </div>
+                                </div>
+                                <div style="margin-left:10px; clear:both"><h5>Comments:</h5></div>
+                            </div>
 
                             <!-- Gridview -->
                             <asp:GridView ID="GridView2" runat="server">
