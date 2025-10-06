@@ -201,7 +201,7 @@
                                     <asp:BoundField DataField="Device_Serial" HeaderText="Device Serial" SortExpression="Device_Serial" ItemStyle-Width="5%" ItemStyle-Wrap="false" />
                                     <asp:BoundField DataField="Unique_ID" HeaderText="Unique_ID" SortExpression="Unique_ID" ItemStyle-Width="0%" ItemStyle-Wrap="false" />
                                     <asp:BoundField DataField="Device_ID" HeaderText="Device ID" SortExpression="Device_ID" ItemStyle-Width="10%" ItemStyle-Wrap="false" />
-                                    <asp:BoundField DataField="Licence_Key" HeaderText="Activation Key(s)" SortExpression="Licence_Key" ItemStyle-Width="12%" ItemStyle-Wrap="true" />
+                                    <asp:BoundField DataField="Licence_Key" HeaderText="Activation Key(s)" SortExpression="Licence_Key" ItemStyle-Width="12%" ItemStyle-Wrap="false" />
                                     <asp:BoundField DataField="Model" HeaderText="Model" SortExpression="Model" ItemStyle-Width="0%" ItemStyle-Wrap="false" />
                                     <asp:BoundField DataField="Created_Date" HeaderText="Created On" SortExpression="Created_Date" DataFormatString="{0:dd MMM yy}" ItemStyle-Width="5%" ItemStyle-Wrap="false" />
                                     <asp:BoundField DataField="Effective_Date" HeaderText="CZL Eff. Date" SortExpression="Effective_Date" DataFormatString="{0:dd MMM yy}" ItemStyle-Width="8%" ItemStyle-Wrap="false" />
@@ -408,7 +408,7 @@
                                     <h5 style="float: left; margin-bottom: 50px">
                                         <table border="0" class="modalPopupTable" style="width: 100%">
                                             <tr style="vertical-align: top">
-                                                <td style="width: 200px">
+                                                <td style="width: 200px; white-space: nowrap">
                                                     <asp:Label ID="LB_Header_Licence_Key" runat="server" Visible="false" Font-Bold="true"></asp:Label>
                                                 </td>
                                             </tr>
