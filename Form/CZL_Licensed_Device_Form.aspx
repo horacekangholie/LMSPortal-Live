@@ -402,7 +402,7 @@
                             <hr style="margin: 0px 15px 20px 0px"/>
                             <div id="ChangeLog_Header" runat="server" style="text-align: left">
                                 <div style="margin-left: 10px">
-                                    <h4 style="float: left; vertical-align: baseline;margin-right: 10px">Licence Device Log</h4>
+                                    <div><h4 style="float: left; vertical-align: baseline;margin-right: 10px">Licence Device Log</h4></div>
                                     <div>
                                         <h5 style="float: left; vertical-align: baseline; margin-right: 10px">Serial No: </h5>
                                         <h5 style="float: left; margin-bottom: 0px">
