@@ -85,7 +85,7 @@
         .licence-block {
             margin: 10px;
             max-width: 100%;
-            font-size: 1.25rem; /* ↑ Base font size for readability */
+            font-size: 1.5rem; /* ↑ Base font size for readability */
             line-height: 1.5;
             font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         }
@@ -110,13 +110,13 @@
         .licence-label {
             font-weight: 600;
             white-space: nowrap;
-            font-size: 1.25rem; /* ↑ Label font */
+            font-size: 1.5rem; /* ↑ Label font */
         }
 
         /* Value styling */
         .licence-value {
             font-weight: 700;
-            font-size: 1.25rem; /* ↑ Value font */
+            font-size: 1.5rem; /* ↑ Value font */
             font-family: ui-monospace, monospace;
             overflow-wrap: anywhere;
         }
