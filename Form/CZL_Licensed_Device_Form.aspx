@@ -458,13 +458,7 @@
 
                                     <div class="block" style="margin-top: 8px">
                                         <h5>Activation Key(s):</h5>
-                                        <table border="0" class="modalPopupTable">
-                                            <tr>
-                                                <td>
-                                                    <asp:Label ID="LB_Header_Licence_Key" runat="server" CssClass="key-chip"></asp:Label>
-                                                </td>
-                                            </tr>
-                                        </table>
+                                        <asp:Label ID="LB_Header_Licence_Key" runat="server" CssClass="key-chip"></asp:Label>
                                     </div>
                                 </div>
 
