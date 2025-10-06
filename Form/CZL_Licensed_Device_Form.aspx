@@ -81,31 +81,37 @@
         }
     </style>
     <style>
-        /* kill floats + add spacing */
-        h5, h4 {
+        .licence-block {
+            margin: 10px;
+            max-width: 100%;
+            font-size: 0.95rem;
+        }
+
+        .licence-title {
             margin: 0 0 8px 0;
+            font-size: 1.125rem;
+            font-weight: 600;
         }
 
-        .inline-row {
+        .licence-row {
             display: flex;
-            gap: 10px;
+            flex-wrap: nowrap;
             align-items: center;
-            flex-wrap: wrap;
+            margin-bottom: 4px; /* space between rows */
+            gap: 8px;
         }
 
-        .block {
-            display: block;
+        .licence-label {
+            font-weight: 600;
+            white-space: nowrap;
         }
 
-        /* keys area */
-        .modalPopupTable {
-            width: 100%;
-            border-collapse: collapse;
+        .licence-value {
+            font-weight: 700;
+            white-space: nowrap;
+            font-family: ui-monospace, monospace;
+            overflow-wrap: anywhere;
         }
-
-            .modalPopupTable td {
-                padding: 0;
-            }
     </style>
 
 </asp:Content>
@@ -446,23 +452,19 @@
                                         </h5>
                                     </div>
                                 </div>--%>
-                                <div style="margin-left: 10px">
-                                    <div class="block">
-                                        <h4>Licence Device Log</h4>
+                                <div class="licence-block">
+                                    <h4 class="licence-title">Licence Device Log</h4>
+
+                                    <div class="licence-row">
+                                        <span class="licence-label">Serial No:</span>
+                                        <asp:Label ID="LB_Header_Serial_No" runat="server" CssClass="licence-value"></asp:Label>
                                     </div>
 
-                                    <div class="inline-row">
-                                        <h5>Serial No:</h5>
-                                        <asp:Label ID="LB_Header_Serial_No" runat="server" CssClass="text-strong"></asp:Label>
-                                    </div>
-
-                                    <div class="block" style="margin-top: 8px">
-                                        <h5>Activation Key(s):</h5>
-                                        <asp:Label ID="LB_Header_Licence_Key" runat="server" CssClass="key-chip"></asp:Label>
+                                    <div class="licence-row">
+                                        <span class="licence-label">Activation Key(s):</span>
+                                        <asp:Label ID="LB_Header_Licence_Key" runat="server" CssClass="licence-value"></asp:Label>
                                     </div>
                                 </div>
-
-
                                 <div style="margin-left:10px; clear:both"><h5>Comments:</h5></div>
                             </div>
 
