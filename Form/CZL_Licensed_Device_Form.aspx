@@ -82,61 +82,44 @@
     </style>
 
     <style>
-        /* Overall container */
-.licence-block {
-  margin: 10px;
-  max-width: 100%;
-  font-size: 1rem; /* ↑ Base font size for readability */
-  line-height: 1.5;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-}
+        .licence-block {
+            margin: 10px;
+            max-width: 100%;
+            font-size: 2rem; /* ↑ Base font size for readability */
+            line-height: 1.5;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-/* Title */
-.licence-title {
-  margin: 0 0 8px 0;
-  font-size: 1.25rem;  /* ↑ Title font */
-  font-weight: 600;
-}
+        /* Title */
+        .licence-title {
+            margin: 0 0 8px 0;
+            font-size: 2.5rem; /* ↑ Title font */
+            font-weight: 600;
+        }
 
-/* Each label-value pair row */
-.licence-row {
-  display: flex;
-  flex-wrap: nowrap;
-  align-items: baseline;
-  margin-bottom: 6px;
-  gap: 6px;
-}
+        /* Each label-value pair row */
+        .licence-row {
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: baseline;
+            margin-bottom: 6px;
+            gap: 6px;
+        }
 
-/* Label styling */
-.licence-label {
-  font-weight: 600;
-  white-space: nowrap;
-  font-size: 1rem;     /* ↑ Label font */
-}
+        /* Label styling */
+        .licence-label {
+            font-weight: 600;
+            white-space: nowrap;
+            font-size: 2rem; /* ↑ Label font */
+        }
 
-/* Value styling */
-.licence-value {
-  font-weight: 700;
-  font-size: 1rem;     /* ↑ Value font */
-  font-family: ui-monospace, monospace;
-  overflow-wrap: anywhere;
-}
-
-/* Comments section */
-.comments-label {
-  font-weight: 600;
-  margin-top: 10px;
-  margin-bottom: 4px;
-  font-size: 1rem;
-}
-
-.comment-row {
-  display: flex;
-  gap: 10px;
-  font-size: 1rem;
-  line-height: 1.4;
-}
-
+        /* Value styling */
+        .licence-value {
+            font-weight: 700;
+            font-size: 2rem; /* ↑ Value font */
+            font-family: ui-monospace, monospace;
+            overflow-wrap: anywhere;
+        }
     </style>
 
 </asp:Content>
@@ -490,8 +473,9 @@
                                         <asp:Label ID="LB_Header_Licence_Key" runat="server" CssClass="licence-value"></asp:Label>
                                     </div>
                                 </div>
-                                <div style="margin-left:10px; clear:both"><h5>Comments:</h5></div>
                             </div>
+
+                            <div style="margin-left:10px; clear:both"><h5>Comments:</h5></div>
 
                             <!-- Gridview -->
                             <asp:GridView ID="GridView2" runat="server">
