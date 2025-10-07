@@ -62,11 +62,8 @@ Partial Class _Default
 
     Protected Sub BindGridView()
         'Dim ControlObject() As Object = {New GridView(), New GridView(), New GridView(), New GridView(), New GridView(), New GridView(), New GridView(), New GridView(), New GridView()}
-        Dim ControlObject() As Object = {New GridView(), New GridView(), New GridView(), New GridView(), New GridView(), New GridView()}
         'Dim ControlName() As String = {"HQStoreSummary", "DMCOutstandingInvoice", "HardkeySummary", "HarkeyOrderOutstandingInvoice", "AppLicenceSummry", "LicenceCodeOutstandingInvoice", "ModuleLicenceOutstandingInvoice", "TermedLicenceRenewal", "BilledItemSummary"}
-        Dim ControlName() As String = {"HQStoreSummary", "DMCOutstandingInvoice", "LicenceCodeOutstandingInvoice", "ModuleLicenceOutstandingInvoice", "TermedLicenceRenewal", "BilledItemSummary"}
         'Dim TabName() As String = {"DMC Accounts", "DMC Subscription (Open)", "Hardkey Summary", "Harkey Order (Open)", "Product Licence Stats", "Licence Order (Open)", "Module Licence Order (Open)", "Termed Licence Renewal (Open)", "Billed Items Summary"}
-        Dim TabName() As String = {"DMC Accounts", "DMC Subscription (Open)", "Licence Order (Open)", "Module Licence Order (Open)", "Termed Licence Renewal (Open)", "Billed Items Summary"}
         'Dim sqlStr() As String = {"SELECT [Group Name], [HQ], [Store], [Demo], [Billed], [Trial], [Suspended], [Closed Store], [Closed Demo], [Closed Billed], [Closed Trial], REPLACE([Path], '~', '') AS [Path] FROM D_DMC_Summary A INNER JOIN DB_Access_Map B ON B.Sub_Module = A.[Group Name] ORDER BY CASE [Group Name] WHEN 'Singapore Outlets' THEN 1 WHEN 'Distributors' THEN 2 WHEN 'Overseas Subsidiaries' THEN 3 WHEN 'Overseas Customers' THEN 4 ELSE 5 END ",
         '                          "SELECT * FROM D_DMC_Subscription_Outstanding_Invoice ORDER BY [Subscription ID] DESC ",
         '                          "SELECT * FROM D_Hardkey_Licence_Summary",
@@ -76,6 +73,11 @@ Partial Class _Default
         '                          "SELECT * FROM D_LMS_Module_Licence_Order_Outstanding_Invoice ORDER BY [Created Date] DESC",
         '                          "SELECT [UID], [Customer ID], [Customer], [PO No], [PO Date], [Invoice No], [Invoice Date], [Currency], SUM(Fee) AS [Total Amount], [Renewal Date] FROM R_Termed_Licence_Renewal WHERE [PO No] != 'NA' AND ([Invoice No] = '' OR [Invoice No] IS NULL) GROUP BY [UID], [Customer ID], [Customer], [PO No], [PO Date], [Invoice No], [Invoice Date], [Currency], [Renewal Date] ORDER BY [UID] DESC ",
         '                          "EXEC SP_D_Sales_Item_Summary"}
+        'Dim GridViewDataKeyNames() As String = {"Group Name", "Subscription ID", "Country", "Licence No", "Application Type", "Customer ID", "UID", "UID", "Item Code"}
+
+        Dim ControlObject() As Object = {New GridView(), New GridView(), New GridView(), New GridView(), New GridView(), New GridView()}
+        Dim ControlName() As String = {"HQStoreSummary", "DMCOutstandingInvoice", "LicenceCodeOutstandingInvoice", "ModuleLicenceOutstandingInvoice", "TermedLicenceRenewal", "BilledItemSummary"}
+        Dim TabName() As String = {"DMC Accounts", "DMC Subscription (Open)", "Licence Order (Open)", "Module Licence Order (Open)", "Termed Licence Renewal (Open)", "Billed Items Summary"}
         Dim sqlStr() As String = {"SELECT [Group Name], [HQ], [Store], [Demo], [Billed], [Trial], [Suspended], [Closed Store], [Closed Demo], [Closed Billed], [Closed Trial], REPLACE([Path], '~', '') AS [Path] FROM D_DMC_Summary A INNER JOIN DB_Access_Map B ON B.Sub_Module = A.[Group Name] ORDER BY CASE [Group Name] WHEN 'Singapore Outlets' THEN 1 WHEN 'Distributors' THEN 2 WHEN 'Overseas Subsidiaries' THEN 3 WHEN 'Overseas Customers' THEN 4 ELSE 5 END ",
                                   "SELECT * FROM D_DMC_Subscription_Outstanding_Invoice ORDER BY [Subscription ID] DESC ",
                                   "SELECT * FROM D_LMS_Licence_Order_Outstanding_Invoice ORDER BY [Days since created]",
