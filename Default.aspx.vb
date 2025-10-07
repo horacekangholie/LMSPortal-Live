@@ -61,19 +61,28 @@ Partial Class _Default
     End Sub
 
     Protected Sub BindGridView()
-        Dim ControlObject() As Object = {New GridView(), New GridView(), New GridView(), New GridView(), New GridView(), New GridView(), New GridView(), New GridView(), New GridView()}
-        Dim ControlName() As String = {"HQStoreSummary", "DMCOutstandingInvoice", "HardkeySummary", "HarkeyOrderOutstandingInvoice", "AppLicenceSummry", "LicenceCodeOutstandingInvoice", "ModuleLicenceOutstandingInvoice", "TermedLicenceRenewal", "BilledItemSummary"}
-        Dim TabName() As String = {"DMC Accounts", "DMC Subscription (Open)", "Hardkey Summary", "Harkey Order (Open)", "Product Licence Stats", "Licence Order (Open)", "Module Licence Order (Open)", "Termed Licence Renewal (Open)", "Billed Items Summary"}
+        'Dim ControlObject() As Object = {New GridView(), New GridView(), New GridView(), New GridView(), New GridView(), New GridView(), New GridView(), New GridView(), New GridView()}
+        Dim ControlObject() As Object = {New GridView(), New GridView(), New GridView(), New GridView(), New GridView(), New GridView()}
+        'Dim ControlName() As String = {"HQStoreSummary", "DMCOutstandingInvoice", "HardkeySummary", "HarkeyOrderOutstandingInvoice", "AppLicenceSummry", "LicenceCodeOutstandingInvoice", "ModuleLicenceOutstandingInvoice", "TermedLicenceRenewal", "BilledItemSummary"}
+        Dim ControlName() As String = {"HQStoreSummary", "DMCOutstandingInvoice", "LicenceCodeOutstandingInvoice", "ModuleLicenceOutstandingInvoice", "TermedLicenceRenewal", "BilledItemSummary"}
+        'Dim TabName() As String = {"DMC Accounts", "DMC Subscription (Open)", "Hardkey Summary", "Harkey Order (Open)", "Product Licence Stats", "Licence Order (Open)", "Module Licence Order (Open)", "Termed Licence Renewal (Open)", "Billed Items Summary"}
+        Dim TabName() As String = {"DMC Accounts", "DMC Subscription (Open)", "Harkey Order (Open)", "Product Licence Stats", "Licence Order (Open)", "Module Licence Order (Open)", "Termed Licence Renewal (Open)", "Billed Items Summary"}
+        'Dim sqlStr() As String = {"SELECT [Group Name], [HQ], [Store], [Demo], [Billed], [Trial], [Suspended], [Closed Store], [Closed Demo], [Closed Billed], [Closed Trial], REPLACE([Path], '~', '') AS [Path] FROM D_DMC_Summary A INNER JOIN DB_Access_Map B ON B.Sub_Module = A.[Group Name] ORDER BY CASE [Group Name] WHEN 'Singapore Outlets' THEN 1 WHEN 'Distributors' THEN 2 WHEN 'Overseas Subsidiaries' THEN 3 WHEN 'Overseas Customers' THEN 4 ELSE 5 END ",
+        '                          "SELECT * FROM D_DMC_Subscription_Outstanding_Invoice ORDER BY [Subscription ID] DESC ",
+        '                          "SELECT * FROM D_Hardkey_Licence_Summary",
+        '                          "SELECT * FROM D_LMS_Hardkey_Licence_Order_Outstanding_Invoice ORDER BY [Created Date] DESC",
+        '                          "SELECT * FROM D_LMS_Licence_Summary",
+        '                          "SELECT * FROM D_LMS_Licence_Order_Outstanding_Invoice ORDER BY [Days since created]",
+        '                          "SELECT * FROM D_LMS_Module_Licence_Order_Outstanding_Invoice ORDER BY [Created Date] DESC",
+        '                          "SELECT [UID], [Customer ID], [Customer], [PO No], [PO Date], [Invoice No], [Invoice Date], [Currency], SUM(Fee) AS [Total Amount], [Renewal Date] FROM R_Termed_Licence_Renewal WHERE [PO No] != 'NA' AND ([Invoice No] = '' OR [Invoice No] IS NULL) GROUP BY [UID], [Customer ID], [Customer], [PO No], [PO Date], [Invoice No], [Invoice Date], [Currency], [Renewal Date] ORDER BY [UID] DESC ",
+        '                          "EXEC SP_D_Sales_Item_Summary"}
         Dim sqlStr() As String = {"SELECT [Group Name], [HQ], [Store], [Demo], [Billed], [Trial], [Suspended], [Closed Store], [Closed Demo], [Closed Billed], [Closed Trial], REPLACE([Path], '~', '') AS [Path] FROM D_DMC_Summary A INNER JOIN DB_Access_Map B ON B.Sub_Module = A.[Group Name] ORDER BY CASE [Group Name] WHEN 'Singapore Outlets' THEN 1 WHEN 'Distributors' THEN 2 WHEN 'Overseas Subsidiaries' THEN 3 WHEN 'Overseas Customers' THEN 4 ELSE 5 END ",
                                   "SELECT * FROM D_DMC_Subscription_Outstanding_Invoice ORDER BY [Subscription ID] DESC ",
-                                  "SELECT * FROM D_Hardkey_Licence_Summary",
-                                  "SELECT * FROM D_LMS_Hardkey_Licence_Order_Outstanding_Invoice ORDER BY [Created Date] DESC",
-                                  "SELECT * FROM D_LMS_Licence_Summary",
                                   "SELECT * FROM D_LMS_Licence_Order_Outstanding_Invoice ORDER BY [Days since created]",
                                   "SELECT * FROM D_LMS_Module_Licence_Order_Outstanding_Invoice ORDER BY [Created Date] DESC",
                                   "SELECT [UID], [Customer ID], [Customer], [PO No], [PO Date], [Invoice No], [Invoice Date], [Currency], SUM(Fee) AS [Total Amount], [Renewal Date] FROM R_Termed_Licence_Renewal WHERE [PO No] != 'NA' AND ([Invoice No] = '' OR [Invoice No] IS NULL) GROUP BY [UID], [Customer ID], [Customer], [PO No], [PO Date], [Invoice No], [Invoice Date], [Currency], [Renewal Date] ORDER BY [UID] DESC ",
                                   "EXEC SP_D_Sales_Item_Summary"}
-        Dim GridViewDataKeyNames() As String = {"Group Name", "Subscription ID", "Country", "Licence No", "Application Type", "Customer ID", "UID", "UID", "Item Code"}
+        Dim GridViewDataKeyNames() As String = {"Group Name", "Subscription ID", "Customer ID", "UID", "UID", "Item Code"}
 
         '' Tab header section
         Dashboard.Controls.Add(New LiteralControl("<hr style='margin-top: 25px; margin-bottom: 25px' />"))
@@ -348,21 +357,21 @@ Partial Class _Default
                         AddHandler GridViewObj.RowCreated, AddressOf GridView4_RowCreated
                         AddHandler GridViewObj.RowDataBound, AddressOf GridView4_RowDataBound
 
-                    Case "HardkeySummary"
-                        GridViewObj.AutoGenerateColumns = False
-                        GridViewObj.Columns.Clear()
-                        Dim ColName() As String = {"Country", "Demo", "Tier 1", "Tier 2", "Tier 3", "Tier 4", "Tier 5", "CMS", "CMS Demo", "Total"}
-                        Dim ColData() As String = {"Country", "Demo", "Tier 1", "Tier 2", "Tier 3", "Tier 4", "Tier 5", "CMS", "CMS Demo", "Total"}
-                        Dim ColSize() As Integer = {220, 140, 140, 140, 140, 140, 140, 140, 140, 140}
-                        For i = 0 To ColName.Length - 1
-                            Dim Bfield As BoundField = New BoundField()
-                            Bfield.DataField = ColData(i)
-                            Bfield.HeaderText = ColName(i)
-                            Bfield.HeaderStyle.Width = ColSize(i)
-                            GridViewObj.Columns.Add(Bfield)
-                        Next
-                        AddHandler GridViewObj.RowCreated, AddressOf GridView5_RowCreated
-                        AddHandler GridViewObj.RowDataBound, AddressOf GridView5_RowDataBound
+                    'Case "HardkeySummary"
+                    '    GridViewObj.AutoGenerateColumns = False
+                    '    GridViewObj.Columns.Clear()
+                    '    Dim ColName() As String = {"Country", "Demo", "Tier 1", "Tier 2", "Tier 3", "Tier 4", "Tier 5", "CMS", "CMS Demo", "Total"}
+                    '    Dim ColData() As String = {"Country", "Demo", "Tier 1", "Tier 2", "Tier 3", "Tier 4", "Tier 5", "CMS", "CMS Demo", "Total"}
+                    '    Dim ColSize() As Integer = {220, 140, 140, 140, 140, 140, 140, 140, 140, 140}
+                    '    For i = 0 To ColName.Length - 1
+                    '        Dim Bfield As BoundField = New BoundField()
+                    '        Bfield.DataField = ColData(i)
+                    '        Bfield.HeaderText = ColName(i)
+                    '        Bfield.HeaderStyle.Width = ColSize(i)
+                    '        GridViewObj.Columns.Add(Bfield)
+                    '    Next
+                    '    AddHandler GridViewObj.RowCreated, AddressOf GridView5_RowCreated
+                    '    AddHandler GridViewObj.RowDataBound, AddressOf GridView5_RowDataBound
 
                     Case "HardkeyLicenceExpiry"
                         GridViewObj.AutoGenerateColumns = False
@@ -386,43 +395,43 @@ Partial Class _Default
                         AddHandler GridViewObj.RowCreated, AddressOf GridView6_RowCreated
                         AddHandler GridViewObj.RowDataBound, AddressOf GridView6_RowDataBound
 
-                    Case "HarkeyOrderOutstandingInvoice"
-                        GridViewObj.AutoGenerateColumns = False
-                        GridViewObj.Columns.Clear()
-                        Dim ColName() As String = {"Licensee", "PO No", "PO Date", "Licence No", "Created Date", "PLU Code", "Description", "Prepared By", "Requested By", "Invoice No", "Invoice Date"}
-                        Dim ColData() As String = {"Licensee", "PO No", "PO Date", "Licence No", "Created Date", "PLU Code", "Description", "Prepared By", "Requested By", "Invoice No", "Invoice Date"}
-                        Dim ColSize() As Integer = {250, 100, 50, 80, 50, 50, 100, 100, 100, 100, 50}
-                        For i = 0 To ColName.Length - 1
-                            Dim Bfield As BoundField = New BoundField()
-                            Bfield.DataField = ColData(i)
-                            Bfield.HeaderText = ColName(i)
-                            If Bfield.HeaderText.Contains("Date") Then
-                                Bfield.DataFormatString = "{0:dd MMM yy}"
-                            End If
-                            Bfield.HeaderStyle.Wrap = False
-                            Bfield.ItemStyle.Wrap = False
-                            Bfield.HeaderStyle.Width = ColSize(i)
-                            GridViewObj.Columns.Add(Bfield)
-                        Next
-                        AddHandler GridViewObj.RowCreated, AddressOf GridView16_RowCreated
-                        AddHandler GridViewObj.RowDataBound, AddressOf GridView16_RowDataBound
+                    'Case "HarkeyOrderOutstandingInvoice"
+                    '    GridViewObj.AutoGenerateColumns = False
+                    '    GridViewObj.Columns.Clear()
+                    '    Dim ColName() As String = {"Licensee", "PO No", "PO Date", "Licence No", "Created Date", "PLU Code", "Description", "Prepared By", "Requested By", "Invoice No", "Invoice Date"}
+                    '    Dim ColData() As String = {"Licensee", "PO No", "PO Date", "Licence No", "Created Date", "PLU Code", "Description", "Prepared By", "Requested By", "Invoice No", "Invoice Date"}
+                    '    Dim ColSize() As Integer = {250, 100, 50, 80, 50, 50, 100, 100, 100, 100, 50}
+                    '    For i = 0 To ColName.Length - 1
+                    '        Dim Bfield As BoundField = New BoundField()
+                    '        Bfield.DataField = ColData(i)
+                    '        Bfield.HeaderText = ColName(i)
+                    '        If Bfield.HeaderText.Contains("Date") Then
+                    '            Bfield.DataFormatString = "{0:dd MMM yy}"
+                    '        End If
+                    '        Bfield.HeaderStyle.Wrap = False
+                    '        Bfield.ItemStyle.Wrap = False
+                    '        Bfield.HeaderStyle.Width = ColSize(i)
+                    '        GridViewObj.Columns.Add(Bfield)
+                    '    Next
+                    '    AddHandler GridViewObj.RowCreated, AddressOf GridView16_RowCreated
+                    '    AddHandler GridViewObj.RowDataBound, AddressOf GridView16_RowDataBound
 
-                    Case "AppLicenceSummry"
-                        GridViewObj.AutoGenerateColumns = False
-                        GridViewObj.Columns.Clear()
-                        Dim ColName() As String = {"Application Type", "Android", "iOS", "Web", "SM"}
-                        Dim ColData() As String = {"Application Type", "Android", "iOS", "Web", "SM"}
-                        Dim ColSize() As Integer = {250, 100, 100, 100, 100}
-                        For i = 0 To ColName.Length - 1
-                            Dim Bfield As BoundField = New BoundField()
-                            Bfield.DataField = ColData(i)
-                            Bfield.HeaderText = ColName(i)
-                            Bfield.ItemStyle.Wrap = False
-                            Bfield.HeaderStyle.Width = ColSize(i)
-                            GridViewObj.Columns.Add(Bfield)
-                        Next
-                        AddHandler GridViewObj.RowCreated, AddressOf GridView7_RowCreated
-                        AddHandler GridViewObj.RowDataBound, AddressOf GridView7_RowDataBound
+                    'Case "AppLicenceSummry"
+                    '    GridViewObj.AutoGenerateColumns = False
+                    '    GridViewObj.Columns.Clear()
+                    '    Dim ColName() As String = {"Application Type", "Android", "iOS", "Web", "SM"}
+                    '    Dim ColData() As String = {"Application Type", "Android", "iOS", "Web", "SM"}
+                    '    Dim ColSize() As Integer = {250, 100, 100, 100, 100}
+                    '    For i = 0 To ColName.Length - 1
+                    '        Dim Bfield As BoundField = New BoundField()
+                    '        Bfield.DataField = ColData(i)
+                    '        Bfield.HeaderText = ColName(i)
+                    '        Bfield.ItemStyle.Wrap = False
+                    '        Bfield.HeaderStyle.Width = ColSize(i)
+                    '        GridViewObj.Columns.Add(Bfield)
+                    '    Next
+                    '    AddHandler GridViewObj.RowCreated, AddressOf GridView7_RowCreated
+                    '    AddHandler GridViewObj.RowDataBound, AddressOf GridView7_RowDataBound
 
                     Case "LicenceCodeOutstandingInvoice"
                         GridViewObj.AutoGenerateColumns = False
@@ -889,86 +898,86 @@ Partial Class _Default
         End If
     End Sub
 
-    Private Sub GridView5_RowCreated(sender As Object, e As GridViewRowEventArgs)
-        ' Call javascript function for GridView Row highlight effect
-        If e.Row.RowType = DataControlRowType.DataRow Then
-            e.Row.Attributes.Add("OnMouseOver", "this.style.cursor='default';")
-            e.Row.Attributes.Add("OnMouseOut", "this.style.cursor='none';")
-        End If
-    End Sub
+    'Private Sub GridView5_RowCreated(sender As Object, e As GridViewRowEventArgs)
+    '    ' Call javascript function for GridView Row highlight effect
+    '    If e.Row.RowType = DataControlRowType.DataRow Then
+    '        e.Row.Attributes.Add("OnMouseOver", "this.style.cursor='default';")
+    '        e.Row.Attributes.Add("OnMouseOut", "this.style.cursor='none';")
+    '    End If
+    'End Sub
 
-    Protected Sub GridView5_RowDataBound(ByVal sender As Object, ByVal e As GridViewRowEventArgs)
-        Dim GridViewObj As GridView = CType(sender, GridView)
-        If e.Row.RowType = DataControlRowType.Header Then
-            Dim HeaderGrid As GridView = DirectCast(sender, GridView)
-            Dim HeaderGridRow As New GridViewRow(0, 0, DataControlRowType.Header, DataControlRowState.Insert)
-            Dim HeaderCell = New TableCell()
+    'Protected Sub GridView5_RowDataBound(ByVal sender As Object, ByVal e As GridViewRowEventArgs)
+    '    Dim GridViewObj As GridView = CType(sender, GridView)
+    '    If e.Row.RowType = DataControlRowType.Header Then
+    '        Dim HeaderGrid As GridView = DirectCast(sender, GridView)
+    '        Dim HeaderGridRow As New GridViewRow(0, 0, DataControlRowType.Header, DataControlRowState.Insert)
+    '        Dim HeaderCell = New TableCell()
 
-            For i = 0 To e.Row.Cells.Count - 1
-                HeaderCell = New TableCell()   ' Add new tablecell
-                Select Case i
-                    Case 0
-                        HeaderGridRow.Cells.Add(HeaderCell)  '' add tablecell to griviewrow
-                        'HeaderCell.Text = "Country"
-                    Case 1
-                        HeaderGridRow.Cells.Add(HeaderCell)
-                        HeaderCell.Text = "DMC Enterprise"
-                        HeaderCell.ColumnSpan = 6
-                        e.Row.Cells(i).Text = "Demo <br> (1 HQ - 2 Stores)"
-                    Case 2
-                        e.Row.Cells(i).Text = "Tier " & i - 1 & "<br> (1 HQ - 50 Stores)"
-                    Case 3
-                        e.Row.Cells(i).Text = "Tier " & i - 1 & "<br> (1 HQ - 100 Stores)"
-                    Case 4
-                        e.Row.Cells(i).Text = "Tier " & i - 1 & "<br> (1 HQ - 200 Stores)"
-                    Case 5
-                        e.Row.Cells(i).Text = "Tier " & i - 1 & "<br> (1 HQ - 201 Stores & above)"
-                    Case 6
-                        e.Row.Cells(i).Text = "Tier " & i - 1 & "<br> (Unlimited HQ and Stores)"
-                    Case 7
-                        HeaderGridRow.Cells.Add(HeaderCell)
-                        HeaderCell.Text = "T@POP CMS"
-                        HeaderCell.ColumnSpan = 2
-                        e.Row.Cells(i).Text = "Demo <br> (2 Stores)"
-                    Case 8
-                        e.Row.Cells(i).Text = "Standard <br> (Unlimited Stores)"
-                    Case 9
-                        HeaderGridRow.Cells.Add(HeaderCell)
-                        HeaderCell.Text = "Total"
-                        e.Row.Cells(i).Text = "By country"
-                End Select
-            Next
-            GridViewObj.Controls(0).Controls.AddAt(0, HeaderGridRow)
+    '        For i = 0 To e.Row.Cells.Count - 1
+    '            HeaderCell = New TableCell()   ' Add new tablecell
+    '            Select Case i
+    '                Case 0
+    '                    HeaderGridRow.Cells.Add(HeaderCell)  '' add tablecell to griviewrow
+    '                    'HeaderCell.Text = "Country"
+    '                Case 1
+    '                    HeaderGridRow.Cells.Add(HeaderCell)
+    '                    HeaderCell.Text = "DMC Enterprise"
+    '                    HeaderCell.ColumnSpan = 6
+    '                    e.Row.Cells(i).Text = "Demo <br> (1 HQ - 2 Stores)"
+    '                Case 2
+    '                    e.Row.Cells(i).Text = "Tier " & i - 1 & "<br> (1 HQ - 50 Stores)"
+    '                Case 3
+    '                    e.Row.Cells(i).Text = "Tier " & i - 1 & "<br> (1 HQ - 100 Stores)"
+    '                Case 4
+    '                    e.Row.Cells(i).Text = "Tier " & i - 1 & "<br> (1 HQ - 200 Stores)"
+    '                Case 5
+    '                    e.Row.Cells(i).Text = "Tier " & i - 1 & "<br> (1 HQ - 201 Stores & above)"
+    '                Case 6
+    '                    e.Row.Cells(i).Text = "Tier " & i - 1 & "<br> (Unlimited HQ and Stores)"
+    '                Case 7
+    '                    HeaderGridRow.Cells.Add(HeaderCell)
+    '                    HeaderCell.Text = "T@POP CMS"
+    '                    HeaderCell.ColumnSpan = 2
+    '                    e.Row.Cells(i).Text = "Demo <br> (2 Stores)"
+    '                Case 8
+    '                    e.Row.Cells(i).Text = "Standard <br> (Unlimited Stores)"
+    '                Case 9
+    '                    HeaderGridRow.Cells.Add(HeaderCell)
+    '                    HeaderCell.Text = "Total"
+    '                    e.Row.Cells(i).Text = "By country"
+    '            End Select
+    '        Next
+    '        GridViewObj.Controls(0).Controls.AddAt(0, HeaderGridRow)
 
-        ElseIf e.Row.RowType = DataControlRowType.DataRow Then
-            TotalHardkeyDemo += CInt(DataBinder.Eval(e.Row.DataItem, "Demo"))
-            TotalTier1 += CInt(DataBinder.Eval(e.Row.DataItem, "Tier 1"))
-            TotalTier2 += CInt(DataBinder.Eval(e.Row.DataItem, "Tier 2"))
-            TotalTier3 += CInt(DataBinder.Eval(e.Row.DataItem, "Tier 3"))
-            TotalTier4 += CInt(DataBinder.Eval(e.Row.DataItem, "Tier 4"))
-            TotalTier5 += CInt(DataBinder.Eval(e.Row.DataItem, "Tier 5"))
-            TotalCMSDemo += CInt(DataBinder.Eval(e.Row.DataItem, "CMS Demo"))
-            TotalCMS += CInt(DataBinder.Eval(e.Row.DataItem, "CMS"))
-            TotalHardkey += CInt(DataBinder.Eval(e.Row.DataItem, "Total"))
+    '    ElseIf e.Row.RowType = DataControlRowType.DataRow Then
+    '        TotalHardkeyDemo += CInt(DataBinder.Eval(e.Row.DataItem, "Demo"))
+    '        TotalTier1 += CInt(DataBinder.Eval(e.Row.DataItem, "Tier 1"))
+    '        TotalTier2 += CInt(DataBinder.Eval(e.Row.DataItem, "Tier 2"))
+    '        TotalTier3 += CInt(DataBinder.Eval(e.Row.DataItem, "Tier 3"))
+    '        TotalTier4 += CInt(DataBinder.Eval(e.Row.DataItem, "Tier 4"))
+    '        TotalTier5 += CInt(DataBinder.Eval(e.Row.DataItem, "Tier 5"))
+    '        TotalCMSDemo += CInt(DataBinder.Eval(e.Row.DataItem, "CMS Demo"))
+    '        TotalCMS += CInt(DataBinder.Eval(e.Row.DataItem, "CMS"))
+    '        TotalHardkey += CInt(DataBinder.Eval(e.Row.DataItem, "Total"))
 
-        ElseIf e.Row.RowType = DataControlRowType.Footer Then
-            e.Row.Cells(0).Text = "Total"
-            e.Row.Cells(1).Text = TotalHardkeyDemo
-            e.Row.Cells(2).Text = TotalTier1
-            e.Row.Cells(3).Text = TotalTier2
-            e.Row.Cells(4).Text = TotalTier3
-            e.Row.Cells(5).Text = TotalTier4
-            e.Row.Cells(6).Text = TotalTier5
-            e.Row.Cells(7).Text = TotalCMSDemo
-            e.Row.Cells(8).Text = TotalCMS
-            e.Row.Cells(9).Text = TotalHardkey
-        Else
-        End If
+    '    ElseIf e.Row.RowType = DataControlRowType.Footer Then
+    '        e.Row.Cells(0).Text = "Total"
+    '        e.Row.Cells(1).Text = TotalHardkeyDemo
+    '        e.Row.Cells(2).Text = TotalTier1
+    '        e.Row.Cells(3).Text = TotalTier2
+    '        e.Row.Cells(4).Text = TotalTier3
+    '        e.Row.Cells(5).Text = TotalTier4
+    '        e.Row.Cells(6).Text = TotalTier5
+    '        e.Row.Cells(7).Text = TotalCMSDemo
+    '        e.Row.Cells(8).Text = TotalCMS
+    '        e.Row.Cells(9).Text = TotalHardkey
+    '    Else
+    '    End If
 
-        For i = 1 To e.Row.Cells.Count - 1
-            e.Row.Cells(i).HorizontalAlign = HorizontalAlign.Left
-        Next
-    End Sub
+    '    For i = 1 To e.Row.Cells.Count - 1
+    '        e.Row.Cells(i).HorizontalAlign = HorizontalAlign.Left
+    '    Next
+    'End Sub
 
     Private Sub GridView6_RowCreated(sender As Object, e As GridViewRowEventArgs)
         ' Call javascript function for GridView Row highlight effect
@@ -983,30 +992,30 @@ Partial Class _Default
         GridViewObj.ShowFooter = False
     End Sub
 
-    Private Sub GridView7_RowCreated(sender As Object, e As GridViewRowEventArgs)
-        ' Call javascript function for GridView Row highlight effect
-        If e.Row.RowType = DataControlRowType.DataRow Then
-            e.Row.Attributes.Add("OnMouseOver", "this.style.cursor='default';")
-            e.Row.Attributes.Add("OnMouseOut", "this.style.cursor='none';")
-        End If
-    End Sub
+    'Private Sub GridView7_RowCreated(sender As Object, e As GridViewRowEventArgs)
+    '    ' Call javascript function for GridView Row highlight effect
+    '    If e.Row.RowType = DataControlRowType.DataRow Then
+    '        e.Row.Attributes.Add("OnMouseOver", "this.style.cursor='default';")
+    '        e.Row.Attributes.Add("OnMouseOut", "this.style.cursor='none';")
+    '    End If
+    'End Sub
 
-    Protected Sub GridView7_RowDataBound(ByVal sender As Object, ByVal e As GridViewRowEventArgs)
-        If e.Row.RowType = DataControlRowType.DataRow Then
-            TotalAndroid += CInt(DataBinder.Eval(e.Row.DataItem, "Android"))
-            TotaliOS += CInt(DataBinder.Eval(e.Row.DataItem, "iOS"))
-            TotalWeb += CInt(DataBinder.Eval(e.Row.DataItem, "Web"))
-            TotalSM += CInt(DataBinder.Eval(e.Row.DataItem, "SM"))
-        ElseIf e.Row.RowType = DataControlRowType.Footer Then
-            e.Row.Cells(0).Text = "Total"
-            e.Row.Cells(1).Text = TotalAndroid
-            e.Row.Cells(2).Text = TotaliOS
-            e.Row.Cells(3).Text = TotalWeb
-            e.Row.Cells(4).Text = TotalSM
-        ElseIf e.Row.RowType = DataControlRowType.Header Then
-            e.Row.Height = 40
-        End If
-    End Sub
+    'Protected Sub GridView7_RowDataBound(ByVal sender As Object, ByVal e As GridViewRowEventArgs)
+    '    If e.Row.RowType = DataControlRowType.DataRow Then
+    '        TotalAndroid += CInt(DataBinder.Eval(e.Row.DataItem, "Android"))
+    '        TotaliOS += CInt(DataBinder.Eval(e.Row.DataItem, "iOS"))
+    '        TotalWeb += CInt(DataBinder.Eval(e.Row.DataItem, "Web"))
+    '        TotalSM += CInt(DataBinder.Eval(e.Row.DataItem, "SM"))
+    '    ElseIf e.Row.RowType = DataControlRowType.Footer Then
+    '        e.Row.Cells(0).Text = "Total"
+    '        e.Row.Cells(1).Text = TotalAndroid
+    '        e.Row.Cells(2).Text = TotaliOS
+    '        e.Row.Cells(3).Text = TotalWeb
+    '        e.Row.Cells(4).Text = TotalSM
+    '    ElseIf e.Row.RowType = DataControlRowType.Header Then
+    '        e.Row.Height = 40
+    '    End If
+    'End Sub
 
     Private Sub GridView8_RowCreated(sender As Object, e As GridViewRowEventArgs)
         ' Call javascript function for GridView Row highlight effect
@@ -1295,23 +1304,23 @@ Partial Class _Default
 
     'End Sub
 
-    Private Sub GridView16_RowCreated(sender As Object, e As GridViewRowEventArgs)
-        ' Call javascript function for GridView Row highlight effect
-        If e.Row.RowType = DataControlRowType.DataRow Then
-            e.Row.Attributes.Add("OnMouseOver", "this.style.cursor='default';")
-            e.Row.Attributes.Add("OnMouseOut", "this.style.cursor='none';")
-        End If
-    End Sub
+    'Private Sub GridView16_RowCreated(sender As Object, e As GridViewRowEventArgs)
+    '    ' Call javascript function for GridView Row highlight effect
+    '    If e.Row.RowType = DataControlRowType.DataRow Then
+    '        e.Row.Attributes.Add("OnMouseOver", "this.style.cursor='default';")
+    '        e.Row.Attributes.Add("OnMouseOut", "this.style.cursor='none';")
+    '    End If
+    'End Sub
 
-    Protected Sub GridView16_RowDataBound(ByVal sender As Object, ByVal e As GridViewRowEventArgs)
-        Dim GridViewObj As GridView = CType(sender, GridView)
-        GridViewObj.ShowFooter = False
+    'Protected Sub GridView16_RowDataBound(ByVal sender As Object, ByVal e As GridViewRowEventArgs)
+    '    Dim GridViewObj As GridView = CType(sender, GridView)
+    '    GridViewObj.ShowFooter = False
 
-        If e.Row.RowType = DataControlRowType.DataRow Then
-            e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Text = "Pending"
-            e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice Date")).Text = "TBA"
-        End If
-    End Sub
+    '    If e.Row.RowType = DataControlRowType.DataRow Then
+    '        e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Text = "Pending"
+    '        e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice Date")).Text = "TBA"
+    '    End If
+    'End Sub
 
     Private Sub GridView17_RowCreated(sender As Object, e As GridViewRowEventArgs)
         ' Call javascript function for GridView Row highlight effect
