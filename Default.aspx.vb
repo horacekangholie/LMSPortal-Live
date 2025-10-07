@@ -109,19 +109,32 @@ Partial Class _Default
     End Sub
 
     Protected Sub BindGridView1()
-        Dim ControlObject() As Object = {New GridView(), New GridView(), New GridView(), New GridView(), New GridView(), New GridView(), New GridView(), New GridView(), New GridView()}
-        Dim ControlName() As String = {"BilledAccountExpiry", "TrialAccountExpiry", "HardkeyLicenceExpiry", "TermLicenceAppProduct", "TermLicenceAI", "AILicenceRenewStatus", "AILicenceExpiredStatus", "CZLAccountSetupFee", "SuspendedStores"}
-        Dim TabName() As String = {"Billed - Expiry", "Trial - Expiry", "Hardkey - Expiry", "Termed Licence (App/Product) - Expiry", "AI Licence (Expiring)", "AI Licence (Renew)", "AI Licence (Expired)", "CZL Account Setup Fee (Open)", "Suspended Stores"}
+        'Dim ControlObject() As Object = {New GridView(), New GridView(), New GridView(), New GridView(), New GridView(), New GridView(), New GridView(), New GridView(), New GridView()}
+        'Dim ControlName() As String = {"BilledAccountExpiry", "TrialAccountExpiry", "HardkeyLicenceExpiry", "TermLicenceAppProduct", "TermLicenceAI", "AILicenceRenewStatus", "AILicenceExpiredStatus", "CZLAccountSetupFee", "SuspendedStores"}
+        'Dim TabName() As String = {"Billed - Expiry", "Trial - Expiry", "Hardkey - Expiry", "Termed Licence (App/Product) - Expiry", "AI Licence (Expiring)", "AI Licence (Renew)", "AI Licence (Expired)", "CZL Account Setup Fee (Open)", "Suspended Stores"}
+        'Dim sqlStr() As String = {"SELECT * FROM D_DMC_Billed_Account_Expired_In_2_Months ORDER BY [End Date], [Bill entity], [HQ Code], [Store Code]",
+        '                          "SELECT * FROM D_DMC_Trial_Account_Expired_In_2_Months ORDER BY [End Date], [Customer], [Store Code]",
+        '                          "SELECT * FROM D_Hardkey_Licence_Expired_In_2_Months",
+        '                          "SELECT * FROM D_Licence_With_Term WHERE [Expired Date] <= DATEADD (dd, -1, DATEADD(mm, DATEDIFF(mm, 0, GETDATE()) + 4, 0)) AND [Application Type] NOT IN ('PC Scale (AI Classic)', 'PC Scale - AI (Online)', 'PC Scale - AI (Offline)') AND Chargeable NOT IN ('No') AND [Status] = 'Activated' ORDER BY [Expired Date] DESC ",
+        '                          "SELECT * FROM D_Licence_With_Term WHERE [Expired Date] <= DATEADD (dd, -1, DATEADD(mm, DATEDIFF(mm, 0, GETDATE()) + 4, 0)) AND [Application Type] IN ('PC Scale (AI Classic)', 'PC Scale - AI (Online)', 'PC Scale - AI (Offline)') AND [Status] NOT IN ('Renew', 'Blocked', 'Expired') AND Replace([Licence Code], '-', '') NOT IN (SELECT Replace(Value_1, '-', '') FROM DB_Lookup WHERE Lookup_Name = 'Production Used Licence Key') ORDER BY [Expired Date], [Serial No] ",
+        '                          "SELECT * FROM R_LMS_Module_Licence WHERE [status] IN ('Renew') ORDER BY CAST([Expired Date] AS date) DESC ",
+        '                          "SELECT * FROM D_Licence_With_Term WHERE [Expired Date] <= DATEADD (dd, -1, DATEADD(mm, DATEDIFF(mm, 0, GETDATE()) + 4, 0)) AND [Application Type] IN ('PC Scale (AI Classic)', 'PC Scale - AI (Online)', 'PC Scale - AI (Offline)') AND [Status] IN ('Expired') AND Replace([Licence Code], '-', '') NOT IN (SELECT Replace(Value_1, '-', '') FROM DB_Lookup WHERE Lookup_Name = 'Production Used Licence Key') ORDER BY [Expired Date], [Serial No] ",
+        '                          "SELECT * FROM D_CZL_Account_Setup_Fee_Outstanding_Invoice ORDER BY [Created Date] DESC ",
+        '                          "SELECT * FROM R_Suspended_Stores WHERE [Suspended Date] BETWEEN DATEADD(month, DATEDIFF(MONTH, 0, DATEADD(MM, -6, GETDATE())), 0) AND GETDATE() ORDER BY [Suspended Date] DESC, [Headquarter ID] "}
+        'Dim GridViewDataKeyNames() As String = {"Bill Entity", "Customer", "Customer", "Licence Code", "Licence Code", "Licence Code", "Licence Code", "CZL Account ID", "Headquarter ID"}
+
+        Dim ControlObject() As Object = {New GridView(), New GridView(), New GridView(), New GridView(), New GridView(), New GridView(), New GridView(), New GridView()}
+        Dim ControlName() As String = {"BilledAccountExpiry", "TrialAccountExpiry", "TermLicenceAppProduct", "TermLicenceAI", "AILicenceRenewStatus", "AILicenceExpiredStatus", "CZLAccountSetupFee", "SuspendedStores"}
+        Dim TabName() As String = {"Billed - Expiry", "Trial - Expiry", "Termed Licence (App/Product) - Expiry", "AI Licence (Expiring)", "AI Licence (Renew)", "AI Licence (Expired)", "CZL Account Setup Fee (Open)", "Suspended Stores"}
         Dim sqlStr() As String = {"SELECT * FROM D_DMC_Billed_Account_Expired_In_2_Months ORDER BY [End Date], [Bill entity], [HQ Code], [Store Code]",
                                   "SELECT * FROM D_DMC_Trial_Account_Expired_In_2_Months ORDER BY [End Date], [Customer], [Store Code]",
-                                  "SELECT * FROM D_Hardkey_Licence_Expired_In_2_Months",
                                   "SELECT * FROM D_Licence_With_Term WHERE [Expired Date] <= DATEADD (dd, -1, DATEADD(mm, DATEDIFF(mm, 0, GETDATE()) + 4, 0)) AND [Application Type] NOT IN ('PC Scale (AI Classic)', 'PC Scale - AI (Online)', 'PC Scale - AI (Offline)') AND Chargeable NOT IN ('No') AND [Status] = 'Activated' ORDER BY [Expired Date] DESC ",
                                   "SELECT * FROM D_Licence_With_Term WHERE [Expired Date] <= DATEADD (dd, -1, DATEADD(mm, DATEDIFF(mm, 0, GETDATE()) + 4, 0)) AND [Application Type] IN ('PC Scale (AI Classic)', 'PC Scale - AI (Online)', 'PC Scale - AI (Offline)') AND [Status] NOT IN ('Renew', 'Blocked', 'Expired') AND Replace([Licence Code], '-', '') NOT IN (SELECT Replace(Value_1, '-', '') FROM DB_Lookup WHERE Lookup_Name = 'Production Used Licence Key') ORDER BY [Expired Date], [Serial No] ",
                                   "SELECT * FROM R_LMS_Module_Licence WHERE [status] IN ('Renew') ORDER BY CAST([Expired Date] AS date) DESC ",
                                   "SELECT * FROM D_Licence_With_Term WHERE [Expired Date] <= DATEADD (dd, -1, DATEADD(mm, DATEDIFF(mm, 0, GETDATE()) + 4, 0)) AND [Application Type] IN ('PC Scale (AI Classic)', 'PC Scale - AI (Online)', 'PC Scale - AI (Offline)') AND [Status] IN ('Expired') AND Replace([Licence Code], '-', '') NOT IN (SELECT Replace(Value_1, '-', '') FROM DB_Lookup WHERE Lookup_Name = 'Production Used Licence Key') ORDER BY [Expired Date], [Serial No] ",
                                   "SELECT * FROM D_CZL_Account_Setup_Fee_Outstanding_Invoice ORDER BY [Created Date] DESC ",
                                   "SELECT * FROM R_Suspended_Stores WHERE [Suspended Date] BETWEEN DATEADD(month, DATEDIFF(MONTH, 0, DATEADD(MM, -6, GETDATE())), 0) AND GETDATE() ORDER BY [Suspended Date] DESC, [Headquarter ID] "}
-        Dim GridViewDataKeyNames() As String = {"Bill Entity", "Customer", "Customer", "Licence Code", "Licence Code", "Licence Code", "Licence Code", "CZL Account ID", "Headquarter ID"}
+        Dim GridViewDataKeyNames() As String = {"Bill Entity", "Customer", "Licence Code", "Licence Code", "Licence Code", "Licence Code", "CZL Account ID", "Headquarter ID"}
 
         '' Tab header section
         Dashboard1.Controls.Add(New LiteralControl("<hr style='margin-top: 25px; margin-bottom: 25px' />"))
@@ -375,27 +388,27 @@ Partial Class _Default
                     '    AddHandler GridViewObj.RowCreated, AddressOf GridView5_RowCreated
                     '    AddHandler GridViewObj.RowDataBound, AddressOf GridView5_RowDataBound
 
-                    Case "HardkeyLicenceExpiry"
-                        GridViewObj.AutoGenerateColumns = False
-                        GridViewObj.Columns.Clear()
-                        Dim ColName() As String = {"Customer", "Country", "PO No", "PO Date", "SO No", "SO Date", "Invoice No", "Licence No", "PLU Code", "Description", "Invoice Date", "Prepared By", "Created Date", "Start Date", "End Date", "Requested By"}
-                        Dim ColData() As String = {"Customer", "Country", "PO No", "PO Date", "SO No", "SO Date", "Invoice No", "Licence No", "PLU Code", "Description", "Invoice Date", "Prepared By", "Created Date", "Start Date", "End Date", "Requested By"}
-                        Dim ColSize() As Integer = {250, 90, 140, 80, 50, 80, 100, 100, 50, 250, 90, 100, 80, 80, 80, 100}
-                        For i = 0 To ColName.Length - 1
-                            Dim Bfield As BoundField = New BoundField()
-                            Bfield.DataField = ColData(i)
-                            Bfield.HeaderText = ColName(i)
-                            If Bfield.HeaderText.Contains("Date") Then
-                                Bfield.DataFormatString = "{0:dd MMM yy}"
-                                Bfield.ItemStyle.Wrap = False
-                            ElseIf Bfield.HeaderText.Contains("Licence") Then
-                                Bfield.ItemStyle.Wrap = False
-                            End If
-                            Bfield.HeaderStyle.Width = ColSize(i)
-                            GridViewObj.Columns.Add(Bfield)
-                        Next
-                        AddHandler GridViewObj.RowCreated, AddressOf GridView6_RowCreated
-                        AddHandler GridViewObj.RowDataBound, AddressOf GridView6_RowDataBound
+                    'Case "HardkeyLicenceExpiry"
+                    '    GridViewObj.AutoGenerateColumns = False
+                    '    GridViewObj.Columns.Clear()
+                    '    Dim ColName() As String = {"Customer", "Country", "PO No", "PO Date", "SO No", "SO Date", "Invoice No", "Licence No", "PLU Code", "Description", "Invoice Date", "Prepared By", "Created Date", "Start Date", "End Date", "Requested By"}
+                    '    Dim ColData() As String = {"Customer", "Country", "PO No", "PO Date", "SO No", "SO Date", "Invoice No", "Licence No", "PLU Code", "Description", "Invoice Date", "Prepared By", "Created Date", "Start Date", "End Date", "Requested By"}
+                    '    Dim ColSize() As Integer = {250, 90, 140, 80, 50, 80, 100, 100, 50, 250, 90, 100, 80, 80, 80, 100}
+                    '    For i = 0 To ColName.Length - 1
+                    '        Dim Bfield As BoundField = New BoundField()
+                    '        Bfield.DataField = ColData(i)
+                    '        Bfield.HeaderText = ColName(i)
+                    '        If Bfield.HeaderText.Contains("Date") Then
+                    '            Bfield.DataFormatString = "{0:dd MMM yy}"
+                    '            Bfield.ItemStyle.Wrap = False
+                    '        ElseIf Bfield.HeaderText.Contains("Licence") Then
+                    '            Bfield.ItemStyle.Wrap = False
+                    '        End If
+                    '        Bfield.HeaderStyle.Width = ColSize(i)
+                    '        GridViewObj.Columns.Add(Bfield)
+                    '    Next
+                    '    AddHandler GridViewObj.RowCreated, AddressOf GridView6_RowCreated
+                    '    AddHandler GridViewObj.RowDataBound, AddressOf GridView6_RowDataBound
 
                     'Case "HarkeyOrderOutstandingInvoice"
                     '    GridViewObj.AutoGenerateColumns = False
@@ -981,18 +994,18 @@ Partial Class _Default
     '    Next
     'End Sub
 
-    Private Sub GridView6_RowCreated(sender As Object, e As GridViewRowEventArgs)
-        ' Call javascript function for GridView Row highlight effect
-        If e.Row.RowType = DataControlRowType.DataRow Then
-            e.Row.Attributes.Add("OnMouseOver", "this.style.cursor='default';")
-            e.Row.Attributes.Add("OnMouseOut", "this.style.cursor='none';")
-        End If
-    End Sub
+    'Private Sub GridView6_RowCreated(sender As Object, e As GridViewRowEventArgs)
+    '    ' Call javascript function for GridView Row highlight effect
+    '    If e.Row.RowType = DataControlRowType.DataRow Then
+    '        e.Row.Attributes.Add("OnMouseOver", "this.style.cursor='default';")
+    '        e.Row.Attributes.Add("OnMouseOut", "this.style.cursor='none';")
+    '    End If
+    'End Sub
 
-    Protected Sub GridView6_RowDataBound(ByVal sender As Object, ByVal e As GridViewRowEventArgs)
-        Dim GridViewObj As GridView = CType(sender, GridView)
-        GridViewObj.ShowFooter = False
-    End Sub
+    'Protected Sub GridView6_RowDataBound(ByVal sender As Object, ByVal e As GridViewRowEventArgs)
+    '    Dim GridViewObj As GridView = CType(sender, GridView)
+    '    GridViewObj.ShowFooter = False
+    'End Sub
 
     'Private Sub GridView7_RowCreated(sender As Object, e As GridViewRowEventArgs)
     '    ' Call javascript function for GridView Row highlight effect
