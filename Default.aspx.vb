@@ -427,9 +427,9 @@ Partial Class _Default
                     Case "LicenceCodeOutstandingInvoice"
                         GridViewObj.AutoGenerateColumns = False
                         GridViewObj.Columns.Clear()
-                        Dim ColName() As String = {"Invoice Bill To", "Licensee", "PO No", "PO Date", "Activated / No of Licence", "Requested By", "Payment Status", "Invoice No", "Days since created"}
-                        Dim ColData() As String = {"Invoice Bill To", "Licensee", "PO No", "PO Date", "No of Licence", "Requested By", "Payment Status", "Invoice No", "Days since created"}
-                        Dim ColSize() As Integer = {250, 250, 250, 80, 50, 250, 100, 100, 80}
+                        Dim ColName() As String = {"Invoice Bill To", "Licensee", "PO No", "PO Date", "Activated / No of Licence", "Requested By", "Payment Status", "Invoice No"}
+                        Dim ColData() As String = {"Invoice Bill To", "Licensee", "PO No", "PO Date", "No of Licence", "Requested By", "Payment Status", "Invoice No"}
+                        Dim ColSize() As Integer = {250, 250, 250, 80, 50, 250, 100, 100}
 
                         '' Add a templatefield for the nexted gridview
                         Dim Tfield As TemplateField = New TemplateField()
