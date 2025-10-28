@@ -188,8 +188,8 @@ Partial Class Listings_Module_Licence
                                   "      , [Activated Date], [Expired Date], [Remarks], [Requested By] " &
                                   " FROM I_LMS_Module_Licence " &
                                   " LEFT JOIN LMS_Module_Licence_Activated ON LMS_Module_Licence_Activated.[Licence_Code] = REPLACE(I_LMS_Module_Licence.[Licence Code], '-', '') " &
-                                  " WHERE [Customer ID] = '" & Customer_ID & "'" &
-                                  "   AND [PO No] = '" & PO_No & "'"
+                                  " WHERE [Customer ID] = '" & Trim(Customer_ID) & "'" &
+                                  "   AND [PO No] = '" & Trim(PO_No) & "'"
 
             If PO_No <> "NA" Then
                 query += " AND [PO Date] = '" & PO_Date & "' "
