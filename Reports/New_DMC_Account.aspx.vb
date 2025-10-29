@@ -197,7 +197,7 @@ Partial Class Reports_New_DMC_Account
     Protected Sub GridView3_RowDataBound(ByVal sender As Object, ByVal e As GridViewRowEventArgs) Handles GridView3.RowDataBound
         Dim GridViewObj As GridView = CType(sender, GridView)
         If e.Row.RowType = DataControlRowType.DataRow Then
-            Dim Customer_Country As String = Get_Value("SELECT Country FROM Master_Customer WHERE Customer_ID = (SELECT TOP 1 Customer_ID FROM R_DMC_User_Licence WHERE [Headquarter ID] = (SELECT TOP 1 [Headquarter ID] FROM I_DMC_Subscription ORDER BY [Subscription ID] DESC) AND CAST([Created Date] AS date) = CAST(GETDATE() AS date) ORDER BY Created_Date)", "Country")
+            Dim Customer_Country As String = Get_Value("SELECT Country FROM Master_Customer WHERE Customer_ID = (SELECT TOP 1 [Customer ID] FROM R_DMC_User_Licence WHERE [Headquarter ID] = (SELECT TOP 1 [Headquarter ID] FROM I_DMC_Subscription ORDER BY [Subscription ID] DESC) AND CAST([Created Date] AS date) = CAST(GETDATE() AS date) ORDER BY Created_Date)", "Country")
             If Not Customer_Country.Contains("Singapore") Then
                 e.Row.Cells(GetColumnIndexByName(e.Row, "Password")).Text = "(hidden)"
                 e.Row.Cells(GetColumnIndexByName(e.Row, "Password")).Style.Add("font-style", "italic")
