@@ -835,7 +835,7 @@ Partial Class Form_CZL_Licensed_Device_Form
             Case "GridView1"
                 sqlStr = "SELECT A.Unique_ID, Device_Serial, Device_ID " &
                          "     , Scale_SN, Model, AI_Software_Version, R_Version, MAC_Addr " &
-                         "     , ISNULL(dbo.Get_AI_Licence_Activation_Key(A.Device_ID), 'No Binding Key') AS Licence_Key " &
+                         "     , ISNULL(dbo.Get_AI_Licence_Activation_Key(A.Device_ID, MAC_Addr), 'No Binding Key') AS Licence_Key " &
                          "     , Production_Licence_No " &
                          "     , Location, A.Created_Date, Last_Updated, Client_ID, CZL_Account_Unique_ID " &
                          "     , Effective_Date, COUNT(B.Unique_ID) AS Comment_Count " &
