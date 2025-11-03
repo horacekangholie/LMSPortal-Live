@@ -353,7 +353,8 @@ Partial Class Form_CZL_Licensed_Device_Form
     Protected Sub GridView1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles GridView1.SelectedIndexChanged
         Dim Selected_Row_Index As Integer = GridView1.SelectedRow.RowIndex
         Dim Selected_Device_ID As String = GridView1.SelectedRow.Cells(2).Text
-        Dim Selected_Unique_ID As String = Get_Value("SELECT Unique_ID FROM CZL_Licenced_Devices WHERE Device_ID = '" & Selected_Device_ID & "'", "Unique_ID")  '' Get updated unique id
+        'Dim Selected_Unique_ID As String = Get_Value("SELECT Unique_ID FROM CZL_Licenced_Devices WHERE (Device_ID = '" & Selected_Device_ID & "'", "Unique_ID")  '' Get updated unique id
+        Dim Selected_Unique_ID As String = GridView1.SelectedRow.Cells(1).Text
         Dim Selected_Serial_No As String = GridView1.SelectedRow.Cells(9).Text
         Dim Selected_Licence_Key As String = GridView1.SelectedRow.Cells(3).Text
 
