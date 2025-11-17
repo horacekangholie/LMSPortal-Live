@@ -51,7 +51,7 @@ Partial Class Form_App_Product_Licence_Form
     Protected Sub PopulateGridViewData(Optional ByVal TB_Search As String = Nothing)
         Dim keyword As String = EscapeChar(TB_Search)
         Try
-            Dim sqlStr() As String = {"SELECT * FROM R_LMS_Licence_Order WHERE [Customer ID] = '" & Request.QueryString("Customer_ID") & "' AND [PO No] IN (SELECT PO_No FROM LMS_Licence WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' AND Licence_Code LIKE '%" & keyword & "%') ORDER BY CASE [PO No] WHEN 'NA' THEN 2 ELSE 1 END, [PO Date] DESC ",
+            Dim sqlStr() As String = {"SELECT * FROM R_LMS_Licence_Order WHERE [Customer ID] = '" & Request.QueryString("Customer_ID") & "' AND ([PO No] IN (SELECT PO_No FROM LMS_Licence WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' AND Licence_Code LIKE '%" & keyword & "%') OR [PO No] LIKE '%" & keyword & "%') ORDER BY CASE [PO No] WHEN 'NA' THEN 2 ELSE 1 END, [PO Date] DESC ",
                                       "SELECT * FROM _LicenceUsage WHERE [Customer ID] = '" & Request.QueryString("Customer_ID") & "' ",
                                       "SELECT * FROM I_Termed_Licence_Renewal WHERE [Customer ID] = '" & Request.QueryString("Customer_ID") & "' ",
                                       "SELECT [UID], [PO No], [PO Date], [Invoice No], [Invoice Date], [Currency], SUM(Fee) AS [Total Amount], [Renewal Date] FROM R_Termed_Licence_Renewal WHERE [Customer ID] = '" & Request.QueryString("Customer_ID") & "' GROUP BY [UID], [PO No], [PO Date], [Invoice No], [Invoice Date], [Currency], [Renewal Date] ORDER BY [UID] DESC ",
