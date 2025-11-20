@@ -1,6 +1,10 @@
 ﻿Imports System.IO
 Imports System.Data
 Imports System.Data.SqlClient
+Imports System.Data.SqlTypes
+Imports System.Diagnostics
+Imports System.Web.UI.WebControls
+'Imports DocumentFormat.OpenXml.Spreadsheet
 
 Partial Class Form_App_Product_Licence_Form
     Inherits LMSPortalBaseCode
@@ -400,29 +404,13 @@ Partial Class Form_App_Product_Licence_Form
             '' Get Data row details
             Dim drv As System.Data.DataRowView = e.Row.DataItem
 
-            '' Invoice Download Link
-            'Dim InvoiceDownloadLink As HyperLink = New HyperLink()
-            'InvoiceDownloadLink.ID = "lnkDownload"
-            'InvoiceDownloadLink.Text = drv("Invoice No")
-            'If drv("Invoice No") <> "" And drv("Invoice No") <> "NA" And drv("Invoice No") <> UCase("Cancelled") Then
-            '    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Controls.Add(InvoiceDownloadLink)
-            '    InvoiceDownloadLink.NavigateUrl = String.Format("/Download/DownloadFile.aspx?Inv_Ref_No={0}", drv("Invoice No"))
-            '    InvoiceDownloadLink.Target = "_blank"
-            'ElseIf drv("Invoice No") = UCase("Cancelled") Then
-            '    '' if the order is cancelled then display Cancelled
-            '    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Text = drv("Invoice No")
-            '    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Style.Add("font-style", "italic")
-            '    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Style.Add("color", "#999999")
-            'End If
-
-
             '' Invoice Download Link - Handling multiple invoice numbers
             Dim InvoiceCell As TableCell = e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No"))
             Dim InvoiceNumbers As String() = drv("Invoice No").ToString().Split(New String() {", "}, StringSplitOptions.RemoveEmptyEntries)
 
             For i As Integer = 0 To InvoiceNumbers.Length - 1
                 Dim invoiceNo As String = InvoiceNumbers(i).Trim()
-                If invoiceNo <> "" And invoiceNo <> "NA" And invoiceNo <> UCase("Cancelled") Then
+                If invoiceNo <> "" AndAlso invoiceNo <> "NA" AndAlso invoiceNo <> UCase("Cancelled") Then
                     Dim InvoiceDownloadLink As New HyperLink()
                     InvoiceDownloadLink.Text = invoiceNo
                     InvoiceDownloadLink.NavigateUrl = String.Format("/Download/DownloadFile.aspx?Inv_Ref_No={0}", invoiceNo)
@@ -458,6 +446,18 @@ Partial Class Form_App_Product_Licence_Form
 
             '' Control Button
             Dim CtrlCellIndex As Integer = e.Row.Cells.Count - 1
+
+            Dim EditLinkButton As LinkButton = TryCast(e.Row.Cells(CtrlCellIndex).Controls(0), LinkButton)
+            EditLinkButton.Text = If(Len(drv("Invoice No")) <= 0, "<i class='bi bi-pencil-fill'></i>", "<i class='bi bi-lock'></i>")
+            EditLinkButton.CssClass = If(Len(drv("Invoice No")) <= 0, "btn btn-xs btn-info", "btn btn-xs btn-light disabled")
+            EditLinkButton.ToolTip = If(Len(drv("Invoice No")) <= 0, "", "Item Locked")
+            EditLinkButton.Enabled = Len(drv("Invoice No")) <= 0
+            EditLinkButton.CommandArgument = e.Row.RowIndex & "|" & drv("Customer ID") & "|" & drv("PO No") & "|" & drv("PO Date") & "|" & drv("Requestor ID")
+            EditLinkButton.CausesValidation = False
+            AddHandler EditLinkButton.Click, AddressOf Edit_AppProductLicence_Click
+
+            EditLinkButton.Style.Add("margin-right", "5px")   '' add separator between button
+
             Dim DeleteLinkButton As LinkButton = TryCast(e.Row.Cells(CtrlCellIndex).Controls(1), LinkButton)
             DeleteLinkButton.Text = If(Len(Trim(drv("Invoice No"))) <= 0 And Not toLockDelete, "<i class='bi bi-trash'></i>", "<i class='bi bi-lock'></i>")
             DeleteLinkButton.CssClass = If(Len(Trim(drv("Invoice No"))) <= 0 And Not toLockDelete, "btn btn-xs btn-danger", "btn btn-xs btn-light disabled")
@@ -500,7 +500,7 @@ Partial Class Form_App_Product_Licence_Form
 
             '' Invoice Download Link
             Dim InvoiceDownloadLink As HyperLink = New HyperLink()
-            InvoiceDownloadLink.ID = "lnkDownload"
+            InvoiceDownloadLink.Id = "lnkDownload"
             InvoiceDownloadLink.Text = drv("Invoice No")
             If drv("Invoice No") <> "" And drv("Invoice No") <> "NA" Then
                 e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Controls.Add(InvoiceDownloadLink)
@@ -566,6 +566,61 @@ Partial Class Form_App_Product_Licence_Form
         PopulateGridViewData()
     End Sub
 
+
+    '' Gridview of listbox
+    Protected Sub GridView_Licence_List_RowDataBound(sender As Object, e As GridViewRowEventArgs) Handles GridView_Licence_List.RowDataBound
+        If e.Row.RowType = DataControlRowType.DataRow Then
+            ' click on a row to hightlight and postback to populate value
+            e.Row.Attributes("onclick") = Page.ClientScript.GetPostBackClientHyperlink(GridView_Licence_List, "Select$" & e.Row.RowIndex)
+            e.Row.Attributes("style") = "cursor:pointer"
+        End If
+    End Sub
+
+    Protected Sub GridView_Licence_List_RowCommand(sender As Object, e As GridViewCommandEventArgs) Handles GridView_Licence_List.RowCommand
+        If e.CommandName = "Select" Then
+            Dim rowIndex As Integer = Convert.ToInt32(e.CommandArgument)
+            Dim selectedRow As GridViewRow = GridView_Licence_List.Rows(rowIndex)
+
+            '' Get the value from gridviewrow
+            Dim App_Type As String = selectedRow.Cells(0).Text
+            Dim OS_Type As String = selectedRow.Cells(1).Text
+            Dim Licence_Code As String = selectedRow.Cells(2).Text
+            Dim Licensee_Email As String = selectedRow.Cells(3).Text
+            Dim Remarks As String = Server.HtmlDecode(selectedRow.Cells(4).Text).Trim()
+
+            DDL_Application_Type.SelectedIndex = DDL_Application_Type.Items.IndexOf(DDL_Application_Type.Items.FindByValue(App_Type))
+            DDL_OS_Type.SelectedIndex = DDL_OS_Type.Items.IndexOf(DDL_OS_Type.Items.FindByValue(OS_Type))
+            TB_Email.Text = Licensee_Email
+            TB_Remarks.Text = Remarks
+            TB_Selected_Licence_Code.Text = Licence_Code
+
+            '' Check to turn on / off AI Account Selection based on Licence Type
+            If Trim(DDL_Application_Type.Text).ToLower.Contains("ai gateway") Then
+                aiaccountno.Visible = True
+                CompareValidator_DDL_AI_Account_No.Enabled = True
+                DDL_AI_Account_No.SelectedIndex = -1   '' Default the selection
+            Else
+                aiaccountno.Visible = False
+                CompareValidator_DDL_AI_Account_No.Enabled = False
+            End If
+
+            '' Highlight the selected row with color
+            For Each row As GridViewRow In GridView_Licence_List.Rows
+                row.BackColor = If(row.RowIndex.Equals(rowIndex), Drawing.ColorTranslator.FromHtml("#eeeeee"), Drawing.Color.Transparent)
+            Next
+        End If
+        popupAppProductLicence.Show()
+    End Sub
+
+    Protected Sub GridView_Licence_List_RowCreated(sender As Object, e As GridViewRowEventArgs) Handles GridView_Licence_List.RowCreated
+        If e.Row.RowType = DataControlRowType.DataRow Then
+            ' Call javascript function for GridView Row highlight effect
+            If e.Row.RowType = DataControlRowType.DataRow Then
+                e.Row.Attributes.Add("OnMouseOver", "javascript:SetMouseOver(this);")
+                e.Row.Attributes.Add("OnMouseOut", "javascript:SetMouseOut(this);")
+            End If
+        End If
+    End Sub
 
 
     '' Modal control
@@ -724,28 +779,141 @@ Partial Class Form_App_Product_Licence_Form
         btnSaveAppProductLicence.Text = "Save"
         btnCancelAppProductLicence.Text = "Cancel"
 
-        TB_PO_No.Text = String.Empty
-        TB_PO_Date.Text = String.Empty
-        TB_PO_Date.Enabled = True
-        RequiredField_TB_PO_Date.Enabled = True
-        DDL_Application_Type.SelectedIndex = -1
-        DDL_Sales_Representative.SelectedIndex = -1
+        ' Reinitialize field based on new/edit mode
+        ReInitializeField(btnSaveAppProductLicence.Text)
+    End Sub
 
-        Dim DDL_Chargeable As DropDownList = pnlAddEditAppProductLicence.FindControl("DDL_Chargeable")
-        Dim i = DDL_Chargeable.Items.IndexOf(DDL_Chargeable.Items.FindByText("Yes"))
-        DDL_Chargeable.SelectedIndex = i
-        TB_Email.Text = String.Empty
-        TB_Remarks.Text = String.Empty
+    Protected Sub Edit_AppProductLicence_Click(ByVal sender As Object, ByVal e As EventArgs)
+        ModalHeaderAppProductLicence.Text = "Update App / Product Licence"
+        btnSaveAppProductLicence.Text = "Update"
+        btnCancelAppProductLicence.Text = "Cancel"
 
-        '' AI Account Selection Dropdownlist set to invisible
-        aiaccountno.Visible = False
-        CompareValidator_DDL_AI_Account_No.Enabled = False
-        DDL_AI_Account_No.SelectedIndex = -1
+        '' Get row command argument
+        Dim EditLinkButton As LinkButton = TryCast(sender, LinkButton)
+        Dim EditLinkButtonCommandArgument As Array = Split(EditLinkButton.CommandArgument, "|")
 
-        '' hide the tr row when the error message is.
-        licencelistboxerrormsg.Visible = False
+        TB_Selected_Row_Index.Text = EditLinkButtonCommandArgument(0)
+        TB_Selected_Customer_ID.Text = EditLinkButtonCommandArgument(1)
+        TB_Selected_PO_No.Text = EditLinkButtonCommandArgument(2)
 
-        PopulateListbox()
+        Dim HiddenFields As Array = {TB_Selected_Row_Index,
+                                     TB_Selected_Customer_ID,
+                                     TB_Selected_PO_No,
+                                     TB_Selected_PO_Date,
+                                     TB_Selected_Requestor_ID}
+
+        '' file value to hidden fields
+        For i = 0 To EditLinkButtonCommandArgument.Length - 1
+            HiddenFields(i).Text = EditLinkButtonCommandArgument(i)
+        Next
+
+        ' Reinitialize field based on new/edit mode
+        ReInitializeField(btnSaveAppProductLicence.Text)
+    End Sub
+
+    Protected Sub ReInitializeField(ByVal currmode As String)
+        Dim oMode As String = IIf(currmode = "Save", "New", "Edit")
+        Dim modalFields As New List(Of Control) From {TB_PO_No, TB_PO_Date _
+                                                    , RequiredField_TB_PO_Date _
+                                                    , DDL_Application_Type _
+                                                    , DDL_Sales_Representative _
+                                                    , DDL_Chargeable _
+                                                    , TB_Email _
+                                                    , TB_Remarks _
+                                                    , truploadsectiontitle _
+                                                    , FileUpload1 _
+                                                    , UploadLineItems _
+                                                    , btnClearLineItems _
+                                                    , btnUpdateLineItems _
+                                                    , aiaccountno _
+                                                    , CompareValidator_DDL_AI_Account_No _
+                                                    , DDL_AI_Account_No _
+                                                    , licencelistboxerrormsg}
+
+        For Each ctrl As Control In modalFields
+            'MsgBox(ctrl.GetType().Name)
+            Select Case True
+                Case TypeOf ctrl Is TextBox
+                    Dim tb As TextBox = CType(ctrl, TextBox)
+                    Select Case tb.ID
+                        Case "TB_PO_No"
+                            tb.Text = If(oMode = "New", String.Empty, TB_Selected_PO_No.Text)
+                            tb.Enabled = (oMode = "New")
+
+                        Case "TB_PO_Date"
+                            tb.Text = If(oMode = "New", String.Empty, ConvertTextToDate(TB_Selected_PO_Date.Text))
+                            tb.Enabled = (oMode = "New")
+
+                        Case "TB_Email", "TB_Remarks"
+                            tb.Text = String.Empty
+
+                    End Select
+
+                Case TypeOf ctrl Is RequiredFieldValidator
+                    Dim rfv As RequiredFieldValidator = CType(ctrl, RequiredFieldValidator)
+                    rfv.Enabled = (oMode = "New")
+
+                Case TypeOf ctrl Is DropDownList
+                    Dim ddl As DropDownList = CType(ctrl, DropDownList)
+                    Select Case ddl.ID
+                        Case "DDL_Application_Type"
+                            ddl.SelectedIndex = -1
+                            ddl.Enabled = True
+
+                        Case "DDL_Sales_Representative"
+                            ddl.SelectedIndex = If(oMode = "New", -1, ddl.Items.IndexOf(ddl.Items.FindByValue(TB_Selected_Requestor_ID.Text)))
+                            ddl.Enabled = True
+
+                        Case "DDL_Chargeable"
+                            ddl.SelectedIndex = ddl.Items.IndexOf(ddl.Items.FindByText("Yes"))
+                            ddl.Enabled = (oMode = "New")
+
+                        Case "DDL_AI_Account_No"
+                            ddl.SelectedIndex = -1
+
+                    End Select
+
+                Case TypeOf ctrl Is HtmlTableRow
+                    Dim tblrow As HtmlTableRow = CType(ctrl, HtmlTableRow)
+                    Select Case tblrow.ID
+                        Case "truploadsectiontitle"
+                            tblrow.Visible = (oMode = "New")
+
+                        Case "aiaccountno", "licencelistboxerrormsg"
+                            tblrow.Visible = False
+
+                    End Select
+
+                Case TypeOf ctrl Is FileUpload
+                    Dim fupload As FileUpload = CType(ctrl, FileUpload)
+                    Select Case fupload.ID
+                        Case "FileUpload1"
+                            fupload.Visible = (oMode = "New")
+
+                    End Select
+
+                Case TypeOf ctrl Is Button
+                    Dim btn As Button = CType(ctrl, Button)
+                    Select Case btn.ID
+                        Case "UploadLineItems", "btnClearLineItems"
+                            btn.Visible = (oMode = "New")
+
+                        Case "btnUpdateLineItems"
+                            btn.Visible = Not (oMode = "New")
+
+                    End Select
+
+                Case TypeOf ctrl Is CompareValidator
+                    Dim cpv As CompareValidator = CType(ctrl, CompareValidator)
+                    Select Case cpv.ID
+                        Case "CompareValidator_DDL_AI_Account_No"
+                            cpv.Enabled = False
+
+                    End Select
+            End Select
+        Next
+
+        PopulateListbox(oMode)
         popupAppProductLicence.Show()
         hiddenModalVisible.Value = True
     End Sub
@@ -827,7 +995,8 @@ Partial Class Form_App_Product_Licence_Form
 
         licencelistboxerrormsg.Visible = False
 
-        PopulateListbox()
+        Dim oMode As String = IIf(btnSaveAppProductLicence.Text = "Save", "New", "Edit")
+        PopulateListbox(oMode)
         popupAppProductLicence.Show()
         hiddenModalVisible.Value = True
     End Sub
@@ -835,19 +1004,47 @@ Partial Class Form_App_Product_Licence_Form
     Protected Sub btnClearLineItems_Click(sender As Object, e As EventArgs) Handles btnClearLineItems.Click
         DeleteStaging()
         licencelistboxerrormsg.Visible = False
-        PopulateListbox()
+
+        Dim oMode As String = IIf(btnSaveAppProductLicence.Text = "Save", "New", "Edit")
+        PopulateListbox(oMode)
         popupAppProductLicence.Show()
         hiddenModalVisible.Value = True
     End Sub
 
-    Protected Sub PopulateListbox()
+    Protected Sub btnUpdateLineItems_Click(sender As Object, e As EventArgs) Handles btnUpdateLineItems.Click
+        Try
+            Dim sqlStr As String = "UPDATE LMS_Licence " &
+                                   "SET Remarks = '" & TB_Remarks.Text & "' " &
+                                   "WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' " &
+                                   " AND PO_No = '" & TB_PO_No.Text & "' " &
+                                   " AND Licence_Code = '" & TB_Selected_Licence_Code.Text & "' "
+            RunSQL(sqlStr)
+        Catch ex As Exception
+            Response.Write("Error: " & ex.Message)
+        End Try
+
+        PopulateListbox(btnSaveAppProductLicence.Text)
+        popupAppProductLicence.Show()
+    End Sub
+
+    Protected Sub PopulateListbox(oMode As String)
         Dim Customer_ID As String = Request.QueryString("Customer_ID")
         Dim PO_No As TextBox = pnlAddEditAppProductLicence.FindControl("TB_PO_No")
 
         Try
-            Dim sqlStr As String = " SELECT * FROM LMS_Licence_staging " &
-                                   " WHERE Customer_ID = '" & Customer_ID & "'" &
-                                   "   AND PO_No = N'" & PO_No.Text & "'"
+            Dim sqlStr As String
+            If oMode = "New" Then
+                ' add new, populate the list from temp table
+                sqlStr = " SELECT * FROM LMS_Licence_staging " &
+                         " WHERE Customer_ID = '" & Customer_ID & "'" &
+                         "   AND PO_No = N'" & PO_No.Text & "'"
+            Else
+                ' edit mode, populate from lms_license table
+                sqlStr = " SELECT Customer_ID, PO_No, Application_Type, OS_Type, Licence_Code, Licensee_Email AS Email, Sales_Representative_ID, Chargeable, Remarks " &
+                         " FROM LMS_Licence " &
+                         " WHERE Customer_ID = '" & Customer_ID & "'" &
+                         "   AND PO_No = N'" & PO_No.Text & "'"
+            End If
 
             GridView_Licence_List.DataSource = GetDataTable(sqlStr)
             GridView_Licence_List.DataBind()
@@ -894,15 +1091,15 @@ Partial Class Form_App_Product_Licence_Form
         ElseIf UploadedRecordCount > 0 Then
             Try
                 Dim sqlStr As String = " EXEC SP_CRUD_LMS_Licence '" & Customer_ID &
-                                                                 "', N'" & PO_No.Text &
-                                                                  "', '" & PO_Date.Text &
-                                                                  "', '" & Application_Type.Text &
-                                                                  "', '" & Sales_Representative_ID.Text &
-                                                                  "', '" & Chargeable.SelectedValue &
-                                                                  "', '" & OS_Type.Text &
-                                                                  "', '" & Email.Text &
-                                                                 "', N'" & EscapeChar(Remarks.Text) &
-                                                                  "', '" & Trim(Selected_AI_Account_No) & "' "
+                                                             "', N'" & PO_No.Text &
+                                                              "', '" & PO_Date.Text &
+                                                              "', '" & Application_Type.Text &
+                                                              "', '" & Sales_Representative_ID.Text &
+                                                              "', '" & Chargeable.SelectedValue &
+                                                              "', '" & OS_Type.Text &
+                                                              "', '" & Email.Text &
+                                                             "', N'" & EscapeChar(Remarks.Text) &
+                                                              "', '" & Trim(Selected_AI_Account_No) & "' "
                 RunSQL(sqlStr)
             Catch ex As Exception
                 Response.Write("Error: " & ex.Message)

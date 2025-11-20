@@ -5,6 +5,7 @@
     CodeFile="App_Product_Licence_Form.aspx.vb" 
     MaintainScrollPositionOnPostback ="true"
     ValidateRequest="false"
+    EnableEventValidation="false"
     Inherits="Form_App_Product_Licence_Form" %>
 
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="cc1" %>
@@ -329,12 +330,12 @@
                                     </asp:CompareValidator>
                                 </td>
                             </tr>
-                            <tr style="vertical-align: bottom">
+                            <tr id="truploadsectiontitle" runat="server" style="vertical-align: bottom">
                                 <td style="width: 100%; padding: 0px 10px 0px 0px" colspan="3">
                                     <label>Upload Licence file</label>
                                 </td>
                             </tr>
-                            <tr style="vertical-align: top">
+                            <tr runat="server" style="vertical-align: top">
                                 <td style="width: 100%; padding: 0px 10px 20px 0px" colspan="2">
                                     <asp:FileUpload ID="FileUpload1" runat="server" />
                                     <asp:RequiredFieldValidator ID="RequiredField_FileUpload1" runat="server" ValidationGroup="FileUpload"
@@ -350,6 +351,7 @@
                                         ControlToValidate="FileUpload1"
                                         ValidationExpression="^([0-9a-zA-Z_\-~ :\\])+(.txt)$">
                                     </asp:RegularExpressionValidator>
+                                    <asp:Button ID="btnUpdateLineItems" runat="server" Text="Update" Height="40px" CssClass="btn btn-info" ValidationGroup="FileUpload" />
                                 </td>
                                 <td style="width: 30%; padding: 0px 10px 20px 0px">
                                     <asp:Button ID="UploadLineItems" runat="server" Text="Upload" Height="40px" CssClass="btn btn-info" ValidationGroup="FileUpload" />
@@ -372,8 +374,9 @@
                                             <Columns>
                                                 <asp:BoundField DataField="Application_Type" HeaderText="Application Type" SortExpression="Application_Type" />
                                                 <asp:BoundField DataField="OS_Type" HeaderText="OS Type" SortExpression="OS_Type" />
-                                                <asp:BoundField DataField="Licence_Code" HeaderText="Licence Code" SortExpression="Licence_Code" />
+                                                <asp:BoundField DataField="Licence_Code" HeaderText="Licence Code" SortExpression="Licence_Code" ItemStyle-Wrap="false" />
                                                 <asp:BoundField DataField="Email" HeaderText="Email" SortExpression="Email" />
+                                                <asp:BoundField DataField="Remarks" HeaderText="Remarks" SortExpression="Remarks" />
                                             </Columns>
                                         </asp:GridView>
                                     </div>
@@ -392,7 +395,16 @@
                             </tr>
                         </table>
                         <!-- Hidden field -->
-                        <asp:HiddenField ID="hiddenModalVisible" runat="server" Value="true" />
+                        <asp:HiddenField ID="hiddenModalVisible" runat="server" Value="true" Visible="true" />
+                        <div>
+                            <asp:TextBox ID="TB_Selected_Row_Index" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
+                            <asp:TextBox ID="TB_Selected_Customer_ID" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
+                            <asp:TextBox ID="TB_Selected_PO_No" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
+                            <asp:TextBox ID="TB_Selected_PO_Date" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
+                            <asp:TextBox ID="TB_Selected_Requestor_ID" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
+                            <asp:TextBox ID="TB_Selected_Licence_Code" runat="server" CssClass="form-control" Visible="true"></asp:TextBox>
+
+                        </div>
                     </asp:Panel>
 
                     <asp:LinkButton ID="lnkFakeAppProductLicence" runat="server"></asp:LinkButton>

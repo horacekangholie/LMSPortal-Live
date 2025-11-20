@@ -606,7 +606,15 @@ Public Class LMSPortalBaseCode
         Return columnIndex
     End Function
 
-
+    Protected Function ConvertTextToDate(ByVal PO_Date_Txt As String) As String
+        Dim poDate As Date
+        If Date.TryParse(PO_Date_Txt, poDate) Then
+            PO_Date_Txt = poDate.ToString("yyyy-MM-dd")
+        Else
+            PO_Date_Txt = ""  'avoid error
+        End If
+        Return PO_Date_Txt
+    End Function
 
 
     ' Function to return the column index by column name
