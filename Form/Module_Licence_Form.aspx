@@ -633,12 +633,12 @@
                         <!-- Hidden field -->
                         <asp:HiddenField ID="hiddenModalVisible" runat="server" Value="true" />
                         <div>
-                            <asp:TextBox ID="TextBox1" runat="server" CssClass="form-control" Visible="true"></asp:TextBox>
-                            <asp:TextBox ID="TB_Selected_Customer_ID" runat="server" CssClass="form-control" Visible="true"></asp:TextBox>
-                            <asp:TextBox ID="TB_Selected_PO_No" runat="server" CssClass="form-control" Visible="true"></asp:TextBox>
-                            <asp:TextBox ID="TB_Selected_PO_Date" runat="server" CssClass="form-control" Visible="true"></asp:TextBox>
-                            <asp:TextBox ID="TB_Selected_Requestor_ID" runat="server" CssClass="form-control" Visible="true"></asp:TextBox>
-                            <asp:TextBox ID="TB_Selected_Licence_Code" runat="server" CssClass="form-control" Visible="true"></asp:TextBox>
+                            <asp:TextBox ID="TextBox1" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
+                            <asp:TextBox ID="TB_Selected_Customer_ID" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
+                            <asp:TextBox ID="TB_Selected_PO_No" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
+                            <asp:TextBox ID="TB_Selected_PO_Date" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
+                            <asp:TextBox ID="TB_Selected_Requestor_ID" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
+                            <asp:TextBox ID="TB_Selected_Licence_Code" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
                         </div>
                     </asp:Panel>
 
