@@ -451,7 +451,7 @@ Partial Class Form_App_Product_Licence_Form
             Else
                 poDate = Convert.ToDateTime(drv("PO Date"))
             End If
-            Dim openToEdit As Boolean = (Date.Now - poDate).TotalDays < 180   ' close record for editing after 180 days
+            Dim openToEdit As Boolean = (Date.Now - poDate).TotalDays < 365   ' close record for editing after 1 year
 
 
             '' Control Button
