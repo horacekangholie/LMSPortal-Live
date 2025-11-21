@@ -805,10 +805,6 @@ Partial Class Form_App_Product_Licence_Form
         Dim EditLinkButton As LinkButton = TryCast(sender, LinkButton)
         Dim EditLinkButtonCommandArgument As Array = Split(EditLinkButton.CommandArgument, "|")
 
-        TB_Selected_Row_Index.Text = EditLinkButtonCommandArgument(0)
-        TB_Selected_Customer_ID.Text = EditLinkButtonCommandArgument(1)
-        TB_Selected_PO_No.Text = EditLinkButtonCommandArgument(2)
-
         Dim HiddenFields As Array = {TB_Selected_Row_Index,
                                      TB_Selected_Customer_ID,
                                      TB_Selected_PO_No,
@@ -922,7 +918,7 @@ Partial Class Form_App_Product_Licence_Form
                             btn.Visible = (oMode = "New")
 
                         Case "btnUpdateLineItems"
-                            'btn.Visible = Not (oMode = "New")
+                            btn.Visible = Not (oMode = "New")
                             btn.Enabled = False
                             btn.CssClass = "btn btn-secondary disabled"
 
