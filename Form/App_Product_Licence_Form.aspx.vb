@@ -444,14 +444,23 @@ Partial Class Form_App_Product_Licence_Form
             Dim Activated_vs_Total_Licence As Array = Split(Replace(drv("No of Licence Key Issued"), " ", ""), "/")
             Dim toLockDelete As Boolean = IIf(CInt(Activated_vs_Total_Licence(0)) > 0, True, False)
 
+            '' Retrive PO Data for comparison
+            Dim poDate As Date
+            If IsDBNull(drv("PO Date")) OrElse drv("PO Date").ToString().Trim() = "" Then
+                poDate = Convert.ToDateTime("1900-01-01")   '' handle empty PO Date
+            Else
+                poDate = Convert.ToDateTime(drv("PO Date"))
+            End If
+            Dim openToEdit As Boolean = (Date.Now - poDate).TotalDays < 180   ' close record for editing after 180 days
+
+
             '' Control Button
             Dim CtrlCellIndex As Integer = e.Row.Cells.Count - 1
-
             Dim EditLinkButton As LinkButton = TryCast(e.Row.Cells(CtrlCellIndex).Controls(0), LinkButton)
-            EditLinkButton.Text = If(Len(drv("Invoice No")) <= 0, "<i class='bi bi-pencil-fill'></i>", "<i class='bi bi-lock'></i>")
-            EditLinkButton.CssClass = If(Len(drv("Invoice No")) <= 0, "btn btn-xs btn-info", "btn btn-xs btn-light disabled")
-            EditLinkButton.ToolTip = If(Len(drv("Invoice No")) <= 0, "", "Item Locked")
-            EditLinkButton.Enabled = Len(drv("Invoice No")) <= 0
+            EditLinkButton.Text = If(openToEdit, "<i class='bi bi-pencil-fill'></i>", "<i class='bi bi-lock'></i>")
+            EditLinkButton.CssClass = If(openToEdit, "btn btn-xs btn-info", "btn btn-xs btn-light disabled")
+            EditLinkButton.ToolTip = If(openToEdit, "", "Item Locked")
+            EditLinkButton.Enabled = openToEdit
             EditLinkButton.CommandArgument = e.Row.RowIndex & "|" & drv("Customer ID") & "|" & drv("PO No") & "|" & drv("PO Date") & "|" & drv("Requestor ID")
             EditLinkButton.CausesValidation = False
             AddHandler EditLinkButton.Click, AddressOf Edit_AppProductLicence_Click
