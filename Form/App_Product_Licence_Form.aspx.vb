@@ -604,6 +604,8 @@ Partial Class Form_App_Product_Licence_Form
             TB_Email.Enabled = True
             TB_Remarks.Text = Remarks
             TB_Selected_Licence_Code.Text = Licence_Code
+            btnUpdateLineItems.Enabled = True
+            btnUpdateLineItems.CssClass = "btn btn-info"
 
             '' Check to turn on / off AI Account Selection based on Licence Type
             If Trim(DDL_Application_Type.Text).ToLower.Contains("ai gateway") Then
@@ -920,7 +922,9 @@ Partial Class Form_App_Product_Licence_Form
                             btn.Visible = (oMode = "New")
 
                         Case "btnUpdateLineItems"
-                            btn.Visible = Not (oMode = "New")
+                            'btn.Visible = Not (oMode = "New")
+                            btn.Enabled = False
+                            btn.CssClass = "btn btn-secondary disabled"
 
                     End Select
 
@@ -1046,6 +1050,10 @@ Partial Class Form_App_Product_Licence_Form
         Catch ex As Exception
             Response.Write("Error: " & ex.Message)
         End Try
+
+        ' Reset the udpate button
+        btnUpdateLineItems.Enabled = False
+        btnUpdateLineItems.CssClass = "btn btn-secondary disabled"
 
         PopulateListbox(btnSaveAppProductLicence.Text)
         popupAppProductLicence.Show()
