@@ -589,8 +589,10 @@ Partial Class Form_App_Product_Licence_Form
             Dim Remarks As String = Server.HtmlDecode(selectedRow.Cells(4).Text).Trim()
 
             DDL_Application_Type.SelectedIndex = DDL_Application_Type.Items.IndexOf(DDL_Application_Type.Items.FindByValue(App_Type))
+            DDL_Application_Type.Enabled = True
             DDL_OS_Type.SelectedIndex = DDL_OS_Type.Items.IndexOf(DDL_OS_Type.Items.FindByValue(OS_Type))
             TB_Email.Text = Licensee_Email
+            TB_Email.Enabled = True
             TB_Remarks.Text = Remarks
             TB_Selected_Licence_Code.Text = Licence_Code
 
@@ -816,9 +818,12 @@ Partial Class Form_App_Product_Licence_Form
         Dim modalFields As New List(Of Control) From {TB_PO_No, TB_PO_Date _
                                                     , RequiredField_TB_PO_Date _
                                                     , DDL_Application_Type _
+                                                    , CompareValidator_DDL_Application_Type _
                                                     , DDL_Sales_Representative _
                                                     , DDL_Chargeable _
+                                                    , DDL_OS_Type _
                                                     , TB_Email _
+                                                    , RequiredField_TB_Email _
                                                     , TB_Remarks _
                                                     , truploadsectiontitle _
                                                     , FileUpload1 _
@@ -844,7 +849,11 @@ Partial Class Form_App_Product_Licence_Form
                             tb.Text = If(oMode = "New", String.Empty, ConvertTextToDate(TB_Selected_PO_Date.Text))
                             tb.Enabled = (oMode = "New")
 
-                        Case "TB_Email", "TB_Remarks"
+                        Case "TB_Email"
+                            tb.Enabled = (oMode = "New")
+                            tb.Text = String.Empty
+
+                        Case "TB_Remarks"
                             tb.Text = String.Empty
 
                     End Select
@@ -858,7 +867,7 @@ Partial Class Form_App_Product_Licence_Form
                     Select Case ddl.ID
                         Case "DDL_Application_Type"
                             ddl.SelectedIndex = -1
-                            ddl.Enabled = True
+                            ddl.Enabled = (oMode = "New")
 
                         Case "DDL_Sales_Representative"
                             ddl.SelectedIndex = If(oMode = "New", -1, ddl.Items.IndexOf(ddl.Items.FindByValue(TB_Selected_Requestor_ID.Text)))
@@ -866,6 +875,9 @@ Partial Class Form_App_Product_Licence_Form
 
                         Case "DDL_Chargeable"
                             ddl.SelectedIndex = ddl.Items.IndexOf(ddl.Items.FindByText("Yes"))
+                            ddl.Enabled = (oMode = "New")
+
+                        Case "DDL_OS_Type"
                             ddl.Enabled = (oMode = "New")
 
                         Case "DDL_AI_Account_No"
@@ -905,11 +917,8 @@ Partial Class Form_App_Product_Licence_Form
 
                 Case TypeOf ctrl Is CompareValidator
                     Dim cpv As CompareValidator = CType(ctrl, CompareValidator)
-                    Select Case cpv.ID
-                        Case "CompareValidator_DDL_AI_Account_No"
-                            cpv.Enabled = False
+                    cpv.Enabled = (oMode = "New")
 
-                    End Select
             End Select
         Next
 
@@ -1013,12 +1022,18 @@ Partial Class Form_App_Product_Licence_Form
 
     Protected Sub btnUpdateLineItems_Click(sender As Object, e As EventArgs) Handles btnUpdateLineItems.Click
         Try
-            Dim sqlStr As String = "UPDATE LMS_Licence " &
-                                   "SET Remarks = '" & TB_Remarks.Text & "' " &
-                                   "WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' " &
-                                   " AND PO_No = '" & TB_PO_No.Text & "' " &
-                                   " AND Licence_Code = '" & TB_Selected_Licence_Code.Text & "' "
-            RunSQL(sqlStr)
+            Dim sqlStr As String = ""
+            If DDL_Application_Type.SelectedIndex > 0 Then
+                sqlStr += "UPDATE LMS_Licence " &
+                          "SET Application_Type = '" & DDL_Application_Type.SelectedValue & "' " &
+                          ",   Licensee_Email = '" & TB_Email.Text & "' " &
+                          ",   Remarks = '" & TB_Remarks.Text & "' " &
+                          "WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' " &
+                          "  AND PO_No = '" & TB_PO_No.Text & "' " &
+                          "  AND Licence_Code = '" & TB_Selected_Licence_Code.Text & "'; "
+                RunSQL(sqlStr)
+            End If
+
         Catch ex As Exception
             Response.Write("Error: " & ex.Message)
         End Try
@@ -1054,6 +1069,7 @@ Partial Class Form_App_Product_Licence_Form
     End Sub
 
     Protected Sub Save_AppProductLicence_Click(ByVal sender As Object, ByVal e As EventArgs) Handles btnSaveAppProductLicence.Click
+        'MsgBox(btnSaveAppProductLicence.Text)
         Dim Customer_ID As String = Request.QueryString("Customer_ID")
         Dim PO_No As TextBox = pnlAddEditAppProductLicence.FindControl("TB_PO_No")
         Dim PO_Date As TextBox = pnlAddEditAppProductLicence.FindControl("TB_PO_Date")
@@ -1078,37 +1094,49 @@ Partial Class Form_App_Product_Licence_Form
         Dim GridView_Licence_List As GridView = pnlAddEditAppProductLicence.FindControl("GridView_Licence_List")
         Dim UploadedRecordCount As Integer = GridView_Licence_List.Rows.Count
 
-
-        If Application_Type.SelectedValue = "AI Gateway" AndAlso UploadedRecordCount <> 1 Then
-            If UploadedRecordCount = 0 Then
-                AlertMessage("Please upload licence file.")
+        If btnSaveAppProductLicence.Text = "Save" Then
+            If Application_Type.SelectedValue = "AI Gateway" AndAlso UploadedRecordCount <> 1 Then
+                If UploadedRecordCount = 0 Then
+                    AlertMessage("Please upload licence file.")
+                    licencelistboxerrormsg.Visible = True
+                    popupAppProductLicence.Show()
+                    hiddenModalVisible.Value = True
+                Else
+                    AlertMessage("Please upload AI Gateway Licence one at time.\nOne AI Gateway Licence Key bind to one AI Account.")
+                End If
+            ElseIf UploadedRecordCount > 0 Then
+                Try
+                    Dim sqlStr As String = " EXEC SP_CRUD_LMS_Licence '" & Customer_ID &
+                                                                 "', N'" & PO_No.Text &
+                                                                  "', '" & PO_Date.Text &
+                                                                  "', '" & Application_Type.Text &
+                                                                  "', '" & Sales_Representative_ID.Text &
+                                                                  "', '" & Chargeable.SelectedValue &
+                                                                  "', '" & OS_Type.Text &
+                                                                  "', '" & Email.Text &
+                                                                 "', N'" & EscapeChar(Remarks.Text) &
+                                                                  "', '" & Trim(Selected_AI_Account_No) & "' "
+                    RunSQL(sqlStr)
+                Catch ex As Exception
+                    Response.Write("Error: " & ex.Message)
+                End Try
+            Else
                 licencelistboxerrormsg.Visible = True
                 popupAppProductLicence.Show()
                 hiddenModalVisible.Value = True
-            Else
-                AlertMessage("Please upload AI Gateway Licence one at time.\nOne AI Gateway Licence Key bind to one AI Account.")
             End If
-        ElseIf UploadedRecordCount > 0 Then
+        Else
             Try
-                Dim sqlStr As String = " EXEC SP_CRUD_LMS_Licence '" & Customer_ID &
-                                                             "', N'" & PO_No.Text &
-                                                              "', '" & PO_Date.Text &
-                                                              "', '" & Application_Type.Text &
-                                                              "', '" & Sales_Representative_ID.Text &
-                                                              "', '" & Chargeable.SelectedValue &
-                                                              "', '" & OS_Type.Text &
-                                                              "', '" & Email.Text &
-                                                             "', N'" & EscapeChar(Remarks.Text) &
-                                                              "', '" & Trim(Selected_AI_Account_No) & "' "
+                Dim sqlStr As String = "UPDATE LMS_Licence " &
+                                       "SET Sales_Representative_ID = '" & Sales_Representative_ID.SelectedValue & "' " &
+                                       "WHERE Customer_ID = '" & Customer_ID & "' " &
+                                       "  AND PO_No = '" & PO_No.Text & "'; "
                 RunSQL(sqlStr)
             Catch ex As Exception
                 Response.Write("Error: " & ex.Message)
             End Try
-        Else
-            licencelistboxerrormsg.Visible = True
-            popupAppProductLicence.Show()
-            hiddenModalVisible.Value = True
         End If
+
 
         DeleteStaging()
         PopulateFormViewData()
