@@ -31,7 +31,8 @@ Partial Class Views_Module_Licence_Details
         End Try
     End Sub
 
-    Protected Sub PopulateGridViewData()
+    Protected Sub PopulateGridViewData(Optional ByVal TB_Search As String = Nothing)
+        Dim keyword As String = EscapeChar(TB_Search)
         Try
             'Dim sqlStr() As String = {"EXEC SP_Module_Licence_Order '" & Request.QueryString("Customer_ID") & "' ",
             '                          "SELECT [Customer ID], [PO No], [PO Date], [Chargeable], [Invoice No], STRING_AGG([Requested By], ', ') AS [Requested By] " &

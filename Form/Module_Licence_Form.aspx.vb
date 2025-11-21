@@ -1844,6 +1844,12 @@ Partial Class Form_Module_Licence_Form
     End Sub
 
 
+    '' Searchbox
+    Protected Sub BT_Search_Click(sender As Object, e As EventArgs) Handles BT_Search.Click
+        PopulateFormViewData()
+        PopulateGridViewData(TB_Search.Text)
+    End Sub
+
     '' Bottom control button
     Protected Sub BT_Close_Click(ByVal sender As Object, ByVal e As EventArgs) Handles BT_Close.Click
         Response.Redirect("~/Form/Module_Licence.aspx")
