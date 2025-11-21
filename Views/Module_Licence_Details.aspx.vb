@@ -33,22 +33,31 @@ Partial Class Views_Module_Licence_Details
 
     Protected Sub PopulateGridViewData()
         Try
+            'Dim sqlStr() As String = {"EXEC SP_Module_Licence_Order '" & Request.QueryString("Customer_ID") & "' ",
+            '                          "SELECT [Customer ID], [PO No], [PO Date], [Chargeable], [Invoice No], STRING_AGG([Requested By], ', ') AS [Requested By] " &
+            '                          "     , (SELECT CAST(COUNT(*) AS nvarchar) FROM R_LMS_Module_Licence WHERE [Customer ID] = TBL.[Customer ID] AND [PO No] = TBL.[PO No] AND Status = 'Activated') + ' / ' + CAST(SUM([No of Licence Key Issued]) AS nvarchar) AS [No of Licence Key Issued] " &
+            '                          "FROM (" &
+            '                          "   SELECT [Customer ID], [PO No], [PO Date], [Chargeable], [Invoice No], CASE WHEN [Invoice No] = 'NA' THEN '' ELSE [Requested By] END AS [Requested By], COUNT([Licence Code]) AS [No of Licence Key Issued] " &
+            '                          "   FROM R_LMS_Module_Licence " &
+            '                          "   WHERE [Customer ID] = '" & Request.QueryString("Customer_ID") & "' " &
+            '                          "   GROUP BY [Customer ID], [PO No], [PO Date], [Chargeable], [Invoice No], [Invoice Date], CASE WHEN [Invoice No] = 'NA' THEN '' ELSE [Requested By] END " &
+            '                          ") TBL " &
+            '                          "GROUP BY [Customer ID], [PO No], [PO Date], [Chargeable], [Invoice No] " &
+            '                          "ORDER BY [Chargeable] DESC, [PO Date] DESC",
+            '                          "SELECT * FROM R_LMS_Module_Licence_Pool WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' AND Name LIKE '%Licence Pool%' ORDER BY Customer_ID, No, Module_Type DESC ",
+            '                          "SELECT * FROM I_AI_Licence_Renewal WHERE [Customer ID] = '" & Request.QueryString("Customer_ID") & "' ORDER BY [Expired Date] ",
+            '                          "SELECT [UID], [PO No], [PO Date], [Invoice No], [Invoice Date], [Currency], SUM(Fee) AS [Total Amount], [Renewal Date] FROM R_AI_Licence_Renewal WHERE [Customer ID] = '" & Request.QueryString("Customer_ID") & "' GROUP BY [UID], [PO No], [PO Date], [Invoice No], [Invoice Date], [Currency], [Renewal Date] ORDER BY [UID] DESC ",
+            '                          "SELECT *, CASE WHEN DATEDIFF(D, Added_Date, GETDATE()) > 90 THEN 1 ELSE 0 END AS Is_Locked FROM DB_Account_Notes WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' AND Notes_For = 'Module Licence' ORDER BY Added_Date DESC, ID DESC ",
+            '                          "SELECT * FROM R_LMS_Module_Licence_Pool WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' AND Name NOT LIKE '%Licence Pool%' ORDER BY Customer_ID, Name, No "}
+
             Dim sqlStr() As String = {"EXEC SP_Module_Licence_Order '" & Request.QueryString("Customer_ID") & "' ",
-                                      "SELECT [Customer ID], [PO No], [PO Date], [Chargeable], [Invoice No], STRING_AGG([Requested By], ', ') AS [Requested By] " &
-                                      "     , (SELECT CAST(COUNT(*) AS nvarchar) FROM R_LMS_Module_Licence WHERE [Customer ID] = TBL.[Customer ID] AND [PO No] = TBL.[PO No] AND Status = 'Activated') + ' / ' + CAST(SUM([No of Licence Key Issued]) AS nvarchar) AS [No of Licence Key Issued] " &
-                                      "FROM (" &
-                                      "   SELECT [Customer ID], [PO No], [PO Date], [Chargeable], [Invoice No], CASE WHEN [Invoice No] = 'NA' THEN '' ELSE [Requested By] END AS [Requested By], COUNT([Licence Code]) AS [No of Licence Key Issued] " &
-                                      "   FROM R_LMS_Module_Licence " &
-                                      "   WHERE [Customer ID] = '" & Request.QueryString("Customer_ID") & "' " &
-                                      "   GROUP BY [Customer ID], [PO No], [PO Date], [Chargeable], [Invoice No], [Invoice Date], CASE WHEN [Invoice No] = 'NA' THEN '' ELSE [Requested By] END " &
-                                      ") TBL " &
-                                      "GROUP BY [Customer ID], [PO No], [PO Date], [Chargeable], [Invoice No] " &
-                                      "ORDER BY [Chargeable] DESC, [PO Date] DESC",
-                                      "SELECT * FROM R_LMS_Module_Licence_Pool WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' AND Name LIKE '%Licence Pool%' ORDER BY Customer_ID, No, Module_Type DESC ",
-                                      "SELECT * FROM I_AI_Licence_Renewal WHERE [Customer ID] = '" & Request.QueryString("Customer_ID") & "' ORDER BY [Expired Date] ",
-                                      "SELECT [UID], [PO No], [PO Date], [Invoice No], [Invoice Date], [Currency], SUM(Fee) AS [Total Amount], [Renewal Date] FROM R_AI_Licence_Renewal WHERE [Customer ID] = '" & Request.QueryString("Customer_ID") & "' GROUP BY [UID], [PO No], [PO Date], [Invoice No], [Invoice Date], [Currency], [Renewal Date] ORDER BY [UID] DESC ",
-                                      "SELECT *, CASE WHEN DATEDIFF(D, Added_Date, GETDATE()) > 90 THEN 1 ELSE 0 END AS Is_Locked FROM DB_Account_Notes WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' AND Notes_For = 'Module Licence' ORDER BY Added_Date DESC, ID DESC ",
-                                      "SELECT * FROM R_LMS_Module_Licence_Pool WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' AND Name NOT LIKE '%Licence Pool%' ORDER BY Customer_ID, Name, No "}
+                                       "SELECT * FROM R_LMS_Module_Licence_Order_List WHERE [Customer ID] = '" & Request.QueryString("Customer_ID") & "' AND ([PO No] IN (SELECT PO_No FROM LMS_Licence WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' AND Licence_Code LIKE '%" & keyword & "%') OR [PO No] LIKE '%" & keyword & "%') ORDER BY CASE [PO No] WHEN 'NA' THEN 2 ELSE 1 END, [PO Date] DESC ",
+                                       "SELECT * FROM R_LMS_Module_Licence_Pool WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' AND Name LIKE '%Licence Pool%' ORDER BY Customer_ID, No, Module_Type DESC ",
+                                       "SELECT * FROM I_AI_Licence_Renewal WHERE [Customer ID] = '" & Request.QueryString("Customer_ID") & "' ORDER BY [Expired Date] ",
+                                       "SELECT [UID], [PO No], [PO Date], [Invoice No], [Invoice Date], [Currency], SUM(Fee) AS [Total Amount], [Renewal Date] FROM R_AI_Licence_Renewal WHERE [Customer ID] = '" & Request.QueryString("Customer_ID") & "' GROUP BY [UID], [PO No], [PO Date], [Invoice No], [Invoice Date], [Currency], [Renewal Date] ORDER BY [UID] DESC ",
+                                       "SELECT *, CASE WHEN DATEDIFF(D, Added_Date, GETDATE()) > 90 THEN 1 ELSE 0 END AS Is_Locked FROM DB_Account_Notes WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' AND Notes_For = 'Module Licence' ORDER BY Added_Date DESC, ID DESC ",
+                                       "SELECT * FROM R_LMS_Module_Licence_Pool WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' AND Name NOT LIKE '%Licence Pool%' ORDER BY Customer_ID, Name, No "}
+
 
             BuildGridView(GridView1, "GridView1", "PO No")
             GridView1.DataSource = GetDataTable(sqlStr(0))
