@@ -180,7 +180,7 @@ Partial Class Maintenance_Licence_Code_Reset
     Protected Sub Add(ByVal sender As Object, ByVal e As EventArgs) Handles BN_AddNew.Click
         Dim Customer_ID As String = TB_Customer_ID.Text
         Dim Licence_Code As String = FormatLicenceCode(TB_Licence_Code.Text)
-        Dim MAC_Address As String = FormatMACAddress(TB_MAC_Address.Text)
+        Dim MAC_Address As String = IIf(Len(TB_MAC_Address.Text) < 20, FormatMACAddress(TB_MAC_Address.Text), Trim(TB_MAC_Address.Text))
         Dim Remarks As String = TB_Remarks.Text
 
         Dim sqlStr As String = "INSERT INTO LMS_Licence_Reset_History(Customer_ID, Licence_Code, MAC_Address, Counter, Reset_On, Remarks) " &
