@@ -432,22 +432,6 @@ Partial Class Views_Module_Licence_Details
         End If
     End Sub
 
-    'Protected Sub GridView1_PageIndexChanging(ByVal sender As Object, ByVal e As GridViewPageEventArgs) Handles GridView1.PageIndexChanging, GridView7.PageIndexChanging
-    '    GridView1.PageIndex = e.NewPageIndex
-    '    PopulateFormViewData()
-    '    PopulateGridViewData()
-    'End Sub
-
-    Protected Sub GridView_PageIndexChanging(sender As Object, e As GridViewPageEventArgs) _
-        Handles GridView1.PageIndexChanging, GridView2.PageIndexChanging, GridView3.PageIndexChanging, GridView4.PageIndexChanging, GridView5.PageIndexChanging, GridView6.PageIndexChanging, GridView7.PageIndexChanging
-
-        Dim CurrActiveGV As GridView = CType(sender, GridView)
-        CurrActiveGV.PageIndex = e.NewPageIndex
-
-        PopulateFormViewData()
-        PopulateGridViewData()
-    End Sub
-
     Protected Sub GridView2_RowDataBound(ByVal sender As Object, ByVal e As GridViewRowEventArgs) Handles GridView2.RowDataBound
         Dim GridViewObj As GridView = CType(sender, GridView)
         GridViewObj.ShowFooter = False
@@ -588,6 +572,17 @@ Partial Class Views_Module_Licence_Details
         Dim GridViewObj As GridView = CType(sender, GridView)
         GridViewObj.ShowFooter = False
     End Sub
+
+    Protected Sub GridView_PageIndexChanging(sender As Object, e As GridViewPageEventArgs) _
+        Handles GridView1.PageIndexChanging, GridView2.PageIndexChanging, GridView3.PageIndexChanging, GridView4.PageIndexChanging, GridView5.PageIndexChanging, GridView6.PageIndexChanging, GridView7.PageIndexChanging
+
+        Dim CurrActiveGV As GridView = CType(sender, GridView)
+        CurrActiveGV.PageIndex = e.NewPageIndex
+
+        PopulateFormViewData()
+        PopulateGridViewData()
+    End Sub
+
 
 
     '' Bottom control button
