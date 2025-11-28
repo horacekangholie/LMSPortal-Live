@@ -356,7 +356,7 @@ Partial Class Form_DMC_Account_Form
             Dim EditLinkButton As LinkButton = TryCast(e.Row.Cells(CtrlCellIndex).Controls(0), LinkButton)  ''convert the template control to linkbutton
             EditLinkButton.Text = "<i class='bi bi-pencil-fill'></i>"
             EditLinkButton.CssClass = "btn btn-xs btn-info"
-            EditLinkButton.CommandArgument = e.Row.RowIndex & "|" & drv("Headquarter ID") & "|" & drv("Store No") & "|" & drv("Store Name") & "|" & drv("Banner") & "|" & drv("Zone") & "|" & drv("Public IP") & "|" & drv("FTP User") & "|" & drv("FTP Password") & "|" & drv("Type Code") & "|" & drv("Status") & "|" & drv("End Date") & "|" & drv("Store ID")
+            EditLinkButton.CommandArgument = e.Row.RowIndex & "|" & drv("Headquarter ID") & "|" & drv("Store No") & "|" & drv("Store Name") & "|" & drv("Banner") & "|" & drv("Zone") & "|" & drv("Public IP") & "|" & drv("FTP User") & "|" & drv("FTP Password") & "|" & drv("Type Code") & "|" & drv("Status") & "|" & drv("End Date") & "|" & drv("Store ID") & "|" & drv("Request Date")
             EditLinkButton.CausesValidation = False
             AddHandler EditLinkButton.Click, AddressOf Edit_Store_Click
 
@@ -745,13 +745,14 @@ Partial Class Form_DMC_Account_Form
         TB_Public_IP.Text = String.Empty
         TB_FTP_User.Text = String.Empty
         TB_FTP_Password.Text = String.Empty
+        TB_Request_Date.Text = String.Empty
 
         trTrialAccountStatusRow.Visible = False
         DDL_Store_Status.SelectedIndex = 0
         TB_Store_End_Date.Text = String.Empty
 
         ' Initialiaze the hidden fields
-        Dim HiddenFields As Array = {TB_Selected_Store_Row_Index, TB_Selected_Store_HQ_ID, TB_Selected_Store_No, TB_Selected_Store_Name, TB_Selected_Store_Banner, TB_Selected_Store_Zone, TB_Selected_Store_Public_IP, TB_Selected_Store_FTP_User, TB_Selected_Store_FTP_Password, TB_Selected_Store_Account_Type_Code, TB_Selected_Store_Account_Status, TB_Selected_Store_Account_End_Date, TB_Selected_Store_ID}
+        Dim HiddenFields As Array = {TB_Selected_Store_Row_Index, TB_Selected_Store_HQ_ID, TB_Selected_Store_No, TB_Selected_Store_Name, TB_Selected_Store_Banner, TB_Selected_Store_Zone, TB_Selected_Store_Public_IP, TB_Selected_Store_FTP_User, TB_Selected_Store_FTP_Password, TB_Selected_Store_Account_Type_Code, TB_Selected_Store_Account_Status, TB_Selected_Store_Account_End_Date, TB_Selected_Store_ID, TB_Selected_Request_Date}
         For i = 0 To HiddenFields.Length - 1
             HiddenFields(i).Text = Nothing
         Next
@@ -771,7 +772,7 @@ Partial Class Form_DMC_Account_Form
         ' Get row command argument, get the value and pass them to hidden fields
         Dim EditLinkButton As LinkButton = TryCast(sender, LinkButton)
         Dim EditLinkButtonCommandArgument As Array = Split(EditLinkButton.CommandArgument, "|")
-        Dim HiddenFields As Array = {TB_Selected_Store_Row_Index, TB_Selected_Store_HQ_ID, TB_Selected_Store_No, TB_Selected_Store_Name, TB_Selected_Store_Banner, TB_Selected_Store_Zone, TB_Selected_Store_Public_IP, TB_Selected_Store_FTP_User, TB_Selected_Store_FTP_Password, TB_Selected_Store_Account_Type_Code, TB_Selected_Store_Account_Status, TB_Selected_Store_Account_End_Date, TB_Selected_Store_ID}
+        Dim HiddenFields As Array = {TB_Selected_Store_Row_Index, TB_Selected_Store_HQ_ID, TB_Selected_Store_No, TB_Selected_Store_Name, TB_Selected_Store_Banner, TB_Selected_Store_Zone, TB_Selected_Store_Public_IP, TB_Selected_Store_FTP_User, TB_Selected_Store_FTP_Password, TB_Selected_Store_Account_Type_Code, TB_Selected_Store_Account_Status, TB_Selected_Store_Account_End_Date, TB_Selected_Store_ID, TB_Selected_Request_Date}
 
         ' Loop through to assign value to hidden fields
         For i = 0 To EditLinkButtonCommandArgument.Length - 1
@@ -791,6 +792,7 @@ Partial Class Form_DMC_Account_Form
         TB_FTP_Password.Text = TB_Selected_Store_FTP_Password.Text
         DDL_Type_Code.SelectedIndex = DDL_Type_Code.Items.IndexOf(DDL_Type_Code.Items.FindByValue(TB_Selected_Store_Account_Type_Code.Text))
         DDL_Type_Code.Enabled = IIf(DDL_Type_Code.SelectedValue <> "03", True, False)
+        TB_Request_Date.Text = CDate(TB_Selected_Request_Date.Text).ToString("yyyy-MM-dd")
 
 
         Dim selectedStatus As String = IIf(TB_Selected_Store_Account_Status.Text = "Closed", "Suspended", TB_Selected_Store_Account_Status.Text)
@@ -829,6 +831,8 @@ Partial Class Form_DMC_Account_Form
         Dim Public_IP As TextBox = pnlAddEditStore.FindControl("TB_Public_IP")
         Dim FTP_User As TextBox = pnlAddEditStore.FindControl("TB_FTP_User")
         Dim FTP_Password As TextBox = pnlAddEditStore.FindControl("TB_FTP_Password")
+        Dim Request_Date As TextBox = pnlAddEditStore.FindControl("TB_Request_Date")
+
 
         Dim Status As DropDownList = pnlAddEditStore.FindControl("DDL_Store_Status")
         Dim Is_Active = Status.SelectedValue
@@ -854,7 +858,8 @@ Partial Class Form_DMC_Account_Form
                                                        "',  " & Is_Active &
                                                         ", '" & End_Date.Text &
                                                        "', '" & Headquarter_ID.SelectedValue &
-                                                       "', '" & Store_ID & "' "
+                                                       "', '" & Store_ID &
+                                                       "', '" & Request_Date.Text & "' "
             RunSQL(sqlStr)
         Catch ex As Exception
             Response.Write("Save_Store_Click - Error:  " & ex.Message)

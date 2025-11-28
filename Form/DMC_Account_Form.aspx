@@ -410,7 +410,7 @@
                                 <asp:Label ID="ModalHeaderStore" runat="server"></asp:Label></h3>
                             <table border="0" class="modalPopupTable" style="width: 100%">
                                 <tr style="vertical-align: top">
-                                    <td style="width: 800px; padding: 0px 10px 20px 0px" colspan="2">
+                                    <td style="width: 400px; padding: 0px 10px 20px 0px">
                                         <label>Headquarter</label>
                                         <asp:DropDownList ID="DDL_Store_Headquarter" runat="server" CssClass="form-control" AppendDataBoundItems="true" AutoPostBack="true">
                                             <asp:ListItem Value="-1" Text="Please select"></asp:ListItem>
@@ -422,6 +422,16 @@
                                             Operator="NotEqual" ValueToCompare="-1"
                                             ControlToValidate="DDL_Store_Headquarter" Type="String">
                                         </asp:CompareValidator>
+                                    </td>
+                                    <td style="width: 400px; padding: 0px 10px 20px 0px">
+                                        <label>Request Date</label>
+                                        <asp:TextBox ID="TB_Request_Date" runat="server" CssClass="form-control" TextMode="Date"></asp:TextBox>
+                                        <asp:RequiredFieldValidator ID="Required_TB_Request_Date" runat="server" ValidationGroup="Store"
+                                            ErrorMessage="This field cannot be blank" CssClass="invalid-feedback"
+                                            Display="Dynamic"
+                                            SetFocusOnError="True"
+                                            ControlToValidate="TB_Request_Date">
+                                        </asp:RequiredFieldValidator>
                                     </td>
                                 </tr>
                                 <tr style="vertical-align: top">
@@ -533,6 +543,8 @@
                                 <asp:TextBox ID="TB_Selected_Store_Account_Status" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
                                 <asp:TextBox ID="TB_Selected_Store_Account_End_Date" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
                                 <asp:TextBox ID="TB_Selected_Store_ID" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
+                                <asp:TextBox ID="TB_Selected_Request_Date" runat="server" CssClass="form-control" Visible="true"></asp:TextBox>
+
                             </div>
                             <table border="0" class="modalPopupTable" style="width: 100%">
                                 <tr style="vertical-align: bottom">
