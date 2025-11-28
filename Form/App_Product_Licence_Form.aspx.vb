@@ -1071,7 +1071,8 @@ Partial Class Form_App_Product_Licence_Form
                 sqlStr = " SELECT Customer_ID, PO_No, Application_Type, OS_Type, Licence_Code, Licensee_Email AS Email, Sales_Representative_ID, Chargeable, Remarks " &
                          " FROM LMS_Licence " &
                          " WHERE Customer_ID = '" & Customer_ID & "'" &
-                         "   AND PO_No = N'" & PO_No.Text & "'"
+                         "   AND PO_No = N'" & PO_No.Text & "'" &
+                         " ORDER BY Created_Date DESC "
             End If
 
             GridView_Licence_List.DataSource = GetDataTable(sqlStr)
