@@ -543,7 +543,7 @@
                                 <asp:TextBox ID="TB_Selected_Store_Account_Status" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
                                 <asp:TextBox ID="TB_Selected_Store_Account_End_Date" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
                                 <asp:TextBox ID="TB_Selected_Store_ID" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
-                                <asp:TextBox ID="TB_Selected_Request_Date" runat="server" CssClass="form-control" Visible="true"></asp:TextBox>
+                                <asp:TextBox ID="TB_Selected_Request_Date" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
 
                             </div>
                             <table border="0" class="modalPopupTable" style="width: 100%">
