@@ -193,7 +193,6 @@ Partial Class Listings_Module_Licence
 
             If PO_No <> "NA" Then
                 query += " AND [PO Date] = N'" & PO_Date & "' "
-                Response.Write(PO_Date)
             Else
                 query += " AND [Created Date] = '" & Created_Date & "' "
             End If
