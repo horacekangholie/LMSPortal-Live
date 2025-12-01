@@ -159,7 +159,7 @@ Partial Class Form_Module_Licence_Form
                 '' Build GridView Content
                 GridViewObj.AutoGenerateColumns = False
                 GridViewObj.AllowPaging = True
-                GridViewObj.PageSize = 20
+                GridViewObj.PageSize = 10
                 GridViewObj.Columns.Clear()
                 Dim ColName() As String = {"PO No", "PO Date", "Invoice No", "Invoice Date", "Created Date", "Requested By", "e.Sense", "BYOC", "AI", "AIW"}
                 Dim ColData() As String = {"PO No", "PO Date", "Invoice No", "Invoice Date", "Created Date", "Requested By", "e.Sense", "BYOC", "AI", "AIW"}
@@ -188,7 +188,7 @@ Partial Class Form_Module_Licence_Form
                 '' Build GridView Content
                 GridViewObj.AutoGenerateColumns = False
                 GridViewObj.AllowPaging = True
-                GridViewObj.PageSize = 20
+                GridViewObj.PageSize = 10
                 GridViewObj.Columns.Clear()
                 Dim ColName() As String = {"PO No", "PO Date", "Invoice No", "Activated / No of Licence Key", "Requested By"}
                 Dim ColData() As String = {"PO No", "PO Date", "Invoice No", "No of Licence Key Issued", "Requested By"}
@@ -247,7 +247,7 @@ Partial Class Form_Module_Licence_Form
                 '' Build GridView Content
                 GridViewObj.AutoGenerateColumns = False
                 GridViewObj.AllowPaging = True
-                GridViewObj.PageSize = 20
+                GridViewObj.PageSize = 10
                 GridViewObj.Columns.Clear()
                 Dim ColData() As String = {"Licence Code", "Serial No", "MAC Address", "AI Device ID", "AI Device Serial No", "AI Activation Key", "Activated Date", "Expired Date", "Status", "Requested By"}
                 Dim ColSize() As Integer = {100, 50, 50, 100, 100, 100, 50, 50, 50, 100}

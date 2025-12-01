@@ -196,7 +196,7 @@ Partial Class Form_App_Product_Licence_Form
                 '' Build GridView Content
                 GridViewObj.AutoGenerateColumns = False
                 GridViewObj.AllowPaging = False
-                GridViewObj.PageSize = 20
+                GridViewObj.PageSize = 10
                 GridViewObj.Columns.Clear()
                 Dim ColData() As String = {"Licence Code", "Application Type", "MAC Address", "Activated Date", "Expired Date", "Status", "PO No", "PO Date", "Requested By"}
                 Dim ColSize() As Integer = {100, 100, 50, 50, 50, 50, 50, 50, 100}
