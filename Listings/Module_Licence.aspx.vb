@@ -190,7 +190,7 @@ Partial Class Listings_Module_Licence
                                   " LEFT JOIN LMS_Module_Licence_Activated ON LMS_Module_Licence_Activated.[Licence_Code] = REPLACE(I_LMS_Module_Licence.[Licence Code], '-', '') " &
                                   " WHERE [Customer ID] = '" & Customer_ID & "'" &
                                   "   AND [PO No] = N'" & PO_No & "'"
-
+            Response.Write(query)
             If PO_No <> "NA" Then
                 query += " AND [PO Date] = '" & PO_Date & "' "
             Else
