@@ -461,7 +461,7 @@ Partial Class Form_App_Product_Licence_Form
             EditLinkButton.CssClass = If(openToEdit, "btn btn-xs btn-info", "btn btn-xs btn-light disabled")
             EditLinkButton.ToolTip = If(openToEdit, "", "Item Locked")
             EditLinkButton.Enabled = openToEdit
-            EditLinkButton.CommandArgument = e.Row.RowIndex & "|" & drv("Customer ID") & "|" & drv("PO No") & "|" & drv("PO Date") & "|" & drv("Requestor ID")
+            EditLinkButton.CommandArgument = e.Row.RowIndex & "|" & drv("Customer ID") & "|" & drv("PO No") & "|" & drv("PO Date") & "|" & drv("Requestor ID") & "|" & drv("Request Date")
             EditLinkButton.CausesValidation = False
             AddHandler EditLinkButton.Click, AddressOf Edit_AppProductLicence_Click
 
@@ -792,6 +792,18 @@ Partial Class Form_App_Product_Licence_Form
         btnSaveAppProductLicence.Text = "Save"
         btnCancelAppProductLicence.Text = "Cancel"
 
+        ' Initialiaze the hidden fields
+        Dim HiddenFields As Array = {TB_Selected_Row_Index,
+                                     TB_Selected_Customer_ID,
+                                     TB_Selected_PO_No,
+                                     TB_Selected_PO_Date,
+                                     TB_Selected_Requestor_ID,
+                                     TB_Selected_TB_Request_Date}
+
+        For i = 0 To HiddenFields.Length - 1
+            HiddenFields(i).Text = String.Empty
+        Next
+
         ' Reinitialize field based on new/edit mode
         ReInitializeField(btnSaveAppProductLicence.Text)
     End Sub
@@ -809,7 +821,8 @@ Partial Class Form_App_Product_Licence_Form
                                      TB_Selected_Customer_ID,
                                      TB_Selected_PO_No,
                                      TB_Selected_PO_Date,
-                                     TB_Selected_Requestor_ID}
+                                     TB_Selected_Requestor_ID,
+                                     TB_Selected_TB_Request_Date}
 
         '' file value to hidden fields
         For i = 0 To EditLinkButtonCommandArgument.Length - 1
@@ -840,7 +853,8 @@ Partial Class Form_App_Product_Licence_Form
                                                     , aiaccountno _
                                                     , CompareValidator_DDL_AI_Account_No _
                                                     , DDL_AI_Account_No _
-                                                    , licencelistboxerrormsg}
+                                                    , licencelistboxerrormsg _
+                                                    , TB_Request_Date}
 
         For Each ctrl As Control In modalFields
             'MsgBox(ctrl.GetType().Name)
@@ -854,6 +868,10 @@ Partial Class Form_App_Product_Licence_Form
 
                         Case "TB_PO_Date"
                             tb.Text = If(oMode = "New", String.Empty, ConvertTextToDate(TB_Selected_PO_Date.Text))
+                            tb.Enabled = (oMode = "New")
+
+                        Case "TB_Request_Date"
+                            tb.Text = If(oMode = "New", String.Empty, ConvertTextToDate(TB_Selected_TB_Request_Date.Text))
                             tb.Enabled = (oMode = "New")
 
                         Case "TB_Email"
@@ -945,6 +963,7 @@ Partial Class Form_App_Product_Licence_Form
         Dim Sales_Representative_ID As DropDownList = pnlAddEditAppProductLicence.FindControl("DDL_Sales_Representative")
         Dim Chargeable As DropDownList = pnlAddEditAppProductLicence.FindControl("DDL_Chargeable")
         Dim Remarks As TextBox = pnlAddEditAppProductLicence.FindControl("TB_Remarks")
+        Dim Request_Date As TextBox = pnlAddEditAppProductLicence.FindControl("TB_Request_Date")
 
         '' Prepare data upload to LMS_Licence_Staging table
         Dim filename As String = Path.GetFileName(FileUpload1.PostedFile.FileName)
@@ -952,7 +971,7 @@ Partial Class Form_App_Product_Licence_Form
         Dim dt As New DataTable()
 
         FileUpload1.SaveAs(csvPath)
-        dt.Columns.AddRange(New DataColumn(9) {New DataColumn("ID", GetType(Integer)),
+        dt.Columns.AddRange(New DataColumn(10) {New DataColumn("ID", GetType(Integer)),
                                                New DataColumn("Customer_ID", GetType(String)),
                                                New DataColumn("PO_No", GetType(String)),
                                                New DataColumn("Application_Type", GetType(String)),
@@ -961,6 +980,7 @@ Partial Class Form_App_Product_Licence_Form
                                                New DataColumn("Email", GetType(String)),
                                                New DataColumn("Sales_Rep_ID", GetType(String)),
                                                New DataColumn("Chargeable", GetType(String)),
+                                               New DataColumn("Request_Date", GetType(String)),
                                                New DataColumn("Remarks", GetType(String))
                                                })
         Dim csvData As String = File.ReadAllText(csvPath)
@@ -974,6 +994,7 @@ Partial Class Form_App_Product_Licence_Form
                                            Email.Text,
                                            Sales_Representative_ID.SelectedValue,
                                            CBool(Chargeable.SelectedValue),
+                                           Trim(Request_Date.Text),
                                            EscapeChar(Remarks.Text)}
 
             For Each row As String In csvData.Split(ControlChars.Lf)
@@ -1083,7 +1104,6 @@ Partial Class Form_App_Product_Licence_Form
     End Sub
 
     Protected Sub Save_AppProductLicence_Click(ByVal sender As Object, ByVal e As EventArgs) Handles btnSaveAppProductLicence.Click
-        'MsgBox(btnSaveAppProductLicence.Text)
         Dim Customer_ID As String = Request.QueryString("Customer_ID")
         Dim PO_No As TextBox = pnlAddEditAppProductLicence.FindControl("TB_PO_No")
         Dim PO_Date As TextBox = pnlAddEditAppProductLicence.FindControl("TB_PO_Date")
@@ -1101,6 +1121,7 @@ Partial Class Form_App_Product_Licence_Form
         Dim OS_Type As DropDownList = pnlAddEditAppProductLicence.FindControl("DDL_OS_Type")
         Dim Email As TextBox = pnlAddEditAppProductLicence.FindControl("TB_Email")
         Dim Remarks As TextBox = pnlAddEditAppProductLicence.FindControl("TB_Remarks")
+        Dim Request_Date As TextBox = pnlAddEditAppProductLicence.FindControl("TB_Request_Date")
 
         Dim AI_Account_No As DropDownList = pnlAddEditAppProductLicence.FindControl("DDL_AI_Account_No")
         Dim Selected_AI_Account_No As String = IIf(AI_Account_No.SelectedIndex < 0, 0, AI_Account_No.SelectedValue)
@@ -1128,6 +1149,7 @@ Partial Class Form_App_Product_Licence_Form
                                                                   "', '" & Chargeable.SelectedValue &
                                                                   "', '" & OS_Type.Text &
                                                                   "', '" & Email.Text &
+                                                                  "', '" & Trim(Request_Date.Text) &
                                                                  "', N'" & EscapeChar(Remarks.Text) &
                                                                   "', '" & Trim(Selected_AI_Account_No) & "' "
                     RunSQL(sqlStr)
