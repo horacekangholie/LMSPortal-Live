@@ -66,23 +66,6 @@ Partial Class Form_Module_Licence_Form
     Protected Sub PopulateGridViewData(Optional ByVal TB_Search As String = Nothing)
         Dim keyword As String = EscapeChar(TB_Search)
         Try
-            'Dim sqlStr() As String = {"EXEC SP_Module_Licence_Order '" & Request.QueryString("Customer_ID") & "' ",
-            '                          "SELECT [Customer ID], [PO No], [PO Date], [Chargeable], [Invoice No], STRING_AGG([Requested By], ', ') AS [Requested By] " &
-            '                          "     , (SELECT CAST(COUNT(*) AS nvarchar) FROM R_LMS_Module_Licence WHERE [Customer ID] = TBL.[Customer ID] AND [PO No] = TBL.[PO No] AND Status = 'Activated') + ' / ' + CAST(SUM([No of Licence Key Issued]) AS nvarchar) AS [No of Licence Key Issued] " &
-            '                          "FROM (" &
-            '                          "   SELECT [Customer ID], [PO No], [PO Date], [Chargeable], [Invoice No], CASE WHEN [Invoice No] = 'NA' THEN '' ELSE [Requested By] END AS [Requested By], COUNT([Licence Code]) AS [No of Licence Key Issued] " &
-            '                          "   FROM R_LMS_Module_Licence " &
-            '                          "   WHERE [Customer ID] = '" & Request.QueryString("Customer_ID") & "' " &
-            '                          "   GROUP BY [Customer ID], [PO No], [PO Date], [Chargeable], [Invoice No], [Invoice Date], CASE WHEN [Invoice No] = 'NA' THEN '' ELSE [Requested By] END " &
-            '                          ") TBL " &
-            '                          "GROUP BY [Customer ID], [PO No], [PO Date], [Chargeable], [Invoice No] " &
-            '                          "ORDER BY [Chargeable] DESC, [PO Date] DESC ",
-            '                          "SELECT * FROM R_LMS_Module_Licence_Pool WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' AND Name LIKE '%Licence Pool%' ORDER BY Customer_ID, No, Module_Type DESC ",
-            '                          "SELECT * FROM I_AI_Licence_Renewal WHERE [Customer ID] = '" & Request.QueryString("Customer_ID") & "' ORDER BY [Expired Date] ",
-            '                          "SELECT [UID], [PO No], [PO Date], [Invoice No], [Invoice Date], [Currency], SUM(Fee) AS [Total Amount], [Renewal Date] FROM R_AI_Licence_Renewal WHERE [Customer ID] = '" & Request.QueryString("Customer_ID") & "' GROUP BY [UID], [PO No], [PO Date], [Invoice No], [Invoice Date], [Currency], [Renewal Date] ORDER BY [UID] DESC ",
-            '                          "SELECT *, CASE WHEN DATEDIFF(D, Added_Date, GETDATE()) > 90 THEN 1 ELSE 0 END AS Is_Locked FROM DB_Account_Notes WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' AND Notes_For = 'Module Licence' ORDER BY Added_Date DESC, ID DESC ",
-            '                          "SELECT * FROM R_LMS_Module_Licence_Pool WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' AND Name NOT LIKE '%Licence Pool%' ORDER BY Customer_ID, Name, No "}
-
             Dim sqlStr() As String = {"EXEC SP_Module_Licence_Order '" & Request.QueryString("Customer_ID") & "' ",
                                        "SELECT * FROM R_LMS_Module_Licence_Order_List WHERE [Customer ID] = '" & Request.QueryString("Customer_ID") & "' AND ([PO No] IN (SELECT PO_No FROM LMS_Licence WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' AND Licence_Code LIKE '%" & keyword & "%') OR [PO No] LIKE '%" & keyword & "%') ORDER BY CASE [PO No] WHEN 'NA' THEN 2 ELSE 1 END, [PO Date] DESC ",
                                        "SELECT * FROM R_LMS_Module_Licence_Pool WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' AND Name LIKE '%Licence Pool%' ORDER BY Customer_ID, No, Module_Type DESC ",
@@ -578,7 +561,7 @@ Partial Class Form_Module_Licence_Form
             EditLinkButton.CssClass = If(openToEdit, "btn btn-xs btn-info", "btn btn-xs btn-light disabled")
             EditLinkButton.ToolTip = If(openToEdit, "", "Item Locked")
             EditLinkButton.Enabled = openToEdit
-            EditLinkButton.CommandArgument = e.Row.RowIndex & "|" & drv("Customer ID") & "|" & drv("PO No") & "|" & drv("PO Date") & "|" & drv("Requestor ID")
+            EditLinkButton.CommandArgument = e.Row.RowIndex & "|" & drv("Customer ID") & "|" & drv("PO No") & "|" & drv("PO Date") & "|" & drv("Requestor ID") & "|" & drv("Request Date")
             EditLinkButton.CausesValidation = False
             AddHandler EditLinkButton.Click, AddressOf Edit_ModuleLicence_Click
 
@@ -1187,6 +1170,13 @@ Partial Class Form_Module_Licence_Form
         btnSaveModuleLicence.Text = "Save"
         btnCancelModuleLicence.Text = "Cancel"
 
+        Dim HiddenFields As Array = {TB_Selected_Row_Index,
+                                     TB_Selected_Customer_ID,
+                                     TB_Selected_PO_No,
+                                     TB_Selected_PO_Date,
+                                     TB_Selected_Requestor_ID,
+                                     TB_Selected_TB_Request_Date}
+
         ' Reinitialize field based on new/edit mode
         ReInitializeField(btnSaveModuleLicence.Text)
     End Sub
@@ -1208,7 +1198,8 @@ Partial Class Form_Module_Licence_Form
                                      TB_Selected_Customer_ID,
                                      TB_Selected_PO_No,
                                      TB_Selected_PO_Date,
-                                     TB_Selected_Requestor_ID}
+                                     TB_Selected_Requestor_ID,
+                                     TB_Selected_TB_Request_Date}
 
         '' file value to hidden fields
         For i = 0 To EditLinkButtonCommandArgument.Length - 1
@@ -1236,7 +1227,8 @@ Partial Class Form_Module_Licence_Form
                                                     , UploadLineItems _
                                                     , btnClearLineItems _
                                                     , btnUpdateLineItems _
-                                                    , licencekeylistboxerrormsg}
+                                                    , licencekeylistboxerrormsg _
+                                                    , TB_Request_Date}
 
         For Each ctrl As Control In modalFields
             'MsgBox(ctrl.GetType().Name)
@@ -1250,6 +1242,10 @@ Partial Class Form_Module_Licence_Form
 
                         Case "TB_PO_Date"
                             tb.Text = If(oMode = "New", String.Empty, ConvertTextToDate(TB_Selected_PO_Date.Text))
+                            tb.Enabled = (oMode = "New")
+
+                        Case "TB_Request_Date"
+                            tb.Text = If(oMode = "New", String.Empty, ConvertTextToDate(TB_Selected_TB_Request_Date.Text))
                             tb.Enabled = (oMode = "New")
 
                         Case "TB_Email"
@@ -1338,6 +1334,7 @@ Partial Class Form_Module_Licence_Form
         Dim Sales_Representative_ID As DropDownList = pnlAddEditModuleLicence.FindControl("DDL_Sales_Representative")
         Dim Chargeable As DropDownList = pnlAddEditModuleLicence.FindControl("DDL_Chargeable")
         Dim Remarks As TextBox = pnlAddEditModuleLicence.FindControl("TB_Remarks")
+        Dim Request_Date As TextBox = pnlAddEditModuleLicence.FindControl("TB_Request_Date")
 
         '' Prepare data upload to LMS_Licence_Staging table
         Dim filename As String = Path.GetFileName(FileUpload1.PostedFile.FileName)
@@ -1345,7 +1342,7 @@ Partial Class Form_Module_Licence_Form
         Dim dt As New DataTable()
 
         FileUpload1.SaveAs(csvPath)
-        dt.Columns.AddRange(New DataColumn(9) {New DataColumn("ID", GetType(Integer)),
+        dt.Columns.AddRange(New DataColumn(10) {New DataColumn("ID", GetType(Integer)),
                                                New DataColumn("Customer_ID", GetType(String)),
                                                New DataColumn("PO_No", GetType(String)),
                                                New DataColumn("Application_Type", GetType(String)),
@@ -1354,6 +1351,7 @@ Partial Class Form_Module_Licence_Form
                                                New DataColumn("Email", GetType(String)),
                                                New DataColumn("Sales_Rep_ID", GetType(String)),
                                                New DataColumn("Chargeable", GetType(String)),
+                                               New DataColumn("Request_Date", GetType(String)),
                                                New DataColumn("Remarks", GetType(String))
                                                })
         Dim csvData As String = File.ReadAllText(csvPath)
@@ -1367,6 +1365,7 @@ Partial Class Form_Module_Licence_Form
                                            Email.Text,
                                            Sales_Representative_ID.SelectedValue,
                                            CBool(Chargeable.SelectedValue),
+                                           Trim(Request_Date.Text),
                                            EscapeChar(Remarks.Text)}
 
             For Each row As String In csvData.Split(ControlChars.Lf)
@@ -1487,6 +1486,7 @@ Partial Class Form_Module_Licence_Form
         Dim OS_Type As DropDownList = pnlAddEditModuleLicence.FindControl("DDL_OS_Type")
         Dim Email As TextBox = pnlAddEditModuleLicence.FindControl("TB_Email")
         Dim Remarks As TextBox = pnlAddEditModuleLicence.FindControl("TB_Remarks")
+        Dim Request_Date As TextBox = pnlAddEditModuleLicence.FindControl("TB_Request_Date")
 
         Dim GridView_Licence_List As GridView = pnlAddEditModuleLicence.FindControl("GridView_Licence_List")
         Dim UploadedRecordCount As Integer = GridView_Licence_List.Rows.Count
@@ -1502,6 +1502,7 @@ Partial Class Form_Module_Licence_Form
                                                                   "', '" & Chargeable.SelectedValue &
                                                                   "', '" & OS_Type.Text &
                                                                   "', '" & Email.Text &
+                                                                  "', '" & Trim(Request_Date.Text) &
                                                                   "', N'" & EscapeChar(Remarks.Text) &
                                                                   "', '0' "
                     RunSQL(sqlStr)

@@ -566,6 +566,21 @@
                                     <asp:TextBox ID="TB_Remarks" runat="server" CssClass="form-control"></asp:TextBox>
                                 </td>
                             </tr>
+                            <tr style="vertical-align: top">
+                                <td style="width: 45%; padding: 0px 10px 20px 0px">
+                                    <label>Request Date</label>
+                                    <asp:TextBox ID="TB_Request_Date" runat="server" CssClass="form-control" TextMode="Date"></asp:TextBox>
+                                    <asp:RequiredFieldValidator ID="RequiredField_TB_Request_Date" runat="server" ValidationGroup="ModuleLicence"
+                                        ErrorMessage="This field cannot be blank" CssClass="invalid-feedback"
+                                        Display="Dynamic"
+                                        SetFocusOnError="True"
+                                        ControlToValidate="TB_Request_Date">
+                                    </asp:RequiredFieldValidator>
+                                </td>
+                                <td style="width: 55%; padding: 0px 10px 20px 0px" colspan="2">
+
+                                </td>
+                            </tr>
                             <tr id="truploadsectiontitle" runat="server" style="vertical-align: bottom">
                                 <td style="width: 100%; padding: 0px 10px 0px 0px" colspan="3">
                                     <label>Upload Licence file</label>
@@ -633,12 +648,12 @@
                         <!-- Hidden field -->
                         <asp:HiddenField ID="hiddenModalVisible" runat="server" Value="true" />
                         <div>
-                            <asp:TextBox ID="TextBox1" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
                             <asp:TextBox ID="TB_Selected_Customer_ID" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
                             <asp:TextBox ID="TB_Selected_PO_No" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
                             <asp:TextBox ID="TB_Selected_PO_Date" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
                             <asp:TextBox ID="TB_Selected_Requestor_ID" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
                             <asp:TextBox ID="TB_Selected_Licence_Code" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
+                            <asp:TextBox ID="TB_Selected_TB_Request_Date" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
                         </div>
                     </asp:Panel>
 
