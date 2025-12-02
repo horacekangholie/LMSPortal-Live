@@ -174,7 +174,7 @@ Partial Class Listings_Module_Licence
             Dim PO_Date As String = e.Row.Cells(GetColumnIndexByName(e.Row, "PO Date")).Text
             Dim Licence_Code As GridView = TryCast(e.Row.FindControl("gvLicenceList"), GridView)   '' gvLicenceList shared common both App / Product Licence and Module Licence
             Dim Created_Date As String = e.Row.Cells(GetColumnIndexByName(e.Row, "Created Date")).Text
-            Response.Write(PO_Date)
+
             If Replace(PO_Date, "&nbsp;", "") = "" Then
                 PO_Date = ""
             Else
@@ -197,7 +197,7 @@ Partial Class Listings_Module_Licence
                 query += " AND [Created Date] = '" & Created_Date & "' "
             End If
             query += " ORDER BY [Created Date] DESC "
-
+            Response.Write(query & "<br>")
             Try
                 Licence_Code.DataSource = GetDataTable(query)
                 Licence_Code.DataBind()
