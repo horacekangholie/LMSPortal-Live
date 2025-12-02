@@ -197,7 +197,7 @@ Partial Class Listings_Module_Licence
                 query += " AND [Created Date] = '" & Created_Date & "' "
             End If
             query += " ORDER BY [Created Date] DESC "
-            Response.Write(query & "<br>")
+
             Try
                 Licence_Code.DataSource = GetDataTable(query)
                 Licence_Code.DataBind()
