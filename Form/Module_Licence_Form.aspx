@@ -595,12 +595,19 @@
                                         SetFocusOnError="True"
                                         ControlToValidate="FileUpload1">
                                     </asp:RequiredFieldValidator>
-                                    <asp:RegularExpressionValidator ID="RegEx_FileUpload1" runat="server" ValidationGroup="FileUpload"
+                                    <%--<asp:RegularExpressionValidator ID="RegEx_FileUpload1" runat="server" ValidationGroup="FileUpload"
                                         ErrorMessage="Only (.txt) file is allowed" CssClass="invalid-feedback"
                                         Display="Dynamic"
                                         SetFocusOnError="True"
                                         ControlToValidate="FileUpload1"
                                         ValidationExpression="^([0-9a-zA-Z_\-~ :\\])+(.txt)$">
+                                    </asp:RegularExpressionValidator>--%>
+                                    <asp:RegularExpressionValidator ID="RegEx_FileUpload1" runat="server" ValidationGroup="FileUpload"
+                                        ErrorMessage="Only (.txt) file is allowed" CssClass="invalid-feedback"
+                                        Display="Dynamic"
+                                        SetFocusOnError="True"
+                                        ControlToValidate="FileUpload1"
+                                        ValidationExpression="^.*\.txt$">
                                     </asp:RegularExpressionValidator>
                                     <asp:Button ID="btnUpdateLineItems" runat="server" Text="Update" Height="40px" CssClass="btn btn-info" ValidationGroup="FileUpload" />
                                 </td>
