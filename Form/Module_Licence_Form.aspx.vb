@@ -1336,6 +1336,13 @@ Partial Class Form_Module_Licence_Form
         Dim Remarks As TextBox = pnlAddEditModuleLicence.FindControl("TB_Remarks")
         Dim Request_Date As TextBox = pnlAddEditModuleLicence.FindControl("TB_Request_Date")
 
+        ' Common validation for all controls in this group
+        If Not ValidateGroupAndStyleControls("ModuleLicence", pnlAddEditModuleLicence) Then
+            popupModuleLicence.Show()
+            hiddenModalVisible.Value = True
+            Exit Sub
+        End If
+
         '' Prepare data upload to LMS_Licence_Staging table
         Dim filename As String = Path.GetFileName(FileUpload1.PostedFile.FileName)
         Dim csvPath As String = Server.MapPath("~/Uploads/") + AppendDatetime() + "_" + filename
@@ -1410,6 +1417,50 @@ Partial Class Form_Module_Licence_Form
         popupModuleLicence.Show()
         hiddenModalVisible.Value = True
     End Sub
+
+    Private Function ValidateGroupAndStyleControls(validationGroup As String, container As Control) As Boolean
+        ' Run all validators in this group
+        Page.Validate(validationGroup)
+
+        ' Track validity per control ID
+        Dim controlValidity As New Dictionary(Of String, Boolean)(StringComparer.OrdinalIgnoreCase)
+
+        ' First pass: determine validity of each control in this group
+        For Each v As IValidator In Page.Validators
+            Dim bv As BaseValidator = TryCast(v, BaseValidator)
+            If bv IsNot Nothing AndAlso String.Equals(bv.ValidationGroup, validationGroup, StringComparison.OrdinalIgnoreCase) Then
+                Dim ctrlId As String = bv.ControlToValidate
+
+                If Not controlValidity.ContainsKey(ctrlId) Then
+                    controlValidity(ctrlId) = True
+                End If
+
+                ' If any validator for that control is invalid, mark control invalid
+                If Not bv.IsValid Then
+                    controlValidity(ctrlId) = False
+                End If
+            End If
+        Next
+
+        ' Second pass: add/remove Bootstrap is-invalid on the controls
+        For Each kvp In controlValidity
+            Dim ctrl As WebControl = TryCast(container.FindControl(kvp.Key), WebControl)
+            If ctrl IsNot Nothing Then
+                If kvp.Value = False Then
+                    ' Invalid → add is-invalid
+                    If Not ctrl.CssClass.Contains("is-invalid") Then
+                        ctrl.CssClass &= " is-invalid"
+                    End If
+                Else
+                    ' Valid → remove is-invalid
+                    ctrl.CssClass = ctrl.CssClass.Replace(" is-invalid", "")
+                End If
+            End If
+        Next
+
+        Return Page.IsValid
+    End Function
+
 
     Protected Sub btnClearLineItems_Click(sender As Object, e As EventArgs) Handles btnClearLineItems.Click
         DeleteStaging()
