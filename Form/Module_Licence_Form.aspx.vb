@@ -703,35 +703,131 @@ Partial Class Form_Module_Licence_Form
         End If
     End Sub
 
+    'Protected Sub GridView_Licence_List_RowCommand(sender As Object, e As GridViewCommandEventArgs) Handles GridView_Licence_List.RowCommand
+    '    If e.CommandName = "Select" Then
+    '        Dim rowIndex As Integer = Convert.ToInt32(e.CommandArgument)
+    '        Dim selectedRow As GridViewRow = GridView_Licence_List.Rows(rowIndex)
+
+    '        '' Get the value from gridviewrow
+    '        Dim App_Type As String = selectedRow.Cells(0).Text
+    '        Dim OS_Type As String = selectedRow.Cells(1).Text
+    '        Dim Licence_Code As String = selectedRow.Cells(2).Text
+    '        Dim Licensee_Email As String = selectedRow.Cells(3).Text
+    '        Dim Remarks As String = Server.HtmlDecode(selectedRow.Cells(4).Text).Trim()
+
+    '        DDL_Application_Type.SelectedIndex = DDL_Application_Type.Items.IndexOf(DDL_Application_Type.Items.FindByValue(App_Type))
+    '        DDL_Application_Type.Enabled = True
+    '        DDL_Sales_Representative.Enabled = True
+    '        DDL_OS_Type.SelectedIndex = DDL_OS_Type.Items.IndexOf(DDL_OS_Type.Items.FindByValue(OS_Type))
+    '        TB_Email.Text = Licensee_Email
+    '        TB_Email.Enabled = True
+    '        TB_Remarks.Text = Remarks
+    '        TB_Selected_Licence_Code.Text = Licence_Code
+    '        btnUpdateLineItems.Enabled = True
+    '        btnUpdateLineItems.CssClass = "btn btn-info"
+
+    '        '' Highlight the selected row with color
+    '        For Each row As GridViewRow In GridView_Licence_List.Rows
+    '            row.BackColor = If(row.RowIndex.Equals(rowIndex), Drawing.ColorTranslator.FromHtml("#eeeeee"), Drawing.Color.Transparent)
+    '        Next
+    '    End If
+    '    popupModuleLicence.Show()
+    'End Sub
+
     Protected Sub GridView_Licence_List_RowCommand(sender As Object, e As GridViewCommandEventArgs) Handles GridView_Licence_List.RowCommand
         If e.CommandName = "Select" Then
             Dim rowIndex As Integer = Convert.ToInt32(e.CommandArgument)
-            Dim selectedRow As GridViewRow = GridView_Licence_List.Rows(rowIndex)
 
-            '' Get the value from gridviewrow
-            Dim App_Type As String = selectedRow.Cells(0).Text
-            Dim OS_Type As String = selectedRow.Cells(1).Text
-            Dim Licence_Code As String = selectedRow.Cells(2).Text
-            Dim Licensee_Email As String = selectedRow.Cells(3).Text
-            Dim Remarks As String = Server.HtmlDecode(selectedRow.Cells(4).Text).Trim()
+            ' --- TOGGLE LOGIC ---
+            If SelectedLicenceRowIndex = rowIndex Then
+                ' Clicked the same row again → UNSELECT
 
-            DDL_Application_Type.SelectedIndex = DDL_Application_Type.Items.IndexOf(DDL_Application_Type.Items.FindByValue(App_Type))
-            DDL_Application_Type.Enabled = True
-            DDL_OS_Type.SelectedIndex = DDL_OS_Type.Items.IndexOf(DDL_OS_Type.Items.FindByValue(OS_Type))
-            TB_Email.Text = Licensee_Email
-            TB_Email.Enabled = True
-            TB_Remarks.Text = Remarks
-            TB_Selected_Licence_Code.Text = Licence_Code
-            btnUpdateLineItems.Enabled = True
-            btnUpdateLineItems.CssClass = "btn btn-info"
+                SelectedLicenceRowIndex = -1
 
-            '' Highlight the selected row with color
-            For Each row As GridViewRow In GridView_Licence_List.Rows
-                row.BackColor = If(row.RowIndex.Equals(rowIndex), Drawing.ColorTranslator.FromHtml("#eeeeee"), Drawing.Color.Transparent)
-            Next
+                ' Clear / disable related controls
+                DDL_Application_Type.ClearSelection()
+                DDL_Application_Type.Enabled = False
+
+                DDL_Sales_Representative.Enabled = False
+
+                DDL_OS_Type.ClearSelection()
+                DDL_OS_Type.Enabled = False
+
+                TB_Email.Text = String.Empty
+                TB_Email.Enabled = False
+
+                TB_Remarks.Text = String.Empty
+                TB_Selected_Licence_Code.Text = String.Empty
+
+                btnUpdateLineItems.Enabled = False
+                btnUpdateLineItems.CssClass = "btn btn-secondary"  ' or whatever "disabled" look you prefer
+
+                ' Remove highlight from all rows
+                For Each row As GridViewRow In GridView_Licence_List.Rows
+                    row.BackColor = Drawing.Color.Transparent
+                Next
+
+            Else
+                ' New row selected → LOAD DATA
+
+                SelectedLicenceRowIndex = rowIndex
+                Dim selectedRow As GridViewRow = GridView_Licence_List.Rows(rowIndex)
+
+                ' Get values from row
+                Dim App_Type As String = selectedRow.Cells(0).Text
+                Dim OS_Type As String = selectedRow.Cells(1).Text
+                Dim Licence_Code As String = selectedRow.Cells(2).Text
+                Dim Licensee_Email As String = selectedRow.Cells(3).Text
+                Dim Remarks As String = Server.HtmlDecode(selectedRow.Cells(4).Text).Trim()
+
+                ' Populate dropdowns & textboxes (with safety checks)
+                Dim appItem As ListItem = DDL_Application_Type.Items.FindByValue(App_Type)
+                If appItem IsNot Nothing Then
+                    DDL_Application_Type.ClearSelection()
+                    appItem.Selected = True
+                End If
+                DDL_Application_Type.Enabled = True
+
+                Dim osItem As ListItem = DDL_OS_Type.Items.FindByValue(OS_Type)
+                If osItem IsNot Nothing Then
+                    DDL_OS_Type.ClearSelection()
+                    osItem.Selected = True
+                End If
+
+                DDL_Sales_Representative.Enabled = True
+
+                TB_Email.Text = Licensee_Email
+                TB_Email.Enabled = True
+
+                TB_Remarks.Text = Remarks
+                TB_Selected_Licence_Code.Text = Licence_Code
+
+                btnUpdateLineItems.Enabled = True
+                btnUpdateLineItems.CssClass = "btn btn-info"
+
+                ' Highlight selected row, reset others
+                For Each row As GridViewRow In GridView_Licence_List.Rows
+                    row.BackColor = If(row.RowIndex.Equals(rowIndex),
+                                   Drawing.ColorTranslator.FromHtml("#eeeeee"),
+                                   Drawing.Color.Transparent)
+                Next
+            End If
         End If
+
         popupModuleLicence.Show()
     End Sub
+
+    Private Property SelectedLicenceRowIndex As Integer
+        Get
+            If ViewState("SelectedLicenceRowIndex") IsNot Nothing Then
+                Return CInt(ViewState("SelectedLicenceRowIndex"))
+            End If
+            Return -1   ' no selection
+        End Get
+        Set(value As Integer)
+            ViewState("SelectedLicenceRowIndex") = value
+        End Set
+    End Property
 
     Protected Sub GridView_Licence_List_RowCreated(sender As Object, e As GridViewRowEventArgs) Handles GridView_Licence_List.RowCreated
         If e.Row.RowType = DataControlRowType.DataRow Then
@@ -1166,6 +1262,9 @@ Partial Class Form_Module_Licence_Form
 
 
     Protected Sub Add_ModuleLicence_Click(ByVal sender As Object, ByVal e As EventArgs) Handles btnAddModuleLicence.Click
+        ' Reset all validation status and red borders before opening modal
+        ResetValidationStyles(pnlAddEditModuleLicence)
+
         ModalHeaderModuleLicence.Text = "Add Module Licence"
         btnSaveModuleLicence.Text = "Save"
         btnCancelModuleLicence.Text = "Cancel"
@@ -1182,6 +1281,9 @@ Partial Class Form_Module_Licence_Form
     End Sub
 
     Protected Sub Edit_ModuleLicence_Click(ByVal sender As Object, ByVal e As EventArgs)
+        ' Reset all validation status and red borders before opening modal
+        ResetValidationStyles(pnlAddEditModuleLicence)
+
         ModalHeaderModuleLicence.Text = "Update Module Licence"
         btnSaveModuleLicence.Text = "Update"
         btnCancelModuleLicence.Text = "Cancel"
@@ -1270,7 +1372,7 @@ Partial Class Form_Module_Licence_Form
 
                         Case "DDL_Sales_Representative"
                             ddl.SelectedIndex = If(oMode = "New", -1, ddl.Items.IndexOf(ddl.Items.FindByValue(TB_Selected_Requestor_ID.Text)))
-                            ddl.Enabled = True
+                            ddl.Enabled = (oMode = "New")
 
                         Case "DDL_Chargeable"
                             ddl.SelectedIndex = ddl.Items.IndexOf(ddl.Items.FindByText("Yes"))
@@ -1461,6 +1563,29 @@ Partial Class Form_Module_Licence_Form
         Return Page.IsValid
     End Function
 
+    Private Sub ResetValidationStyles(container As Control)
+        ' Remove is-invalid from all WebControls inside that panel
+        For Each ctrl As Control In container.Controls
+            If TypeOf ctrl Is WebControl Then
+                Dim wc As WebControl = CType(ctrl, WebControl)
+                If wc.CssClass.Contains("is-invalid") Then
+                    wc.CssClass = wc.CssClass.Replace(" is-invalid", "").Replace("is-invalid", "")
+                End If
+            End If
+
+            ' Recursively clean inside child controls
+            If ctrl.HasControls() Then
+                ResetValidationStyles(ctrl)
+            End If
+        Next
+
+        ' Reset page validator states
+        For Each v As IValidator In Page.Validators
+            v.IsValid = True
+        Next
+    End Sub
+
+
 
     Protected Sub btnClearLineItems_Click(sender As Object, e As EventArgs) Handles btnClearLineItems.Click
         DeleteStaging()
@@ -1479,6 +1604,7 @@ Partial Class Form_Module_Licence_Form
                 sqlStr += "UPDATE LMS_Licence " &
                           "SET Application_Type = '" & DDL_Application_Type.SelectedValue & "' " &
                           ",   Licensee_Email = '" & TB_Email.Text & "' " &
+                          ",   OS_Type = '" & DDL_OS_Type.SelectedValue & "' " &
                           ",   Remarks = '" & TB_Remarks.Text & "' " &
                           "WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' " &
                           "  AND PO_No = '" & TB_PO_No.Text & "' " &
@@ -1491,12 +1617,51 @@ Partial Class Form_Module_Licence_Form
         End Try
 
         ' Reset the udpate button
-        btnUpdateLineItems.Enabled = False
-        btnUpdateLineItems.CssClass = "btn btn-secondary disabled"
+        'btnUpdateLineItems.Enabled = False
+        'btnUpdateLineItems.CssClass = "btn btn-secondary disabled"
+
+        ' Reset button + ALL related UI controls & grid highlight
+        ClearLineItemSelection()
 
         PopulateLicenceListbox(btnSaveModuleLicence.Text)
         popupModuleLicence.Show()
     End Sub
+
+    Private Sub ClearLineItemSelection()
+        ' If you have a ViewState-tracked index, reset it here (optional)
+        'SelectedLicenceRowIndex = -1
+
+        ' Application type
+        DDL_Application_Type.ClearSelection()
+        DDL_Application_Type.Enabled = False
+
+        ' OS type (even if handled elsewhere, safe to reset here)
+        DDL_OS_Type.ClearSelection()
+        DDL_OS_Type.Enabled = False
+
+        ' Sales rep
+        'DDL_Sales_Representative.ClearSelection()
+        DDL_Sales_Representative.Enabled = False
+
+        ' Email & remarks
+        TB_Email.Text = String.Empty
+        TB_Email.Enabled = False
+
+        TB_Remarks.Text = String.Empty
+
+        ' Hidden/selected licence code
+        TB_Selected_Licence_Code.Text = String.Empty
+
+        ' Update button state
+        btnUpdateLineItems.Enabled = False
+        btnUpdateLineItems.CssClass = "btn btn-secondary disabled"
+
+        ' Remove highlight from all grid rows
+        For Each row As GridViewRow In GridView_Licence_List.Rows
+            row.BackColor = Drawing.Color.Transparent
+        Next
+    End Sub
+
 
     Protected Sub PopulateLicenceListbox(oMode As String)
         Dim Customer_ID As String = Request.QueryString("Customer_ID")
@@ -1541,6 +1706,18 @@ Partial Class Form_Module_Licence_Form
 
         Dim GridView_Licence_List As GridView = pnlAddEditModuleLicence.FindControl("GridView_Licence_List")
         Dim UploadedRecordCount As Integer = GridView_Licence_List.Rows.Count
+
+        ' If the pending updating a row
+        If btnUpdateLineItems.Enabled Then
+            ScriptManager.RegisterStartupScript(Me, Me.GetType(),
+                                        "msgBox1",
+                                        "alert('Please update the selected row.');",
+                                        True)
+
+            popupModuleLicence.Show()
+            hiddenModalVisible.Value = True
+            Exit Sub
+        End If
 
         If btnSaveModuleLicence.Text = "Save" Then
             If UploadedRecordCount > 0 Then
