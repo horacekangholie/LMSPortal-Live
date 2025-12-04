@@ -90,7 +90,7 @@ Partial Class Adhoc_Upgrade_Schedule
         Dim ColSize() As Integer = {100, 200, 300, 100, 100, 100, 100, 300, 0}
 
         If e.Row.RowType = DataControlRowType.Header Then
-            '' --- Header formatting ---
+            ' --- Header formatting ---
             For i = 0 To e.Row.Cells.Count - 1
                 e.Row.Cells(i).Text = Replace(ColName(i), "_", " ")
                 e.Row.Cells(i).Width = ColSize(i)

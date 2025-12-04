@@ -17,7 +17,7 @@
 
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="PageContent" Runat="Server">
-    <!-- Page Title  -->
+    <!-- Page Title -->
     <h2 class="mb-4">
         <asp:Label ID="LB_PageTitle" runat="server"></asp:Label></h2>
     <hr />
@@ -35,7 +35,7 @@
         <div style="width: 30%; float: left">
             <div class="card border-light mb-3" style="width: 95%">
                 <div class="card-header">
-                    <h4 class="card-title">Add Maintenance Schedule</h4>
+                    <h4 class="card-title">Add Maintenance / Downtime Incident History</h4>
                 </div>
                 <div class="card-body">
                     <table border="0" style="width: 100%">
@@ -51,7 +51,7 @@
                                 </asp:RequiredFieldValidator>
                             </td>
                             <td style="width: 65%; padding: 20px 10px 0px 0px">
-                                <label>Incident / Maintenance Type</label>
+                                <label>Maintenance / Incident Type</label>
                                 <asp:DropDownList ID="DDL_Work_Type" runat="server"
                                     AppendDataBoundItems="true" 
                                     AutoPostBack="true"
