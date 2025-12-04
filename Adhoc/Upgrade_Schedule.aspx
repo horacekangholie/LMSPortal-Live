@@ -17,7 +17,7 @@
 
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="PageContent" Runat="Server">
-    <!-- Page Title -->
+    <!-- Page Title  -->
     <h2 class="mb-4">
         <asp:Label ID="LB_PageTitle" runat="server"></asp:Label></h2>
     <hr />
@@ -51,14 +51,20 @@
                                 </asp:RequiredFieldValidator>
                             </td>
                             <td style="width: 65%; padding: 20px 10px 0px 0px">
-                                <label>Work Type</label>
-                                <asp:TextBox ID="TB_Work_Type" runat="server" CssClass="form-control"></asp:TextBox>
-                                <asp:RequiredFieldValidator ID="RequiredField_TB_Work_Type" runat="server" ValidationGroup="MaintenanceSchedule"
-                                    ErrorMessage="This field cannot be blank" CssClass="invalid-feedback"
+                                <label>Incident / Maintenance Type</label>
+                                <asp:DropDownList ID="DDL_Work_Type" runat="server"
+                                    AppendDataBoundItems="true" 
+                                    AutoPostBack="true"
+                                    CssClass="form-control">
+                                    <asp:ListItem Text="Please select" Value="empty" />
+                                </asp:DropDownList>
+                                <asp:CompareValidator ID="CompareValidator_DDL_Work_Type" runat="server" ValidationGroup="MaintenanceSchedule"
+                                    ErrorMessage="Please select type" CssClass="invalid-feedback"
                                     Display="Dynamic"
                                     SetFocusOnError="True"
-                                    ControlToValidate="TB_Work_Type">
-                                </asp:RequiredFieldValidator>
+                                    Operator="NotEqual" ValueToCompare="empty"
+                                    ControlToValidate="DDL_Work_Type" Type="String">
+                                </asp:CompareValidator>
                             </td>
                         </tr>
                         <tr style="vertical-align: top">
@@ -175,7 +181,7 @@
                             <asp:Label ID="LB_Work_Type" runat="server" Text='<%# Eval("Work_Type") %>'></asp:Label>
                         </ItemTemplate>
                         <EditItemTemplate>
-                            <asp:TextBox ID="TB_E_Work_Type" runat="server" Text='<%# Eval("Work_Type") %>' CssClass="form-control"></asp:TextBox>
+                            <asp:DropDownList ID="DDL_E_Work_Type" runat="server" CssClass="form-control"></asp:DropDownList>
                         </EditItemTemplate>
                     </asp:TemplateField>
                     <asp:TemplateField>
@@ -191,7 +197,7 @@
                             <asp:Label ID="LB_Status" runat="server" Text='<%# Eval("Status") %>'></asp:Label>
                         </ItemTemplate>
                         <EditItemTemplate>
-                            <asp:TextBox ID="TB_E_Status" runat="server" Text='<%# Eval("Status") %>' CssClass="form-control"></asp:TextBox>
+                            <asp:DropDownList ID="DDL_E_Status" runat="server" CssClass="form-control"></asp:DropDownList>
                         </EditItemTemplate>
                     </asp:TemplateField>
                     <asp:TemplateField>

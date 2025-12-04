@@ -2,7 +2,7 @@
 Partial Class Adhoc_Upgrade_Schedule
     Inherits LMSPortalBaseCode
 
-    Dim PageTitle As String = "DMC Maintenance Schedule"
+    Dim PageTitle As String = "DMC Downtime History"
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         LB_PageTitle.Text = PageTitle
@@ -90,12 +90,15 @@ Partial Class Adhoc_Upgrade_Schedule
         Dim ColSize() As Integer = {100, 200, 300, 100, 100, 100, 100, 300, 0}
 
         If e.Row.RowType = DataControlRowType.Header Then
+            '' --- Header formatting ---
             For i = 0 To e.Row.Cells.Count - 1
                 e.Row.Cells(i).Text = Replace(ColName(i), "_", " ")
                 e.Row.Cells(i).Width = ColSize(i)
             Next
+
         ElseIf e.Row.RowType = DataControlRowType.DataRow Then
             Dim CtrlCellIndex As Integer = e.Row.Cells.Count - 1
+            ' --- General cell formatting ---
             For i = 0 To e.Row.Cells.Count - 1
                 e.Row.Cells(i).Wrap = True
                 If i = CtrlCellIndex Then
@@ -105,14 +108,48 @@ Partial Class Adhoc_Upgrade_Schedule
                 End If
             Next
 
-            '' Set confirmation before deleting
+            ' --- Delete confirmation ---
             Dim DeleteCommandFieldIndex As Integer = e.Row.Cells(CtrlCellIndex).Controls.Count - 1
             Dim DeleteCommandField As LinkButton = TryCast(e.Row.Cells(CtrlCellIndex).Controls(DeleteCommandFieldIndex), LinkButton)
-            If DeleteCommandField.CommandName = "Delete" Then
+            If DeleteCommandField IsNot Nothing AndAlso DeleteCommandField.CommandName = "Delete" Then
                 DeleteCommandField.Attributes.Add("onclick", "return confirm('Are you sure to delete record?');")
             End If
+
+            ' --- Bind dropdowns when row is in Edit mode ---
+            If (e.Row.RowState And DataControlRowState.Edit) > 0 Then
+
+                ' Work Type dropdown in edit row =====
+                Dim ddlWorkType As DropDownList = TryCast(e.Row.FindControl("DDL_E_Work_Type"), DropDownList)
+                If ddlWorkType IsNot Nothing Then
+                    ' Use the same DB lookup logic as page-level dropdown
+                    BindWorkTypeDropdown(ddlWorkType)
+
+                    ' Set current value from DataItem
+                    Dim currentWorkType As String = Convert.ToString(DataBinder.Eval(e.Row.DataItem, "Work_Type"))
+                    Dim li As ListItem = ddlWorkType.Items.FindByValue(currentWorkType)
+                    If li IsNot Nothing Then
+                        ddlWorkType.SelectedValue = currentWorkType
+                    End If
+                End If
+
+                ' Status dropdown in edit row =====
+                Dim ddlStatus As DropDownList = TryCast(e.Row.FindControl("DDL_E_Status"), DropDownList)
+                If ddlStatus IsNot Nothing Then
+                    BindStatusDropdown(ddlStatus)
+
+                    Dim currentStatus As String = Convert.ToString(DataBinder.Eval(e.Row.DataItem, "Status"))
+                    Dim liStatus As ListItem = ddlStatus.Items.FindByValue(currentStatus)
+                    If liStatus IsNot Nothing Then
+                        ddlStatus.SelectedValue = currentStatus
+                    End If
+                End If
+
+            End If
+
         End If
     End Sub
+
+
 
     Private Sub GridView1_RowCreated(sender As Object, e As GridViewRowEventArgs) Handles GridView1.RowCreated
         ' Call javascript function for GridView Row highlight effect
@@ -144,7 +181,7 @@ Partial Class Adhoc_Upgrade_Schedule
 
     Protected Sub Add(ByVal sender As Object, ByVal e As EventArgs) Handles BN_AddNew.Click
         Dim Maintenance_Date As String = TB_Maintenance_Date.Text
-        Dim Work_Type As String = TB_Work_Type.Text
+        Dim Work_Type As String = DDL_Work_Type.SelectedValue
         Dim Description As String = EscapeChar(TB_Description.Text)
         Dim Downtime_From As String = TB_Downtime_From.Text
         Dim Donwtime_To As String = TB_Downtime_To.Text
@@ -163,7 +200,7 @@ Partial Class Adhoc_Upgrade_Schedule
 
         '' clear field after added
         TB_Maintenance_Date.Text = String.Empty
-        TB_Work_Type.Text = String.Empty
+        DDL_Work_Type.SelectedIndex = -1
         TB_Description.Text = String.Empty
         TB_Downtime_From.Text = String.Empty
         TB_Downtime_To.Text = String.Empty
@@ -183,9 +220,9 @@ Partial Class Adhoc_Upgrade_Schedule
         Dim row As GridViewRow = GridView1.Rows(e.RowIndex)
         Dim ID As Integer = Convert.ToInt32(GridView1.DataKeys(e.RowIndex).Values(0))
         Dim Maintenance_Date As String = Trim((TryCast(row.FindControl("TB_E_Maintenance_Date"), TextBox)).Text)
-        Dim Work_Type As String = Trim((TryCast(row.FindControl("TB_E_Work_Type"), TextBox)).Text)
+        Dim Work_Type As String = Trim((TryCast(row.FindControl("DDL_E_Work_Type"), DropDownList)).Text)
         Dim Description As String = Trim((TryCast(row.FindControl("TB_E_Description"), TextBox)).Text)
-        Dim Status As String = Trim((TryCast(row.FindControl("TB_E_Status"), TextBox)).Text)
+        Dim Status As String = Trim((TryCast(row.FindControl("DDL_E_Status"), DropDownList)).Text)
         Dim Downtime_From As String = Trim((TryCast(row.FindControl("TB_E_Downtime_From"), TextBox)).Text)
         Dim Downtime_To As String = Trim((TryCast(row.FindControl("TB_E_Downtime_To"), TextBox)).Text)
         Dim Duration As String = Trim((TryCast(row.FindControl("TB_E_Duration"), TextBox)).Text)
@@ -226,21 +263,42 @@ Partial Class Adhoc_Upgrade_Schedule
         PopulateGridViewData(TB_Search.Text)
     End Sub
 
-
+    Protected Sub DDL_Work_Type_Load(sender As Object, e As EventArgs) Handles DDL_Work_Type.Load
+        If Not IsPostBack Then
+            BindWorkTypeDropdown(DDL_Work_Type)
+        End If
+    End Sub
 
     Protected Sub DDL_Status_Load(sender As Object, e As EventArgs) Handles DDL_Status.Load
         If Not IsPostBack Then
-            Dim sqlStr As String = "SELECT Value_1 AS Status FROM DB_Lookup WHERE Lookup_Name = 'Scheduled Maintenance Status' ORDER BY Value_2"
-            Try
-                DDL_Status.DataSource = GetDataTable(sqlStr)
-                DDL_Status.DataTextField = "Status"
-                DDL_Status.DataValueField = "Status"
-                DDL_Status.DataBind()
-            Catch ex As Exception
-                Response.Write("ERROR: " & ex.Message)
-            End Try
+            BindStatusDropdown(DDL_Status)
         End If
     End Sub
+
+    Private Sub BindWorkTypeDropdown(ddl As DropDownList)
+        Dim sqlStr As String = "SELECT Value_2 AS Type FROM DB_Lookup WHERE Lookup_Name = 'Incident Type' ORDER BY Value_1 "
+        Try
+            ddl.DataSource = GetDataTable(sqlStr)
+            ddl.DataTextField = "Type"
+            ddl.DataValueField = "Type"
+            ddl.DataBind()
+        Catch ex As Exception
+            Response.Write("ERROR: " & ex.Message)
+        End Try
+    End Sub
+
+    Private Sub BindStatusDropdown(ddl As DropDownList)
+        Dim sqlStr As String = "SELECT Value_1 AS Status FROM DB_Lookup WHERE Lookup_Name = 'Incident Status' ORDER BY Value_2"
+        Try
+            ddl.DataSource = GetDataTable(sqlStr)
+            ddl.DataTextField = "Status"
+            ddl.DataValueField = "Status"
+            ddl.DataBind()
+        Catch ex As Exception
+            Response.Write("ERROR: " & ex.Message)
+        End Try
+    End Sub
+
 
     Protected Sub DDL_Status_SelectedIndexChanged(sender As Object, e As EventArgs) Handles DDL_Status.SelectedIndexChanged
         ' Convert DDL_Status.SelectedValue to lowercase before comparison
@@ -256,6 +314,5 @@ Partial Class Adhoc_Upgrade_Schedule
     Protected Sub BT_Search_Click(ByVal sender As Object, ByVal e As EventArgs) Handles BT_Search.Click
         PopulateGridViewData(TB_Search.Text)
     End Sub
-
 
 End Class
