@@ -83,6 +83,26 @@
         th span.sort-arrow {
             margin-left: 5px; /* Adjust this value as needed to create space between header text and arrow */
         }
+
+        .CheckboxSelection {
+            float: left;
+            display: inline-block;
+            padding-top: 0em;
+        }
+
+        .CheckboxSelection > input {
+            width: 18px;
+            height: 18px;
+            margin-left: 0em;
+        }
+
+        .CheckboxSelection > span {
+            display:inline-block;
+            font-size: 14px;
+            vertical-align:middle;
+            align-self:center;
+            padding-bottom: 1em;
+        }
     </style>
 
 
@@ -100,7 +120,11 @@
             <asp:Label ID="LB_Maintenance_Year" runat="server" Text="Filter By Year" CssClass="guided-text-dropdownlist"></asp:Label>
             <asp:DropDownList ID="DDL_Maintenance_Year" runat="server" CssClass="form-control" Width="250px" AutoPostBack="true"></asp:DropDownList>
         </div>
-        <div style="margin-top:30px">
+        <div class="CheckboxSelection">
+            <asp:Label ID="lb_unplanned_downtime" runat="server" Text="Unplanned Downtime" CssClass="guided-text-dropdownlist"></asp:Label>
+            <asp:CheckBox ID="chk_unplanned_downtime" runat="server" AutoPostBack="true" />
+        </div>
+        <div style="margin-top:30px; clear:both">
             <asp:GridView ID="GridView1" runat="server"></asp:GridView>
         </div>
     </div>

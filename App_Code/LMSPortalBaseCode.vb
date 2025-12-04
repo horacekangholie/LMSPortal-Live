@@ -596,10 +596,23 @@ Public Class LMSPortalBaseCode
     End Function
 
     Protected Function GetColumnIndexByName(ByVal row As GridViewRow, ByVal columnName As String) As Integer
+        'Dim columnIndex As Integer = 0
+        'For Each cell As DataControlFieldCell In row.Cells
+        '    If TypeOf cell.ContainingField Is BoundField Then
+        '        If (CType(cell.ContainingField, BoundField)).DataField.Equals(columnName) Then Exit For
+        '    End If
+        '    columnIndex += 1
+        'Next
+        'Return columnIndex
+
         Dim columnIndex As Integer = 0
-        For Each cell As DataControlFieldCell In row.Cells
-            If TypeOf cell.ContainingField Is BoundField Then
-                If (CType(cell.ContainingField, BoundField)).DataField.Equals(columnName) Then Exit For
+        For Each cell As TableCell In row.Cells
+            Dim dataCell As DataControlFieldCell = TryCast(cell, DataControlFieldCell)
+            If dataCell IsNot Nothing AndAlso TypeOf dataCell.ContainingField Is BoundField Then
+                Dim bf As BoundField = CType(dataCell.ContainingField, BoundField)
+                If bf.DataField.Equals(columnName, StringComparison.OrdinalIgnoreCase) Then
+                    Exit For
+                End If
             End If
             columnIndex += 1
         Next

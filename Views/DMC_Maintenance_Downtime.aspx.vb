@@ -21,8 +21,11 @@ Partial Class Views_DMC_Maintenance_Downtime
     End Sub
 
     Protected Sub PopulateGridViewData(ByVal year As String)
+        Dim filter As String = If(chk_unplanned_downtime.Checked, " WHERE [Event Type] LIKE '%Unplanned%'", String.Empty)
         Try
-            Dim sqlStr As String = "SELECT * FROM DMC_Maintenance_History_Report('" & year & "') ORDER BY [Maintenance Date] DESC, [Down Time From] DESC "
+            Dim sqlStr As String = "SELECT * FROM DMC_Maintenance_History_Report('" & DateTime.Parse(year).ToString("yyyy-MM-dd") & "') " &
+                                   filter &
+                                   "ORDER BY [Maintenance Date] DESC, [Down Time From] DESC "
 
             BuildGridView(GridView1, "GridView1", "Maintenance Date")
             GridView1.DataSource = GetDataTable(sqlStr)
@@ -75,8 +78,8 @@ Partial Class Views_DMC_Maintenance_Downtime
         Select Case ControlName
             Case "GridView1"
                 GridViewObj.Columns.Clear()
-                Dim ColData() As String = {"Maintenance Date", "Work Type", "Description", "Down Time From", "Down Time To", "Duration"}
-                Dim ColName() As String = {"Maintenance Date", "Work Type", "Description", "Down Time From", "Down Time To", "Duration (Minutes)"}
+                Dim ColData() As String = {"Maintenance Date", "Event Type", "Description", "Down Time From", "Down Time To", "Duration"}
+                Dim ColName() As String = {"Maintenance Date", "Event Type", "Description", "Down Time From", "Down Time To", "Duration (Minutes)"}
                 Dim ColSize() As Integer = {50, 100, 200, 50, 50, 0}
                 For i = 0 To ColData.Length - 1
                     Dim Bfield As BoundField = New BoundField()
@@ -117,18 +120,39 @@ Partial Class Views_DMC_Maintenance_Downtime
         PopulateGridViewData(DDL_Maintenance_Year.SelectedValue)
     End Sub
 
+    Protected Sub chk_unplanned_downtime_CheckedChanged(sender As Object, e As EventArgs) Handles chk_unplanned_downtime.CheckedChanged
+        PopulateGridViewData(DDL_Maintenance_Year.SelectedValue)
+    End Sub
 
 
     '' Gridview controla
     Protected Sub GridView1_RowDataBound(ByVal sender As Object, ByVal e As GridViewRowEventArgs) Handles GridView1.RowDataBound
+        ' exit if gridview return no row
+        If e.Row.RowType = DataControlRowType.EmptyDataRow Then
+            Exit Sub
+        End If
+
         Dim currentDate As DateTime = DateTime.Now
         Dim firstDayOfYear As New DateTime(currentDate.Year, 1, 1)
         Dim firstDayOfYearString As String = firstDayOfYear.ToString("yyyy-MM-dd")
 
+        '' For sqlString
         Dim reportYear As String = IIf(Len(DDL_Maintenance_Year.SelectedValue) > 0, DDL_Maintenance_Year.SelectedValue, firstDayOfYearString)
-        Dim totalDuration As Integer = Get_Value("SELECT SUM(ISNULL(Duration, 0)) AS Total_Duration FROM DMC_Maintenance_History_Report('" & reportYear & "') ", "Total_Duration")
+        Dim totalSql As String = "SELECT ISNULL(SUM(Duration), 0) AS Total_Duration FROM DMC_Maintenance_History_Report('" & DateTime.Parse(reportYear).ToString("yyyy-MM-dd") & "')"
+        If chk_unplanned_downtime.Checked Then
+            totalSql &= " WHERE [Event Type] LIKE '%Unplanned%'"
+        End If
 
-        Dim percentageDownTime As Double = totalDuration / (60 * 24 * 365)
+        Dim totalDuration As Integer = 0
+        Dim totalDurationStr As String = Get_Value(totalSql, "Total_Duration")
+        If Not Integer.TryParse(totalDurationStr, totalDuration) Then
+            totalDuration = 0
+        End If
+
+        Dim daysForDenominator As Integer = GetDaysForDenominator(reportYear)
+        Dim totalMinutesInPeriod As Integer = daysForDenominator * 24 * 60
+
+        Dim percentageDownTime As Double = totalDuration / totalMinutesInPeriod
         Dim percentageUpTime As Double = 1 - percentageDownTime
 
         If e.Row.RowType = DataControlRowType.Header Then
@@ -151,6 +175,31 @@ Partial Class Views_DMC_Maintenance_Downtime
     End Sub
 
 
+    Protected Function GetDaysForDenominator(ByVal reportYear As String) As Integer
+        ' Convert the input year value
+        Dim yearValue As Integer = Convert.ToDateTime(reportYear).Year
+        Dim today As Date = Date.Today
+
+        Dim daysForDenominator As Integer
+
+        If yearValue = today.Year Then
+            ' Case 1: report year is the current year → days from 1 Jan to today
+            Dim startOfYear As New DateTime(today.Year, 1, 1)
+            daysForDenominator = (today - startOfYear).Days + 1
+        Else
+            ' Case 2: report year is a previous year (or any non-current year)
+            ' Use total number of days in that year (automatically handles leap years)
+            Dim lastDayOfYear As New DateTime(yearValue, 12, 31)
+            daysForDenominator = lastDayOfYear.DayOfYear
+        End If
+
+        ' Safeguard
+        If daysForDenominator <= 0 Then
+            daysForDenominator = 1
+        End If
+
+        Return daysForDenominator
+    End Function
 
 
 
@@ -159,6 +208,5 @@ Partial Class Views_DMC_Maintenance_Downtime
         Dim Page_Origin As String = Get_Value("SELECT TOP 1 Page_Origin FROM DMC_Account_Reports_List WHERE ID = " & Request.QueryString("ID"), "Page_Origin")
         Response.Redirect(Page_Origin)
     End Sub
-
 
 End Class
