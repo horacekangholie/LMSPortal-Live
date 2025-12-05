@@ -18,6 +18,33 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" />
     <link rel="stylesheet" href="/Content/ContentPage.css" />
 
+    <style>
+        .header-row {
+            display: flex;
+            justify-content: space-between; /* Left and right alignment */
+            align-items: baseline; /* Vertical alignment */
+            margin-bottom: 10px;
+        }
+
+        .right-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px; /*spacing between textbox and button */
+            padding-right: 20px;
+        }
+
+        .joined-input {
+            border-top-right-radius: 0 !important;
+            border-bottom-right-radius: 0 !important;
+        }
+
+        .joined-button {
+            border-top-left-radius: 0 !important;
+            border-bottom-left-radius: 0 !important;
+            margin-left: -1px; /* removes double border between them */
+        }
+    </style>
+
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="PageContent" Runat="Server">
     <!-- Page Title -->
@@ -144,14 +171,21 @@
                     <div class="col-md-4">
                         <!-- Module Licence Pool -->
                         <div style="width: 100%; float: left">
-                            <h4 style="margin-left: 5px">Distributor Main Pool</h4>
+                            <h4 style="margin-left: 5px; margin-bottom: 38px">Distributor Main Pool</h4>
                             <asp:GridView ID="GridView3" runat="server"></asp:GridView>
                         </div>
                     </div>
                     <div class="col-md-8">
+                        <div class="header-row">
+                            <h4 style="margin-left: 5px">Customer Pool</h4>
+                            <!-- Searchbox for AI Account -->
+                            <div class="form-group form-inline" style="margin-right: 10px; margin-top: 0px">
+                                <asp:TextBox ID="TB_AI_Account_Search" runat="server" CssClass="form-control joined-input" Width="400" placeholder="Type to search..."></asp:TextBox>
+                                <asp:Button ID="BT_AI_Account_Search" runat="server" CssClass="form-control joined-button btn btn-outline btn-info" Text="Search" />
+                            </div>
+                        </div>
                         <!-- Module Licence Pool - New businesss model -->
                         <div style="width: 100%; float: left">
-                            <h4 style="margin-left: 5px">Customer Pool</h4>
                             <asp:GridView ID="GridView7" runat="server"></asp:GridView>
                         </div>
                     </div>

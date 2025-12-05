@@ -240,7 +240,7 @@
                         <asp:UpdatePanel ID="UpdatePanel3" runat="server">
                             <ContentTemplate>
                                 <div class="header-row">
-                                    <h4 style="margin-left: 5px; margin-bottom:10px">Distributor Main Pool</h4>
+                                    <h4 style="margin-left: 5px; margin-bottom:28px">Distributor Main Pool</h4>
                                 </div>
                                 <asp:GridView ID="GridView3" runat="server"></asp:GridView>
                                 <!-- Guide to add Licence Pool for customer under local DIGI Singapore -->
