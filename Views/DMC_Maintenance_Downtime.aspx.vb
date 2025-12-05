@@ -2,7 +2,7 @@
 Partial Class Views_DMC_Maintenance_Downtime
     Inherits LMSPortalBaseCode
 
-    Dim PageTitle As String = "DMC Maintenance Planned Downtime Report"
+    Dim PageTitle As String = "DMC Downtime Report"
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         LB_PageTitle.Text = PageTitle
