@@ -75,7 +75,7 @@
             background-color: #FFFFFF;
             border-radius: 5px;
             padding: 0px;
-            width:800px;
+            width: 800px;
             height: auto;
         }
 
@@ -83,6 +83,31 @@
             display: block;
             padding: 0px 10px 20px 20px;
             table-layout: fixed;
+        }
+
+        .header-row {
+            display: flex;
+            justify-content: space-between; /* Left and right alignment */
+            align-items: baseline; /* Vertical alignment */
+            margin-bottom: 10px;
+        }
+
+        .right-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px; /*spacing between textbox and button */
+            padding-right: 20px;
+        }
+
+        .joined-input {
+            border-top-right-radius: 0 !important;
+            border-bottom-right-radius: 0 !important;
+        }
+
+        .joined-button {
+            border-top-left-radius: 0 !important;
+            border-bottom-left-radius: 0 !important;
+            margin-left: -1px; /* removes double border between them */
         }
     </style>
 
@@ -214,9 +239,10 @@
                         <!-- Module Licence Pool -->
                         <asp:UpdatePanel ID="UpdatePanel3" runat="server">
                             <ContentTemplate>
-                                <h4 style="margin-left: 5px">Distributor Main Pool</h4>
+                                <div class="header-row">
+                                    <h4 style="margin-left: 5px; margin-bottom:10px">Distributor Main Pool</h4>
+                                </div>
                                 <asp:GridView ID="GridView3" runat="server"></asp:GridView>
-
                                 <!-- Guide to add Licence Pool for customer under local DIGI Singapore -->
                                 <div id="AddLicencePoolGuide" runat="server" visible="false" class="alert alert-dismissible alert-secondary"
                                     style="background-color: #f2f2f3; border: solid 1px #f3f3f3; width: 99%">
@@ -224,23 +250,28 @@
                                     <p>If Licence Pool not appear in above list, do the following:</p>
                                     <p>Go to [Settings] > [Lookup Table] > Search <b>Module Licence Bind</b> to add Licence Pool.</p>
                                 </div>
-
                                 <!--Add a refresh linkbutton to sync latest license status-->
                                 <div style="margin-top: 20px">
                                     <asp:LinkButton ID="AILicenceRefresh" runat="server" CssClass="btn btn-default"></asp:LinkButton>
                                 </div>
                             </ContentTemplate>
-
                             <Triggers>
                                 <asp:PostBackTrigger ControlID="AILicenceRefresh" />
                             </Triggers>
                         </asp:UpdatePanel>
                     </div>
                     <div class="col-md-8">
+                        <div class="header-row">
+                            <h4 style="margin-left: 5px">Customer Pool</h4>
+                            <!-- Searchbox for AI Account -->
+                            <div class="form-group form-inline" style="margin-right: 10px; margin-top: 0px">
+                                <asp:TextBox ID="TB_AI_Account_Search" runat="server" CssClass="form-control joined-input" Width="400" placeholder="Type to search..."></asp:TextBox>
+                                <asp:Button ID="BT_AI_Account_Search" runat="server" CssClass="form-control joined-button btn btn-outline btn-info" Text="Search" />
+                            </div>
+                        </div>
                         <!-- Module Licence Pool - New businesss model -->
                         <asp:UpdatePanel ID="UpdatePanel7" runat="server">
                             <ContentTemplate>
-                                <h4 style="margin-left: 5px">Customer Pool</h4>
                                 <asp:GridView ID="GridView7" runat="server"></asp:GridView>
                             </ContentTemplate>
                         </asp:UpdatePanel>

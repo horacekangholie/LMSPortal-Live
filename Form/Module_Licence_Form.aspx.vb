@@ -72,7 +72,7 @@ Partial Class Form_Module_Licence_Form
                                        "SELECT * FROM I_AI_Licence_Renewal WHERE [Customer ID] = '" & Request.QueryString("Customer_ID") & "' ORDER BY [Expired Date] ",
                                        "SELECT [UID], [PO No], [PO Date], [Invoice No], [Invoice Date], [Currency], SUM(Fee) AS [Total Amount], [Renewal Date] FROM R_AI_Licence_Renewal WHERE [Customer ID] = '" & Request.QueryString("Customer_ID") & "' GROUP BY [UID], [PO No], [PO Date], [Invoice No], [Invoice Date], [Currency], [Renewal Date] ORDER BY [UID] DESC ",
                                        "SELECT *, CASE WHEN DATEDIFF(D, Added_Date, GETDATE()) > 90 THEN 1 ELSE 0 END AS Is_Locked FROM DB_Account_Notes WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' AND Notes_For = 'Module Licence' ORDER BY Added_Date DESC, ID DESC ",
-                                       "SELECT * FROM R_LMS_Module_Licence_Pool WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' AND Name NOT LIKE '%Licence Pool%' ORDER BY Customer_ID, Name, No "}
+                                       "SELECT * FROM R_LMS_Module_Licence_Pool WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' AND Name NOT LIKE '%Licence Pool%' AND ([Name] LIKE '%" & keyword & "%' OR [AI Account Name] LIKE '%" & keyword & "%' OR [Store Account] LIKE '%" & keyword & "%' OR [Access Key] LIKE '%" & keyword & "%') ORDER BY Customer_ID, Name, No "}
 
 
             BuildGridView(GridView1, "GridView1", "PO No")
@@ -2081,6 +2081,10 @@ Partial Class Form_Module_Licence_Form
     Protected Sub BT_Search_Click(sender As Object, e As EventArgs) Handles BT_Search.Click
         PopulateFormViewData()
         PopulateGridViewData(TB_Search.Text)
+    End Sub
+
+    Protected Sub BT_AI_Account_Search_Click(sender As Object, e As EventArgs) Handles BT_AI_Account_Search.Click
+        PopulateGridViewData(TB_AI_Account_Search.Text)
     End Sub
 
     '' Bottom control button
