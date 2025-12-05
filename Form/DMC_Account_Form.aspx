@@ -425,7 +425,7 @@
                                     </td>
                                     <td style="width: 400px; padding: 0px 10px 20px 0px">
                                         <label>Request Date</label>
-                                        <asp:TextBox ID="TB_Request_Date" runat="server" CssClass="form-control" TextMode="Date"></asp:TextBox>
+                                        <asp:TextBox ID="TB_Request_Date" runat="server" CssClass="form-control" TextMode="DateTimeLocal"></asp:TextBox>
                                         <asp:RequiredFieldValidator ID="Required_TB_Request_Date" runat="server" ValidationGroup="Store"
                                             ErrorMessage="This field cannot be blank" CssClass="invalid-feedback"
                                             Display="Dynamic"

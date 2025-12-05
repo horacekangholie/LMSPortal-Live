@@ -792,7 +792,7 @@ Partial Class Form_DMC_Account_Form
         TB_FTP_Password.Text = TB_Selected_Store_FTP_Password.Text
         DDL_Type_Code.SelectedIndex = DDL_Type_Code.Items.IndexOf(DDL_Type_Code.Items.FindByValue(TB_Selected_Store_Account_Type_Code.Text))
         DDL_Type_Code.Enabled = IIf(DDL_Type_Code.SelectedValue <> "03", True, False)
-        TB_Request_Date.Text = CDate(TB_Selected_Request_Date.Text).ToString("yyyy-MM-dd")
+        TB_Request_Date.Text = CDate(TB_Selected_Request_Date.Text).ToString("yyyy-MM-dd HH:mm:ss")
 
 
         Dim selectedStatus As String = IIf(TB_Selected_Store_Account_Status.Text = "Closed", "Suspended", TB_Selected_Store_Account_Status.Text)
@@ -832,7 +832,7 @@ Partial Class Form_DMC_Account_Form
         Dim FTP_User As TextBox = pnlAddEditStore.FindControl("TB_FTP_User")
         Dim FTP_Password As TextBox = pnlAddEditStore.FindControl("TB_FTP_Password")
         Dim Request_Date As TextBox = pnlAddEditStore.FindControl("TB_Request_Date")
-
+        Dim Request_Date_Time As String = DateTime.Parse(Request_Date.Text).ToString("yyyy-MM-dd HH:mm:ss")
 
         Dim Status As DropDownList = pnlAddEditStore.FindControl("DDL_Store_Status")
         Dim Is_Active = Status.SelectedValue
@@ -859,7 +859,7 @@ Partial Class Form_DMC_Account_Form
                                                         ", '" & End_Date.Text &
                                                        "', '" & Headquarter_ID.SelectedValue &
                                                        "', '" & Store_ID &
-                                                       "', '" & Request_Date.Text & "' "
+                                                       "', '" & Request_Date_Time & "' "
             RunSQL(sqlStr)
         Catch ex As Exception
             Response.Write("Save_Store_Click - Error:  " & ex.Message)
