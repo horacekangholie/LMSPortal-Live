@@ -629,6 +629,16 @@ Public Class LMSPortalBaseCode
         Return PO_Date_Txt
     End Function
 
+    Protected Function ConvertTextToDateTime(ByVal Request_Date_Txt As String) As String
+        Dim rqDate As Date
+        If Date.TryParse(Request_Date_Txt, rqDate) Then
+            Request_Date_Txt = rqDate.ToString("yyyy-MM-dd HH:mm:ss")
+        Else
+            Request_Date_Txt = ""  'avoid error
+        End If
+        Return Request_Date_Txt
+    End Function
+
 
     ' Function to return the column index by column name
     Public Shared Function GetColumnIndexByColumnName(gridView As GridView, columnName As String) As Integer

@@ -973,8 +973,9 @@ Partial Class Form_App_Product_Licence_Form
                             tb.Enabled = (oMode = "New")
 
                         Case "TB_Request_Date"
-                            tb.Text = If(oMode = "New", String.Empty, ConvertTextToDate(TB_Selected_TB_Request_Date.Text))
-                            tb.Enabled = (oMode = "New")
+                            tb.Text = If(oMode = "New", String.Empty, ConvertTextToDateTime(TB_Selected_TB_Request_Date.Text))
+                            'tb.Enabled = (oMode = "New")
+                            tb.Enabled = True
 
                         Case "TB_Email"
                             tb.Enabled = (oMode = "New")
@@ -1066,6 +1067,7 @@ Partial Class Form_App_Product_Licence_Form
         Dim Chargeable As DropDownList = pnlAddEditAppProductLicence.FindControl("DDL_Chargeable")
         Dim Remarks As TextBox = pnlAddEditAppProductLicence.FindControl("TB_Remarks")
         Dim Request_Date As TextBox = pnlAddEditAppProductLicence.FindControl("TB_Request_Date")
+        Dim Request_Date_Time As String = DateTime.Parse(Request_Date.Text).ToString("yyyy-MM-dd HH:mm:ss")
 
         ' Common validation for all controls in this group
         If Not ValidateGroupAndStyleControls("AppProductLicence", pnlAddEditAppProductLicence) Then
@@ -1103,7 +1105,7 @@ Partial Class Form_App_Product_Licence_Form
                                            Email.Text,
                                            Sales_Representative_ID.SelectedValue,
                                            CBool(Chargeable.SelectedValue),
-                                           Trim(Request_Date.Text),
+                                           Request_Date_Time,
                                            EscapeChar(Remarks.Text)}
 
             For Each row As String In csvData.Split(ControlChars.Lf)
@@ -1335,6 +1337,7 @@ Partial Class Form_App_Product_Licence_Form
         Dim Email As TextBox = pnlAddEditAppProductLicence.FindControl("TB_Email")
         Dim Remarks As TextBox = pnlAddEditAppProductLicence.FindControl("TB_Remarks")
         Dim Request_Date As TextBox = pnlAddEditAppProductLicence.FindControl("TB_Request_Date")
+        Dim Request_Date_Time As String = DateTime.Parse(Request_Date.Text).ToString("yyyy-MM-dd HH:mm:ss")
 
         Dim AI_Account_No As DropDownList = pnlAddEditAppProductLicence.FindControl("DDL_AI_Account_No")
         Dim Selected_AI_Account_No As String = IIf(AI_Account_No.SelectedIndex < 0, 0, AI_Account_No.SelectedValue)
@@ -1375,7 +1378,7 @@ Partial Class Form_App_Product_Licence_Form
                                                                   "', '" & Chargeable.SelectedValue &
                                                                   "', '" & OS_Type.Text &
                                                                   "', '" & Email.Text &
-                                                                  "', '" & Trim(Request_Date.Text) &
+                                                                  "', '" & Request_Date_Time &
                                                                  "', N'" & EscapeChar(Remarks.Text) &
                                                                   "', '" & Trim(Selected_AI_Account_No) & "' "
                     RunSQL(sqlStr)
@@ -1391,6 +1394,7 @@ Partial Class Form_App_Product_Licence_Form
             Try
                 Dim sqlStr As String = "UPDATE LMS_Licence " &
                                        "SET Sales_Representative_ID = '" & Sales_Representative_ID.SelectedValue & "' " &
+                                       "  , Request_Received_Date = '" & Request_Date_Time & "' " &
                                        "WHERE Customer_ID = '" & Customer_ID & "' " &
                                        "  AND PO_No = '" & PO_No.Text & "'; "
                 RunSQL(sqlStr)
