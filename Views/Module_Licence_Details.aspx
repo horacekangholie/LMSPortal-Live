@@ -19,11 +19,16 @@
     <link rel="stylesheet" href="/Content/ContentPage.css" />
 
     <style>
+        .title-group {
+            display: flex;
+            flex-direction: column; /* Stack h4 and h5 vertically */
+            margin-left: 5px;
+        }
+
         .header-row {
             display: flex;
-            justify-content: space-between; /* Left and right alignment */
-            align-items: baseline; /* Vertical alignment */
-            margin-bottom: 10px;
+            justify-content: space-between;
+            align-items:baseline;
         }
 
         .right-controls {
@@ -171,13 +176,18 @@
                     <div class="col-md-4">
                         <!-- Module Licence Pool -->
                         <div style="width: 100%; float: left">
-                            <h4 style="margin-left: 5px; margin-bottom: 38px">Distributor Main Pool</h4>
+                            <div class="title-group">
+                                <h4>Distributor Main Pool</h4>
+                            </div>
+                            <div class="form-group form-inline" style="margin-right: 10px; margin-top: 0px"></div>
                             <asp:GridView ID="GridView3" runat="server"></asp:GridView>
                         </div>
                     </div>
                     <div class="col-md-8">
                         <div class="header-row">
-                            <h4 style="margin-left: 5px">Customer Pool</h4>
+                            <div class="title-group">
+                                <h4>Customer Pool - <i>New AI Business Model</i></h4>
+                            </div>
                             <!-- Searchbox for AI Account -->
                             <div class="form-group form-inline" style="margin-right: 10px; margin-top: 0px">
                                 <asp:TextBox ID="TB_AI_Account_Search" runat="server" CssClass="form-control joined-input" Width="400" placeholder="Type to search..."></asp:TextBox>
