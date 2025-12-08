@@ -262,7 +262,7 @@
                     </div>
                     <div class="col-md-8">
                         <div class="header-row">
-                            <h4 style="margin-left: 5px">Customer Pool</h4>
+                            <h4 style="margin-left: 5px">Customer Pool</h4><br /><h5>(New AI Business Model)</h5>
                             <!-- Searchbox for AI Account -->
                             <div class="form-group form-inline" style="margin-right: 10px; margin-top: 0px">
                                 <asp:TextBox ID="TB_AI_Account_Search" runat="server" CssClass="form-control joined-input" Width="400" placeholder="Type to search..."></asp:TextBox>
