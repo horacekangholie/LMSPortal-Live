@@ -190,17 +190,33 @@ Partial Class Listings_App_Product_Licence
             Dim InvoiceDownloadLink As HyperLink = New HyperLink()
             InvoiceDownloadLink.ID = "lnkDownload"
 
-            If drv("Invoice No") <> "" And drv("Invoice No") <> "NA" And drv("Invoice No") <> UCase("Cancelled") Then
-                e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Controls.Add(InvoiceDownloadLink)
-                InvoiceDownloadLink.Text = drv("Invoice No")
-                InvoiceDownloadLink.NavigateUrl = String.Format("/Download/DownloadFile.aspx?Inv_Ref_No={0}", drv("Invoice No"))
-                InvoiceDownloadLink.Target = "_blank"
-            ElseIf drv("Invoice No") = UCase("Cancelled") Then
-                '' if the order is cancelled then display Cancelled
-                e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Text = drv("Invoice No")
-                e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Style.Add("font-style", "italic")
-                e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Style.Add("color", "#999999")
+            '' Validate the invoice format
+            Dim isInvoiceFormatMatch As Boolean = Regex.IsMatch(drv("Invoice No"), "^TWS/", RegexOptions.IgnoreCase)
+
+            If drv("Invoice No") <> "" Then
+                If isInvoiceFormatMatch Then
+                    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Controls.Add(InvoiceDownloadLink)
+                    InvoiceDownloadLink.Text = drv("Invoice No")
+                    InvoiceDownloadLink.NavigateUrl = String.Format("/Download/DownloadFile.aspx?Inv_Ref_No={0}", drv("Invoice No"))
+                    InvoiceDownloadLink.Target = "_blank"
+                Else
+                    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Text = drv("Invoice No").ToString.ToUpper()
+                    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Style.Add("font-style", "italic")
+                    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Style.Add("color", "#999999")
+                End If
             End If
+
+            'If drv("Invoice No") <> "" And drv("Invoice No") <> "NA" And drv("Invoice No") <> UCase("Cancelled") Then
+            '    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Controls.Add(InvoiceDownloadLink)
+            '    InvoiceDownloadLink.Text = drv("Invoice No")
+            '    InvoiceDownloadLink.NavigateUrl = String.Format("/Download/DownloadFile.aspx?Inv_Ref_No={0}", drv("Invoice No"))
+            '    InvoiceDownloadLink.Target = "_blank"
+            'ElseIf drv("Invoice No") = UCase("Cancelled") Then
+            '    '' if the order is cancelled then display Cancelled
+            '    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Text = drv("Invoice No")
+            '    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Style.Add("font-style", "italic")
+            '    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Style.Add("color", "#999999")
+            'End If
 
             '' Edit Button
             Dim EditctrlCellIndex As Integer = e.Row.Cells.Count - 1
