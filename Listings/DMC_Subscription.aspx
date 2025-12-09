@@ -133,16 +133,6 @@
                             </asp:RequiredFieldValidator>
                         </td>
                     </tr>
-                    <tr style="vertical-align: top">
-                        <td style="width: 400px; padding: 0px 10px 20px 0px">
-                            <label>Status</label>
-                            <asp:DropDownList ID="DDL_Status" runat="server" CssClass="form-control" AutoPostBack="true">
-                                <asp:ListItem Text="Billed" Value="Billed"></asp:ListItem>
-                                <asp:ListItem Text="Cancelled" Value="Cancelled"></asp:ListItem>
-                            </asp:DropDownList>
-                        </td>
-                        <td style="width: 400px; padding: 0px 10px 20px 0px"></td>
-                    </tr>
                     <tr style="vertical-align: bottom">
                         <td style="width: 800px; padding: 10px 10px 10px 0px" colspan="2">
                             <asp:Button ID="btnUpdateSubscription" runat="server" CssClass="btn btn-sm btn-default" ValidationGroup="Subscription" />

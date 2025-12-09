@@ -141,12 +141,28 @@ Partial Class Listings_DMC_Subscription
             Dim InvoiceDownloadLink As HyperLink = New HyperLink()
             InvoiceDownloadLink.ID = "lnkDownload"
 
-            If drv("Invoice No") <> "" And drv("Invoice No") <> "NA" Then
-                e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Controls.Add(InvoiceDownloadLink)
-                InvoiceDownloadLink.Text = drv("Invoice No")
-                InvoiceDownloadLink.NavigateUrl = String.Format("/Download/DownloadFile.aspx?Inv_Ref_No={0}", drv("Invoice No"))
-                InvoiceDownloadLink.Target = "_blank"
+            '' Validate the invoice format
+            Dim isInvoiceFormatMatch As Boolean = Regex.IsMatch(drv("Invoice No"), "^TWS/", RegexOptions.IgnoreCase)
+
+            If drv("Invoice No") <> "" Then
+                If isInvoiceFormatMatch Then
+                    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Controls.Add(InvoiceDownloadLink)
+                    InvoiceDownloadLink.Text = drv("Invoice No")
+                    InvoiceDownloadLink.NavigateUrl = String.Format("/Download/DownloadFile.aspx?Inv_Ref_No={0}", drv("Invoice No"))
+                    InvoiceDownloadLink.Target = "_blank"
+                Else
+                    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Text = drv("Invoice No").ToString.ToUpper()
+                    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Style.Add("font-style", "italic")
+                    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Style.Add("color", "#999999")
+                End If
             End If
+
+            'If drv("Invoice No") <> "" And drv("Invoice No") <> "NA" Then
+            '    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Controls.Add(InvoiceDownloadLink)
+            '    InvoiceDownloadLink.Text = drv("Invoice No")
+            '    InvoiceDownloadLink.NavigateUrl = String.Format("/Download/DownloadFile.aspx?Inv_Ref_No={0}", drv("Invoice No"))
+            '    InvoiceDownloadLink.Target = "_blank"
+            'End If
 
             '' Edit Button
             Dim EditctrlCellIndex As Integer = e.Row.Cells.Count - 1
@@ -167,7 +183,7 @@ Partial Class Listings_DMC_Subscription
             AddHandler VoidLinkButton.Click, AddressOf Void_Subscription_Click
 
             '' Lock record if invoice has been recovered
-            If drv("Invoice No") = "" Then
+            If drv("Invoice No") = "" And drv("Status") <> "Cancelled" Then
                 EditLinkButton.Text = "<i class='bi bi-pencil-fill'></i>"
                 EditLinkButton.CssClass = "btn btn-xs btn-info"
                 EditLinkButton.Enabled = True
@@ -193,21 +209,6 @@ Partial Class Listings_DMC_Subscription
         End If
     End Sub
 
-    Protected Sub DDL_Status_SelectedIndexChanged(sender As Object, e As EventArgs) Handles DDL_Status.SelectedIndexChanged
-        Dim Status As DropDownList = pnlUpdateSubscription.FindControl("DDL_Status")
-        If Status.Text = "Cancelled" Then
-            TB_Invoice_No.Enabled = False
-            TB_Invoice_Date.Enabled = False
-            RequiredField_TB_Invoice_No.Enabled = False
-            RequiredField_TB_Invoice_Date.Enabled = False
-        Else
-            TB_Invoice_No.Enabled = True
-            TB_Invoice_Date.Enabled = True
-            RequiredField_TB_Invoice_No.Enabled = True
-            RequiredField_TB_Invoice_Date.Enabled = True
-        End If
-        popupSubscription.Show()
-    End Sub
 
 
     '' record edit control
@@ -232,12 +233,12 @@ Partial Class Listings_DMC_Subscription
         Dim Subscription_ID As TextBox = pnlUpdateSubscription.FindControl("TB_Subscription_ID")
         Dim Invoice_No As TextBox = pnlUpdateSubscription.FindControl("TB_Invoice_No")
         Dim Invoice_Date As TextBox = pnlUpdateSubscription.FindControl("TB_Invoice_Date")
-        Dim Status As DropDownList = pnlUpdateSubscription.FindControl("DDL_Status")
+        Dim Status As String = "Billed"
 
         Try
             Dim sqlStr As String = "UPDATE DMC_Subscription SET Ref_Invoice_No = N'" & Invoice_No.Text &
                                                               "', Invoiced_Date = '" & Invoice_Date.Text &
-                                                              "', Payment_Status = '" & Status.Text &
+                                                              "', Payment_Status = '" & Status &
                                                               "' WHERE Subscription_ID = '" & Subscription_ID.Text & "' "
             RunSQL(sqlStr)
         Catch ex As Exception
@@ -254,14 +255,13 @@ Partial Class Listings_DMC_Subscription
     Protected Sub Void_Subscription_Click(ByVal sender As Object, ByVal e As EventArgs)
         Dim VoidLinkButton As LinkButton = TryCast(sender, LinkButton)
         Dim Subscription_ID As String = VoidLinkButton.CommandArgument
-        MsgBox(Subscription_ID)
         Try
             Dim sqlStr As String = "EXEC SP_Void_DMC_Subscription '" & Subscription_ID & "' "
             RunSQL(sqlStr)
         Catch ex As Exception
             Response.Write("ERROR: " & ex.Message)
         End Try
-
+        ScriptManager.RegisterClientScriptBlock(Me.Page, Me.Page.GetType(), "alert", "alert('Subscription cancelled');", True)
         PopulateGridViewData(TB_Search.Text)
     End Sub
 
