@@ -33,7 +33,7 @@ Partial Class Views_App_Product_Licence_Details
     Protected Sub PopulateGridViewData(Optional ByVal TB_Search As String = Nothing)
         Dim keyword As String = EscapeChar(TB_Search)
         Try
-            Dim sqlStr() As String = {"SELECT * FROM R_LMS_Licence_Order WHERE [Customer ID] = '" & Request.QueryString("Customer_ID") & "' ORDER BY CASE [PO No] WHEN 'NA' THEN 2 ELSE 1 END, [PO Date] DESC ",
+            Dim sqlStr() As String = {"SELECT * FROM R_LMS_Licence_Order WHERE [Customer ID] = '" & Request.QueryString("Customer_ID") & "' AND ([PO No] IN (SELECT PO_No FROM LMS_Licence WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "' AND REPLACE(Licence_Code, '-', '') LIKE '%" & Replace(keyword, "-", "") & "%') OR [PO No] LIKE '%" & keyword & "%') ORDER BY CASE [PO No] WHEN 'NA' THEN 2 ELSE 1 END, [PO Date] DESC ",
                                       "SELECT * FROM _LicenceUsage WHERE [Customer ID] = '" & Request.QueryString("Customer_ID") & "' ",
                                       "SELECT * FROM I_Termed_Licence_Renewal WHERE [Customer ID] = '" & Request.QueryString("Customer_ID") & "' ",
                                       "SELECT [UID], [PO No], [PO Date], [Invoice No], [Invoice Date], [Currency], SUM(Fee) AS [Total Amount], [Renewal Date] FROM R_Termed_Licence_Renewal WHERE [Customer ID] = '" & Request.QueryString("Customer_ID") & "' GROUP BY [UID], [PO No], [PO Date], [Invoice No], [Invoice Date], [Currency], [Renewal Date] ORDER BY [UID] DESC ",
@@ -473,7 +473,12 @@ Partial Class Views_App_Product_Licence_Details
 
 
     '' Searchbox
-    Protected Sub BT_Search_Click(ByVal sender As Object, ByVal e As EventArgs) Handles BT_Search.Click
+    Protected Sub BT_Search_Click(sender As Object, e As EventArgs) Handles BT_Search.Click
+        PopulateFormViewData()
+        PopulateGridViewData(TB_Search.Text)
+    End Sub
+
+    Protected Sub BT_Token_Search_Click(ByVal sender As Object, ByVal e As EventArgs) Handles BT_Token_Search.Click
         PopulateFormViewData()
         PopulateGridViewData(TB_Search.Text)
     End Sub

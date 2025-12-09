@@ -147,6 +147,11 @@
         <div class="tab-pane" id="appproductlicenceorder" role="tabpanel">
             <!-- App / Product Licence Details -->
             <div style="padding: 20px 0px 40px 10px; border: solid 1px; border-color: #fff #dee2e6 #dee2e6">
+                <!-- Searchbox for Licence -->
+                <div class="form-group form-inline" style="float: left; margin-left: 0px; margin-top: 0px">
+                    <asp:TextBox ID="TB_Search" runat="server" CssClass="form-control" Width="400" placeholder="Type to search..."></asp:TextBox>
+                    <asp:Button ID="BT_Search" runat="server" CssClass="form-control btn btn-outline btn-info" Text="Search" />
+                </div>
                 <asp:GridView ID="GridView1" runat="server"></asp:GridView>
             </div>
         </div>
@@ -175,8 +180,8 @@
         <div class="tab-pane" id="aigatewaytoken" role="tabpanel">
             <!-- Searchbox for CZL Licenced Devices -->
             <div class="form-group form-inline" style="float: left; margin-left: 15px; margin-top: 20px">
-                <asp:TextBox ID="TB_Search" runat="server" CssClass="form-control" Width="400" placeholder="Type in token, licence code to search..."></asp:TextBox>
-                <asp:Button ID="BT_Search" runat="server" CssClass="form-control btn btn-outline btn-info" Text="Search" />
+                <asp:TextBox ID="TB_Token_Search" runat="server" CssClass="form-control" Width="400" placeholder="Type in token, licence code to search..."></asp:TextBox>
+                <asp:Button ID="BT_Token_Search" runat="server" CssClass="form-control btn btn-outline btn-info" Text="Search" />
             </div>
             <!-- AI Gateway Token -->
             <div style="padding: 20px 0px 40px 10px; border: solid 1px; border-color: #fff #dee2e6 #dee2e6">
