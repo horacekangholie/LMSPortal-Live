@@ -84,13 +84,17 @@
                         </table>
                         <table border="0" style="width: 100%">
                             <tr style="vertical-align: top">
-                                <td style="width: 75%; padding: 20px 10px 10px 0px">
+                                <td style="width: 30%; padding: 20px 10px 10px 0px">
                                     <label>MAC Address / UUID</label>
                                     <asp:TextBox ID="TB_MAC_Address" Text='<%# Eval("MAC Address") %>' runat="server" CssClass="form-control" ReadOnly="true" />
                                 </td>
-                                <td style="width: 25%; padding: 20px 10px 10px 0px">
+                                <td style="width: 20%; padding: 20px 10px 10px 0px">
                                     <label>Serial No.</label>
                                     <asp:TextBox ID="TB_Serial_No" Text='<%# Eval("Serial No") %>' runat="server" CssClass="form-control" ReadOnly="true" />
+                                </td>
+                                <td style="width: 50%; padding: 20px 10px 10px 0px">
+                                    <label>AI Activation Key (CZL QR Code)</label>
+                                    <asp:TextBox ID="TB_AI_Activation_Key" Text='<%# Eval("AI Activation Key") %>' runat="server" CssClass="form-control" ReadOnly="true" />
                                 </td>
                             </tr>
                         </table>
@@ -122,7 +126,7 @@
                 </div>
                 <div class="card border-light mb-3" style="width:49%;display:inline-block;margin-left:10px">
                     <div class="card-header">
-                        <h4 class="card-title">Owner Details</h4>
+                        <h4 class="card-title">Licensee Details</h4>
                     </div>
                     <div class="card-body">
                         <table border="0" style="width: 100%">
@@ -240,13 +244,17 @@
                         </table>
                         <table border="0" style="width: 100%">
                             <tr style="vertical-align: top">
-                                <td style="width: 75%; padding: 20px 10px 10px 0px">
+                                <td style="width: 30%; padding: 20px 10px 10px 0px">
                                     <label>MAC Address / UUID / DRM Key</label>
                                     <asp:TextBox ID="TB_E_MAC_Address" Text='<%# Eval("MAC Address") %>' runat="server" CssClass="form-control" ReadOnly="true" />
                                 </td>
-                                <td style="width: 25%; padding: 20px 10px 10px 0px">
+                                <td style="width: 20%; padding: 20px 10px 10px 0px">
                                     <label>Serial No.</label>
                                     <asp:TextBox ID="TB_E_Serial_No" Text='<%# Eval("Serial No") %>' runat="server" CssClass="form-control" />
+                                </td>
+                                <td style="width: 50%; padding: 20px 10px 10px 0px">
+                                    <label>AI Activation Key (CZL QR Code)</label>
+                                    <asp:TextBox ID="TB_E_AI_Activation_Key" Text='<%# Eval("AI Activation Key") %>' runat="server" CssClass="form-control" />
                                 </td>
                             </tr>
                         </table>

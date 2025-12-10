@@ -118,10 +118,15 @@ Partial Class Reports_Licence_Details
         Dim Serial_No As TextBox = FormView1.FindControl("TB_E_Serial_No")
         Dim AI_Device_ID As TextBox = FormView1.FindControl("TB_E_AI_Device_ID")
         Dim AI_Device_Serial_No As TextBox = FormView1.FindControl("TB_E_AI_Device_Serial_No")
+        Dim AI_Activation_Key As TextBox = FormView1.FindControl("TB_E_AI_Activation_Key")
         Dim Remarks As TextBox = FormView1.FindControl("TB_E_Remarks")
 
         Dim sqlStr As String = "UPDATE LMS_Licence " &
-                               "SET Serial_No = '" & Serial_No.Text & "', AI_Device_ID = '" & AI_Device_ID.Text & "', AI_Device_Serial_No = '" & AI_Device_Serial_No.Text & "', Remarks = '" & Remarks.Text & "' " &
+                               "SET Serial_No = '" & Serial_No.Text &
+                               " ', AI_Activation_Key = '" & AI_Activation_Key.Text &
+                               " ', AI_Device_ID = '" & AI_Device_ID.Text &
+                               " ', AI_Device_Serial_No = '" & AI_Device_Serial_No.Text &
+                               " ', Remarks = '" & Remarks.Text & "' " &
                                "WHERE Licence_Code = '" & Licence_Code & "' "
 
         Try
