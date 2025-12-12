@@ -1725,13 +1725,13 @@ Partial Class Form_Module_Licence_Form
             If UploadedRecordCount > 0 Then
                 Try
                     Dim sqlStr As String = " EXEC SP_CRUD_LMS_Licence '" & Customer_ID &
-                                                                 "', N'" & PO_No.Text &
+                                                                 "', N'" & PO_No.Text.Trim() &
                                                                   "', '" & PO_Date.Text &
                                                                   "', '" & Application_Type.Text &
                                                                   "', '" & Sales_Representative_ID.Text &
                                                                   "', '" & Chargeable.SelectedValue &
                                                                   "', '" & OS_Type.Text &
-                                                                  "', '" & Email.Text &
+                                                                  "', '" & Email.Text.Trim() &
                                                                   "', '" & Request_Date_Time &
                                                                   "', N'" & EscapeChar(Remarks.Text) &
                                                                   "', '0' "
