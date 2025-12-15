@@ -251,8 +251,9 @@ Partial Class Listings_Module_Licence
             VoidLinkButton.CausesValidation = False
             AddHandler VoidLinkButton.Click, AddressOf VoidLicenceRequest_Click
 
+            '' Reset assigned Invoice section
             Dim ResetLinkButton As LinkButton = TryCast(e.Row.Cells(EditctrlCellIndex).Controls(2), LinkButton)
-            ResetLinkButton.CommandArgument = drv("UID") & "|" & drv("Customer ID") & "|" & drv("PO No") & "|" & drv("Invoice No")
+            ResetLinkButton.CommandArgument = drv("Customer ID") & "|" & drv("PO No") & "|" & drv("Invoice No")
             ResetLinkButton.Attributes.Add("onclick", "javascript:if (confirm('You are about to reset the " & drv("Invoice No") & " assigned.\nClick OK to proceed.\nOtherwise, click Cancel')){return true;} else {return false;}")
             ResetLinkButton.CausesValidation = False
             AddHandler ResetLinkButton.Click, AddressOf ResetInvoiceAssigned_Click
@@ -381,14 +382,12 @@ Partial Class Listings_Module_Licence
         Dim ResetLinkButton As LinkButton = TryCast(sender, LinkButton)
         Dim ResetLinkButtonArray As String() = Split(ResetLinkButton.CommandArgument, "|")
         Dim Module_Type As String = Request.QueryString("Module")
-        Dim UID As String = ResetLinkButtonArray(0)
-        Dim Custoemr_ID As String = ResetLinkButtonArray(1)
-        Dim PO_No As String = ResetLinkButtonArray(2)
-        Dim Invoice_No As String = ResetLinkButtonArray(3)
+        Dim Custoemr_ID As String = ResetLinkButtonArray(0)
+        Dim PO_No As String = ResetLinkButtonArray(1)
+        Dim Invoice_No As String = ResetLinkButtonArray(2)
 
         Try
-            Dim sqlStr As String = "EXEC SP_Reset_Invoice_Assigned '" & Module_Type &
-                                                               "', '" & UID &
+            Dim sqlStr As String = "EXEC SP_Reset_Invoice_Assigned N'" & Module_Type &
                                                                "', '" & Custoemr_ID &
                                                                "', '" & PO_No &
                                                                "', '" & Invoice_No & "' "
