@@ -258,6 +258,9 @@ Partial Class Listings_Module_Licence
             AddHandler ResetLinkButton.Click, AddressOf ResetInvoiceAssigned_Click
 
 
+            Dim createdDate As DateTime
+            Dim createdDateText As String = drv("Created Date").ToString().Trim()
+
             '' Lock record if invoice has been recovered or the already cancelled
             If drv("Invoice No") = "" And drv("Invoice No") <> UCase("Cancelled") Then
                 EditLinkButton.Text = "<i class='bi bi-pencil-fill'></i>"
@@ -274,9 +277,16 @@ Partial Class Listings_Module_Licence
                 EditLinkButton.Enabled = False
 
                 If drv("Invoice No") <> UCase("Cancelled") Then
-                    ResetLinkButton.Text = "<i class='bi bi-arrow-counterclockwise'></i>"
-                    ResetLinkButton.CssClass = "btn btn-xs btn-secondary"
-                    ResetLinkButton.Enabled = True
+                    If DateTime.TryParse(createdDateText, createdDate) Then
+                        If createdDate > DateTime.Today.AddMonths(-3) Then
+                            ResetLinkButton.Text = "<i class='bi bi-arrow-counterclockwise'></i>"
+                            ResetLinkButton.CssClass = "btn btn-xs btn-secondary"
+                            ResetLinkButton.Visible = True
+                        Else
+                            ResetLinkButton.Visible = False
+                        End If
+                    End If
+
                 End If
             End If
 
