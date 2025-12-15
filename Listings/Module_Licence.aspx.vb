@@ -233,18 +233,6 @@ Partial Class Listings_Module_Licence
                 End If
             End If
 
-            'If drv("Invoice No") <> "" And drv("Invoice No") <> "NA" And drv("Invoice No") <> UCase("Cancelled") Then
-            '    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Controls.Add(InvoiceDownloadLink)
-            '    InvoiceDownloadLink.Text = drv("Invoice No")
-            '    InvoiceDownloadLink.NavigateUrl = String.Format("/Download/DownloadFile.aspx?Inv_Ref_No={0}", drv("Invoice No"))
-            '    InvoiceDownloadLink.Target = "_blank"
-            'ElseIf drv("Invoice No") = UCase("Cancelled") Then
-            '    '' if the order is cancelled then display Cancelled
-            '    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Text = drv("Invoice No")
-            '    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Style.Add("font-style", "italic")
-            '    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Style.Add("color", "#999999")
-            'End If
-
             '' Edit Button
             Dim EditctrlCellIndex As Integer = e.Row.Cells.Count - 1
             Dim EditLinkButton As LinkButton = TryCast(e.Row.Cells(EditctrlCellIndex).Controls(0), LinkButton)
@@ -263,6 +251,12 @@ Partial Class Listings_Module_Licence
             VoidLinkButton.CausesValidation = False
             AddHandler VoidLinkButton.Click, AddressOf VoidLicenceRequest_Click
 
+            Dim ResetLinkButton As LinkButton = TryCast(e.Row.Cells(EditctrlCellIndex).Controls(2), LinkButton)
+            ResetLinkButton.CommandArgument = drv("UID") & "|" & drv("Customer ID") & "|" & drv("PO No") & "|" & drv("Invoice No")
+            ResetLinkButton.Attributes.Add("onclick", "javascript:if (confirm('You are about to reset the " & drv("Invoice No") & " assigned.\nClick OK to proceed.\nOtherwise, click Cancel')){return true;} else {return false;}")
+            ResetLinkButton.CausesValidation = False
+            AddHandler ResetLinkButton.Click, AddressOf ResetInvoiceAssigned_Click
+
 
             '' Lock record if invoice has been recovered or the already cancelled
             If drv("Invoice No") = "" And drv("Invoice No") <> UCase("Cancelled") Then
@@ -278,6 +272,10 @@ Partial Class Listings_Module_Licence
                 EditLinkButton.CssClass = "btn btn-xs btn-light disabled"
                 EditLinkButton.ToolTip = "Item Locked"
                 EditLinkButton.Enabled = False
+
+                ResetLinkButton.Text = "<i class='bi bi-arrow-counterclockwise'></i>"
+                ResetLinkButton.CssClass = "btn btn-xs btn-light"
+                ResetLinkButton.Enabled = True
             End If
 
         End If
@@ -359,6 +357,29 @@ Partial Class Listings_Module_Licence
 
         Try
             Dim sqlStr As String = "EXEC SP_Void_Licence_Request '" & PO_No & "', '" & Customer_ID & "' "
+            RunSQL(sqlStr)
+        Catch ex As Exception
+            Response.Write("ERROR: " & ex.Message)
+        End Try
+
+        PopulateGridViewData(TB_Search.Text)
+    End Sub
+
+    Protected Sub ResetInvoiceAssigned_Click(ByVal sender As Object, ByVal e As EventArgs)
+        Dim ResetLinkButton As LinkButton = TryCast(sender, LinkButton)
+        Dim ResetLinkButtonArray As String() = Split(ResetLinkButton.CommandArgument, "|")
+        Dim Module_Type As String = Request.QueryString("Module")
+        Dim UID As String = ResetLinkButtonArray(0)
+        Dim Custoemr_ID As String = ResetLinkButtonArray(1)
+        Dim PO_No As String = ResetLinkButtonArray(2)
+        Dim Invoice_No As String = ResetLinkButtonArray(3)
+
+        Try
+            Dim sqlStr As String = "EXEC SP_Reset_Invoice_Assigned '" & Module_Type &
+                                                               "', '" & UID &
+                                                               "', '" & Custoemr_ID &
+                                                               "', '" & PO_No &
+                                                               "', '" & Invoice_No & "' "
             RunSQL(sqlStr)
         Catch ex As Exception
             Response.Write("ERROR: " & ex.Message)
