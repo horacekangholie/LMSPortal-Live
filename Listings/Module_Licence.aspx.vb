@@ -273,9 +273,11 @@ Partial Class Listings_Module_Licence
                 EditLinkButton.ToolTip = "Item Locked"
                 EditLinkButton.Enabled = False
 
-                ResetLinkButton.Text = "<i class='bi bi-arrow-counterclockwise'></i>"
-                ResetLinkButton.CssClass = "btn btn-xs btn-light"
-                ResetLinkButton.Enabled = True
+                If drv("Invoice No") <> UCase("Cancelled") Then
+                    ResetLinkButton.Text = "<i class='bi bi-arrow-counterclockwise'></i>"
+                    ResetLinkButton.CssClass = "btn btn-xs btn-secondary"
+                    ResetLinkButton.Enabled = True
+                End If
             End If
 
         End If
