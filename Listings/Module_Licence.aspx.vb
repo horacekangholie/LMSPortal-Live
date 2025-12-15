@@ -279,7 +279,7 @@ Partial Class Listings_Module_Licence
 
                 If drv("Invoice No") <> UCase("Cancelled") Then
                     If DateTime.TryParse(createdDateText, createdDate) Then
-                        If createdDate > DateTime.Today.AddYears(-1) Then
+                        If createdDate > DateTime.Today.AddMonths(-6) Then
                             ResetLinkButton.Text = "<i class='bi bi-arrow-counterclockwise'></i>"
                             ResetLinkButton.CssClass = "btn btn-xs btn-secondary"
                             ResetLinkButton.Visible = True
