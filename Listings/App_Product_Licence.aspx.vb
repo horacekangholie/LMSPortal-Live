@@ -357,7 +357,7 @@ Partial Class Listings_App_Product_Licence
     Protected Sub ResetInvoiceAssigned_Click(ByVal sender As Object, ByVal e As EventArgs)
         Dim ResetLinkButton As LinkButton = TryCast(sender, LinkButton)
         Dim ResetLinkButtonArray As String() = Split(ResetLinkButton.CommandArgument, "|")
-        Dim Module_Type As String = Request.QueryString("Module")
+        Dim Module_Type As String = "App Licence"
         Dim Custoemr_ID As String = ResetLinkButtonArray(0)
         Dim PO_No As String = ResetLinkButtonArray(1)
         Dim Invoice_No As String = ResetLinkButtonArray(2)
