@@ -250,11 +250,6 @@ Partial Class Listings_App_Product_Licence
                 EditLinkButton.ToolTip = "Item Locked"
                 EditLinkButton.Enabled = False
 
-                EditLinkButton.Text = "<i class='bi bi-lock'></i>"
-                EditLinkButton.CssClass = "btn btn-xs btn-light disabled"
-                EditLinkButton.ToolTip = "Item Locked"
-                EditLinkButton.Enabled = False
-
                 If drv("Invoice No") <> UCase("Cancelled") Then
                     If DateTime.TryParse(createdDateText, createdDate) Then
                         If createdDate > DateTime.Today.AddMonths(-3) Then
