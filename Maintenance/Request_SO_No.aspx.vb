@@ -21,7 +21,7 @@ Partial Class Maintenance_Request_SO_No
         Try
             'If chk_empty_account.Checked Then
             Dim sqlStr As String = "SELECT A.[Customer ID], A.[Name], A.[Requestor ID], A.[Requested By] " &
-                                   "     , STRING_AGG(B.[Category], ',') AS [Category] " &
+                                   "     , STRING_AGG(B.[Category], ', ') AS [Category] " &
                                    "     , A.[PO No], A.[PO Date], A.[SO No] " &
                                    "FROM I_DB_SO_No_By_PO A " &
                                    "INNER JOIN _PO_No_Ref_Invoice_For_All_Type_Of_Request B ON B.PO_No = A.[PO No] " &
@@ -115,7 +115,7 @@ Partial Class Maintenance_Request_SO_No
     Protected Sub GridView1_RowUpdating(sender As Object, e As GridViewUpdateEventArgs) Handles GridView1.RowUpdating
         Dim row As GridViewRow = GridView1.Rows(e.RowIndex)
         Dim Customer_ID As String = GridView1.DataKeys(e.RowIndex).Values(0)
-        Dim Category As String() = Split(GridView1.DataKeys(e.RowIndex).Values(1), ",")
+        Dim Category As String() = Split(GridView1.DataKeys(e.RowIndex).Values(1), ", ")
 
         Dim Old_PO_No As String = GridView1.DataKeys(e.RowIndex).Values(2)
         Dim New_PO_No As String = Trim((TryCast(row.FindControl("TB_E_PO_No"), TextBox)).Text)

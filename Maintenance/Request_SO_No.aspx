@@ -64,7 +64,7 @@
         <!-- GridView -->
         <asp:GridView ID="GridView1" runat="server">
             <Columns>
-                <asp:TemplateField HeaderText="Name" ItemStyle-Width="40%">
+                <asp:TemplateField HeaderText="Name" ItemStyle-Width="25%">
                     <ItemTemplate>
                         <asp:Label ID="LB_Name" runat="server" Text='<%# Eval("Name") %>'></asp:Label>
                     </ItemTemplate>
@@ -72,7 +72,7 @@
                         <asp:TextBox ID="TB_E_Name" runat="server" Text='<%# Eval("Name") %>' ReadOnly="true" Enabled="false" CssClass="form-control"></asp:TextBox>
                     </EditItemTemplate>
                 </asp:TemplateField>
-                <asp:TemplateField HeaderText="Requested By" ItemStyle-Width="20%">
+                <asp:TemplateField HeaderText="Requested By" ItemStyle-Width="15%">
                     <ItemTemplate>
                         <asp:Label ID="LB_Requested_By" runat="server" Text='<%# Eval("Requested By") %>'></asp:Label>
                     </ItemTemplate>
@@ -80,6 +80,14 @@
                         <asp:TextBox ID="TB_E_Requested_By" runat="server" Text='<%# Eval("Requested By") %>' ReadOnly="true" Enabled="false" CssClass="form-control"></asp:TextBox>
                     </EditItemTemplate>
                 </asp:TemplateField>
+                <asp:TemplateField HeaderText="Request Type" ItemStyle-Width="20%" ItemStyle-Wrap="false">
+                    <ItemTemplate>
+                        <asp:Label ID="LB_Request_Type" runat="server" Text='<%# Eval("Category") %>'></asp:Label>
+                    </ItemTemplate>
+                    <EditItemTemplate>
+                        <asp:TextBox ID="TB_E_Requested_Type" runat="server" Text='<%# Eval("Category") %>' ReadOnly="true" Enabled="false" CssClass="form-control"></asp:TextBox>
+                    </EditItemTemplate>
+                </asp:TemplateField>        
                 <asp:TemplateField HeaderText="PO No" ItemStyle-Width="15%">
                     <ItemTemplate>
                         <asp:Label ID="LB_PO_No" runat="server" Text='<%# Eval("PO No") %>'></asp:Label>
