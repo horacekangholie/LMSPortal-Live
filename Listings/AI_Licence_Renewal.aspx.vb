@@ -202,7 +202,8 @@ Partial Class Listings_AI_Licence_Renewal
 
 
             Dim createdDate As DateTime
-            Dim createdDateText As String = drv("PO Date").ToString().Trim()
+            Dim createdDateText As String = drv("UID").ToString().Trim()
+            Dim uidDate As New Date(createdDateText.Substring(4, 4), createdDateText.Substring(8, 2), 1)
 
             '' Lock record if invoice has been recovered
             If drv("Invoice No") = "" And drv("Invoice No") <> UCase("Cancelled") Then
@@ -220,8 +221,8 @@ Partial Class Listings_AI_Licence_Renewal
                 EditLinkButton.Enabled = False
 
                 If drv("Invoice No") <> UCase("Cancelled") Then
-                    If DateTime.TryParse(createdDateText, createdDate) Then
-                        If createdDate > DateTime.Today.AddMonths(-30) Then
+                    If DateTime.TryParse(uidDate, createdDate) Then
+                        If createdDate > DateTime.Today.AddMonths(-3) Then
                             ResetLinkButton.Text = "<i class='bi bi-arrow-counterclockwise'></i>"
                             ResetLinkButton.CssClass = "btn btn-xs btn-secondary"
                             ResetLinkButton.Visible = True
