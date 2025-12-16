@@ -201,7 +201,7 @@ Partial Class Listings_DMC_Subscription
                 EditLinkButton.ToolTip = "Item Locked"
                 EditLinkButton.Enabled = False
 
-                If drv("Invoice No") <> UCase("Cancelled") Then
+                If drv("Status") <> "Cancelled" Then
                     If DateTime.TryParse(subscriptionDate, createdDate) Then
                         If createdDate > DateTime.Today.AddMonths(-3) Then
                             ResetLinkButton.Text = "<i class='bi bi-arrow-counterclockwise'></i>"
