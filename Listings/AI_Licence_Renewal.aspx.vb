@@ -203,7 +203,6 @@ Partial Class Listings_AI_Licence_Renewal
 
             Dim renewDate As DateTime
             Dim renewDateText As String = CDate(drv("Renewal Date")).ToString("yyyy-MM-dd")
-            'Dim uidDate As New Date(createdDateText.Substring(4, 4), createdDateText.Substring(8, 2), 1)
 
             '' Lock record if invoice has been recovered
             If drv("Invoice No") = "" And drv("Invoice No") <> UCase("Cancelled") Then
@@ -225,7 +224,7 @@ Partial Class Listings_AI_Licence_Renewal
                         If renewDate > DateTime.Today.AddMonths(-3) Then
                             ResetLinkButton.Text = "<i class='bi bi-arrow-counterclockwise'></i>"
                             ResetLinkButton.CssClass = "btn btn-xs btn-secondary"
-                            ResetLinkButton.Visible = True
+                            ResetLinkButton.Visible = IIf(drv("PO No") <> "NA", True, False)
                         Else
                             ResetLinkButton.Visible = False
                         End If

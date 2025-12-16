@@ -157,11 +157,21 @@ Partial Class Listings_Termed_Licence_Renewal
             '' Invoice Download Link
             Dim InvoiceDownloadLink As HyperLink = New HyperLink()
             InvoiceDownloadLink.ID = "lnkDownload"
-            If drv("Invoice No") <> "" And drv("Invoice No") <> "NA" Then
-                e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Controls.Add(InvoiceDownloadLink)
-                InvoiceDownloadLink.Text = drv("Invoice No")
-                InvoiceDownloadLink.NavigateUrl = String.Format("/Download/DownloadFile.aspx?Inv_Ref_No={0}", drv("Invoice No"))
-                InvoiceDownloadLink.Target = "_blank"
+
+            '' Validate the invoice format
+            Dim isInvoiceFormatMatch As Boolean = Regex.IsMatch(drv("Invoice No"), "^TWS/", RegexOptions.IgnoreCase)
+
+            If drv("Invoice No") <> "" Then
+                If isInvoiceFormatMatch Then
+                    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Controls.Add(InvoiceDownloadLink)
+                    InvoiceDownloadLink.Text = drv("Invoice No")
+                    InvoiceDownloadLink.NavigateUrl = String.Format("/Download/DownloadFile.aspx?Inv_Ref_No={0}", drv("Invoice No"))
+                    InvoiceDownloadLink.Target = "_blank"
+                Else
+                    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Text = drv("Invoice No").ToString.ToUpper()
+                    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Style.Add("font-style", "italic")
+                    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Style.Add("color", "#999999")
+                End If
             End If
 
             '' Edit Button
@@ -174,20 +184,54 @@ Partial Class Listings_Termed_Licence_Renewal
             EditLinkButton.CausesValidation = False
             AddHandler EditLinkButton.Click, AddressOf Edit_TermedLicenceRenewal_Click
 
+            EditLinkButton.Style.Add("margin-right", "5px")   '' add separator between button
+
+            '' Void Button
+            Dim VoidLinkButton As LinkButton = TryCast(e.Row.Cells(EditctrlCellIndex).Controls(1), LinkButton)
+            VoidLinkButton.CommandArgument = drv("UID")
+            VoidLinkButton.CommandName = drv("Customer ID") & "|" & drv("PO No")
+            VoidLinkButton.Attributes.Add("onclick", "javascript:if (confirm('You are about to void PO No. " & drv("PO No") & "\nClick OK to proceed.\nOtherwise, click Cancel')){return true;} else {return false;}")
+            VoidLinkButton.CausesValidation = False
+            AddHandler VoidLinkButton.Click, AddressOf Void_TermedLicenceRenewal_Click
+
+            '' Reset assigned Invoice section
+            Dim ResetLinkButton As LinkButton = TryCast(e.Row.Cells(EditctrlCellIndex).Controls(2), LinkButton)
+            ResetLinkButton.CommandArgument = drv("UID") & "|" & drv("Customer ID") & "|" & drv("PO No") & "|" & drv("Invoice No")
+            ResetLinkButton.Attributes.Add("onclick", "javascript:if (confirm('You are about to reset the " & drv("Invoice No") & " assigned.\nClick OK to proceed.\nOtherwise, click Cancel')){return true;} else {return false;}")
+            ResetLinkButton.CausesValidation = False
+            AddHandler ResetLinkButton.Click, AddressOf ResetInvoiceAssigned_Click
+
+            Dim renewDate As DateTime
+            Dim renewDateText As String = CDate(drv("Renewal Date")).ToString("yyyy-MM-dd")
+
             '' Lock record if invoice has been recovered
             If drv("Invoice No") = "" Then
                 EditLinkButton.Text = "<i class='bi bi-pencil-fill'></i>"
                 EditLinkButton.CssClass = "btn btn-xs btn-info"
                 EditLinkButton.Enabled = True
+
+                VoidLinkButton.Text = "<i class='bi bi-x-circle'></i>"
+                VoidLinkButton.CssClass = "btn btn-xs btn-warning"
+                VoidLinkButton.Enabled = True
             Else
                 EditLinkButton.Text = "<i class='bi bi-lock'></i>"
                 EditLinkButton.CssClass = "btn btn-xs btn-light disabled"
                 EditLinkButton.ToolTip = "Item Locked"
                 EditLinkButton.Enabled = False
+
+                If drv("Invoice No") <> UCase("Cancelled") Then
+                    If DateTime.TryParse(renewDateText, renewDate) Then
+                        If renewDate > DateTime.Today.AddMonths(-3) Then
+                            ResetLinkButton.Text = "<i class='bi bi-arrow-counterclockwise'></i>"
+                            ResetLinkButton.CssClass = "btn btn-xs btn-secondary"
+                            ResetLinkButton.Visible = IIf(drv("PO No") <> "NA", True, False)
+                        Else
+                            ResetLinkButton.Visible = False
+                        End If
+                    End If
+                End If
             End If
-
         End If
-
     End Sub
 
     Private Sub GridView1_RowCreated(sender As Object, e As GridViewRowEventArgs) Handles GridView1.RowCreated
@@ -252,6 +296,42 @@ Partial Class Listings_Termed_Licence_Renewal
     End Sub
 
     Protected Sub Cancel_TermedLicenceRenewal_Click(ByVal sender As Object, ByVal e As EventArgs) Handles btnCancelTermedLicenceRenewal.Click
+        PopulateGridViewData(TB_Search.Text)
+    End Sub
+
+    Protected Sub Void_TermedLicenceRenewal_Click(ByVal sender As Object, ByVal e As EventArgs)
+        Dim VoidLinkButton As LinkButton = TryCast(sender, LinkButton)
+        Dim UID As String = VoidLinkButton.CommandArgument
+
+        Try
+            Dim sqlStr As String = "UPDATE LMS_Termed_Licence_Renewal SET Is_Cancelled = 1 WHERE Renewal_UID = '" & UID & "' "
+            RunSQL(sqlStr)
+        Catch ex As Exception
+            Response.Write("ERROR: " & ex.Message)
+        End Try
+
+        PopulateGridViewData(TB_Search.Text)
+    End Sub
+
+    Protected Sub ResetInvoiceAssigned_Click(ByVal sender As Object, ByVal e As EventArgs)
+        Dim ResetLinkButton As LinkButton = TryCast(sender, LinkButton)
+        Dim ResetLinkButtonArray As String() = Split(ResetLinkButton.CommandArgument, "|")
+        Dim Module_Type As String = "Termed Licence Renewal"
+        Dim UID As String = ResetLinkButtonArray(0)
+        Dim Customer_ID As String = ResetLinkButtonArray(1)
+        Dim PO_No As String = ResetLinkButtonArray(2)
+        Dim Invoice_No As String = ResetLinkButtonArray(3)
+
+        Try
+            Dim sqlStr As String = "EXEC SP_Reset_Invoice_Assigned N'" & Module_Type &
+                                                               "', '" & Customer_ID &
+                                                               "', '" & PO_No &
+                                                               "', '" & Invoice_No & "' "
+            RunSQL(sqlStr)
+        Catch ex As Exception
+            Response.Write("ERROR: " & ex.Message)
+        End Try
+
         PopulateGridViewData(TB_Search.Text)
     End Sub
 
