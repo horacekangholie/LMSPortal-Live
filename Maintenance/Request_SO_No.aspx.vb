@@ -21,7 +21,7 @@ Partial Class Maintenance_Request_SO_No
         Try
             'If chk_empty_account.Checked Then
             Dim sqlStr As String = "SELECT A.[Customer ID], A.[Name], A.[Requestor ID], A.[Requested By] " &
-                                   "     , STRING_AGG(B.[Category], ', ') AS [Category] " &
+                                   "     , STRING_AGG(B.[Category], ',') AS [Category] " &
                                    "     , A.[PO No], A.[PO Date], A.[SO No] " &
                                    "FROM I_DB_SO_No_By_PO A " &
                                    "INNER JOIN _PO_No_Ref_Invoice_For_All_Type_Of_Request B ON B.PO_No = A.[PO No] " &
@@ -56,7 +56,7 @@ Partial Class Maintenance_Request_SO_No
         GridView1.GridLines = GridLines.None
         GridView1.ShowFooter = False
         GridView1.ShowHeaderWhenEmpty = True
-        GridView1.DataKeyNames = New String() {"Customer ID", "Category", "PO No"}
+        GridView1.DataKeyNames = New String() {"Customer ID", "Category", "PO No", "SO No"}
         GridView1.CssClass = "table table-bordered"
 
         '' Header Style
@@ -115,24 +115,29 @@ Partial Class Maintenance_Request_SO_No
     Protected Sub GridView1_RowUpdating(sender As Object, e As GridViewUpdateEventArgs) Handles GridView1.RowUpdating
         Dim row As GridViewRow = GridView1.Rows(e.RowIndex)
         Dim Customer_ID As String = GridView1.DataKeys(e.RowIndex).Values(0)
-        Dim Category As String = GridView1.DataKeys(e.RowIndex).Values(1)
+        Dim Category As String() = Split(GridView1.DataKeys(e.RowIndex).Values(1), ",")
+
         Dim Old_PO_No As String = GridView1.DataKeys(e.RowIndex).Values(2)
         Dim New_PO_No As String = Trim((TryCast(row.FindControl("TB_E_PO_No"), TextBox)).Text)
-        Dim SO_No As String = Trim((TryCast(row.FindControl("TB_E_SO_No"), TextBox)).Text)
 
-        Try
-            Dim sqlStr As String = "UPDATE DB_SO_No_By_PO SET SO_No = '" & SO_No & "' WHERE Customer_ID = '" & Customer_ID & "' AND PO_No = '" & Old_PO_No & "' "
-            RunSQL(sqlStr)
+        Dim Old_SO_No As String = Convert.ToString(GridView1.DataKeys(e.RowIndex).Values(3))
+        Dim New_SO_No As String = Trim((TryCast(row.FindControl("TB_E_SO_No"), TextBox)).Text)
 
-            '' If PO No is changed, then update the PO No in table accordingly
-            If Trim(New_PO_No) <> Trim(Old_PO_No) Then
-                Dim sqlStr1 As String = "EXEC SP_Change_Order_PO_No '" & Customer_ID & "', '" & Category & "', '" & Old_PO_No & "', '" & New_PO_No & "' "
-                RunSQL(sqlStr1)
-            End If
+        '' Loop through to perform record update
+        For i = 0 To Category.Length - 1
+            Try
+                Dim sqlStr = "EXEC SP_Change_Order_PO_No '" & Customer_ID &
+                                                     "', '" & Category(i).Trim() &
+                                                     "', '" & Old_PO_No &
+                                                     "', '" & New_PO_No &
+                                                     "', '" & Old_SO_No &
+                                                     "', '" & New_SO_No & "' "
 
-        Catch ex As Exception
-            Response.Write("ERROR: " & ex.Message)
-        End Try
+                RunSQL(sqlStr)
+            Catch ex As Exception
+                Response.Write("ERROR: " & ex.Message)
+            End Try
+        Next
 
         GridView1.EditIndex = -1
         PopulateGridViewData(TB_Search.Text)
