@@ -285,13 +285,13 @@ Partial Class Listings_DMC_Subscription
         Dim ResetLinkButton As LinkButton = TryCast(sender, LinkButton)
         Dim ResetLinkButtonArray As String() = Split(ResetLinkButton.CommandArgument, "|")
         Dim Module_Type As String = "DMC Subscription"
-        Dim Custoemr_ID As String = ResetLinkButtonArray(0)
+        Dim Customer_ID As String = ResetLinkButtonArray(0)
         Dim Subscription_ID As String = ResetLinkButtonArray(1)
         Dim Invoice_No As String = ResetLinkButtonArray(2)
 
         Try
             Dim sqlStr As String = "EXEC SP_Reset_Invoice_Assigned N'" & Module_Type &
-                                                               "', '" & Custoemr_ID &
+                                                               "', '" & Customer_ID &
                                                                "', '" & Subscription_ID &
                                                                "', '" & Invoice_No & "' "
             RunSQL(sqlStr)

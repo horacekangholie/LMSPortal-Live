@@ -18,7 +18,7 @@ Partial Class Listings_CZL_Account_Setup
         Dim keyword As String = EscapeChar(TB_Search)
         Try
             Dim sqlStr = "SELECT * FROM I_CZL_Account_Setup_Fee " &
-                         "WHERE [Account Name] LIKE '%" & keyword & "%' OR [By Distributor] LIKE '%" & keyword & "%' OR [PO No] LIKE '%" & keyword & "%' OR [Requested By] LIKE '%" & keyword & "%' " &
+                         "WHERE ([Account Name] LIKE '%" & keyword & "%' OR [By Distributor] LIKE '%" & keyword & "%' OR [PO No] LIKE '%" & keyword & "%' OR [Requested By] LIKE '%" & keyword & "%') " &
                          "ORDER BY [CZL Account ID] DESC "
 
             BuildGridView()
@@ -128,35 +128,80 @@ Partial Class Listings_CZL_Account_Setup
             '' Invoice Download Link
             Dim InvoiceDownloadLink As HyperLink = New HyperLink()
             InvoiceDownloadLink.ID = "lnkDownload"
-            If drv("Invoice No") <> "" And drv("Invoice No") <> "NA" Then
-                e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Controls.Add(InvoiceDownloadLink)
-                InvoiceDownloadLink.Text = drv("Invoice No")
-                InvoiceDownloadLink.NavigateUrl = String.Format("/Download/DownloadFile.aspx?Inv_Ref_No={0}", drv("Invoice No"))
-                InvoiceDownloadLink.Target = "_blank"
+
+            '' Validate the invoice format
+            Dim isInvoiceFormatMatch As Boolean = Regex.IsMatch(drv("Invoice No"), "^TWS/", RegexOptions.IgnoreCase)
+
+            If drv("Invoice No") <> "" Then
+                If isInvoiceFormatMatch Then
+                    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Controls.Add(InvoiceDownloadLink)
+                    InvoiceDownloadLink.Text = drv("Invoice No")
+                    InvoiceDownloadLink.NavigateUrl = String.Format("/Download/DownloadFile.aspx?Inv_Ref_No={0}", drv("Invoice No"))
+                    InvoiceDownloadLink.Target = "_blank"
+                Else
+                    '' if the order is cancelled then display Cancelled
+                    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Text = drv("Invoice No")
+                    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Style.Add("font-style", "italic")
+                    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Style.Add("color", "#999999")
+                End If
             End If
 
             '' Edit Button
             Dim EditctrlCellIndex As Integer = e.Row.Cells.Count - 1
             Dim EditLinkButton As LinkButton = TryCast(e.Row.Cells(EditctrlCellIndex).Controls(0), LinkButton)
-            EditLinkButton.Text = "<i class='bi bi-pencil-fill'></i>"
-            EditLinkButton.CssClass = "btn btn-xs btn-info"
             EditLinkButton.CommandArgument = drv("CZL Account ID")
             EditLinkButton.CommandName = drv("Distributor ID") & "|" & drv("PO No")
             EditLinkButton.CausesValidation = False
             AddHandler EditLinkButton.Click, AddressOf Edit_RecoverCZLAccountSetupFee_Click
+
+            EditLinkButton.Style.Add("margin-right", "5px")   '' add separator between button
+
+            '' Void Button
+            Dim VoidLinkButton As LinkButton = TryCast(e.Row.Cells(EditctrlCellIndex).Controls(1), LinkButton)
+            VoidLinkButton.CommandArgument = drv("CZL Account ID")
+            VoidLinkButton.CommandName = drv("Distributor ID") & "|" & drv("PO No")
+            VoidLinkButton.Attributes.Add("onclick", "javascript:if (confirm('You are about to void PO No. " & drv("PO No") & "\nClick OK to proceed.\nOtherwise, click Cancel')){return true;} else {return false;}")
+            VoidLinkButton.CausesValidation = False
+            AddHandler VoidLinkButton.Click, AddressOf Void_RecoverCZLAccountSetupFee_Click
+
+            '' Reset assigned Invoice section
+            Dim ResetLinkButton As LinkButton = TryCast(e.Row.Cells(EditctrlCellIndex).Controls(2), LinkButton)
+            ResetLinkButton.CommandArgument = drv("CZL Account ID")
+            ResetLinkButton.CommandName = drv("CZL Account ID") & "|" & drv("Distributor ID") & "|" & drv("PO No") & "|" & drv("Invoice No")
+            ResetLinkButton.Attributes.Add("onclick", "javascript:if (confirm('You are about to reset the " & drv("Invoice No") & " assigned.\nPleaes note any record linked to this Invoice will also be cleared.\nClick OK to proceed.\nOtherwise, click Cancel')){return true;} else {return false;}")
+            ResetLinkButton.CausesValidation = False
+            AddHandler ResetLinkButton.Click, AddressOf ResetInvoiceAssigned_Click
+
+            Dim createdDate As DateTime
+            Dim createdDateText As String = drv("Created Date").ToString().Trim()
 
             '' Lock record if invoice has been recovered
             If drv("Invoice No") = "" Then
                 EditLinkButton.Text = "<i class='bi bi-pencil-fill'></i>"
                 EditLinkButton.CssClass = "btn btn-xs btn-info"
                 EditLinkButton.Enabled = True
+
+                VoidLinkButton.Text = "<i class='bi bi-x-circle'></i>"
+                VoidLinkButton.CssClass = "btn btn-xs btn-warning"
+                VoidLinkButton.Enabled = True
             Else
                 EditLinkButton.Text = "<i class='bi bi-lock'></i>"
                 EditLinkButton.CssClass = "btn btn-xs btn-light disabled"
                 EditLinkButton.ToolTip = "Item Locked"
                 EditLinkButton.Enabled = False
-            End If
 
+                If drv("Invoice No") <> UCase("Cancelled") Then
+                    If DateTime.TryParse(createdDateText, createdDate) Then
+                        If createdDate > DateTime.Today.AddMonths(-3) Then
+                            ResetLinkButton.Text = "<i class='bi bi-arrow-counterclockwise'></i>"
+                            ResetLinkButton.CssClass = "btn btn-xs btn-secondary"
+                            ResetLinkButton.Visible = True
+                        Else
+                            ResetLinkButton.Visible = False
+                        End If
+                    End If
+                End If
+            End If
         End If
     End Sub
 
@@ -305,8 +350,8 @@ Partial Class Listings_CZL_Account_Setup
         Else
             Dim CZL_Account_To_Charge_Setup_Fee As String = Get_Value("SELECT CZL_Account_Unique_ID FROM CZL_Account WHERE Client_ID = '" & DDL_CZL_Client_ID.SelectedValue & "' ", "CZL_Account_Unique_ID")
             Try
-                Dim sqlStr As String = "INSERT INTO CZL_Account_Setup_Charge(CZL_Account_Unique_ID, Client_ID, PO_No, PO_Date, Invoice_No, Invoice_Date, Currency, Fee, Sales_Representative_ID) " &
-                                       "SELECT '" & CZL_Account_To_Charge_Setup_Fee & "', " & DDL_CZL_Client_ID.SelectedValue & ", '" & TB_PO_No.Text & "', '" & TB_PO_Date.Text & "', '', NULL, '" & DDL_Currency.SelectedValue & "', " & TB_Fee.Text & ", '" & DDL_Sales_Representative.SelectedValue & "' "
+                Dim sqlStr As String = "INSERT INTO CZL_Account_Setup_Charge(CZL_Account_Unique_ID, Client_ID, PO_No, PO_Date, Invoice_No, Invoice_Date, Currency, Fee, Sales_Representative_ID, Is_Cancelled) " &
+                                       "SELECT '" & CZL_Account_To_Charge_Setup_Fee & "', " & DDL_CZL_Client_ID.SelectedValue & ", '" & TB_PO_No.Text & "', '" & TB_PO_Date.Text & "', '', NULL, '" & DDL_Currency.SelectedValue & "', " & TB_Fee.Text & ", '" & DDL_Sales_Representative.SelectedValue & "', 0 "
                 RunSQL(sqlStr)
 
                 Dim sqlStr1 As String = "INSERT INTO DB_SO_No_By_PO(Customer_ID, Sales_Representative_ID, PO_No, PO_Date) " &
@@ -317,6 +362,42 @@ Partial Class Listings_CZL_Account_Setup
                 Response.Write("ERROR: " & ex.Message)
             End Try
         End If
+
+        PopulateGridViewData(TB_Search.Text)
+    End Sub
+
+    Protected Sub Void_RecoverCZLAccountSetupFee_Click(ByVal sender As Object, ByVal e As EventArgs)
+        Dim VoidLinkButton As LinkButton = TryCast(sender, LinkButton)
+        Dim CZL_Account_ID As String = VoidLinkButton.CommandArgument
+
+        Try
+            Dim sqlStr As String = "UPDATE CZL_Account_Setup_Charge SET Is_Cancelled = 1 WHERE CZL_Account_Unique_ID = '" & CZL_Account_ID & "' "
+            RunSQL(sqlStr)
+        Catch ex As Exception
+            Response.Write("ERROR: " & ex.Message)
+        End Try
+
+        PopulateGridViewData(TB_Search.Text)
+    End Sub
+
+    Protected Sub ResetInvoiceAssigned_Click(ByVal sender As Object, ByVal e As EventArgs)
+        Dim ResetLinkButton As LinkButton = TryCast(sender, LinkButton)
+        Dim ResetLinkButtonArray As String() = Split(ResetLinkButton.CommandName, "|")
+        Dim Module_Type As String = "CZL Account Setup Fee"
+        Dim CZL_Account_ID As String = ResetLinkButtonArray(0)
+        Dim Customer_ID As String = ResetLinkButtonArray(1)
+        Dim PO_No As String = ResetLinkButtonArray(2)
+        Dim Invoice_No As String = ResetLinkButtonArray(3)
+
+        Try
+            Dim sqlStr As String = "EXEC SP_Reset_Invoice_Assigned N'" & Module_Type &
+                                                               "', '" & Customer_ID &
+                                                               "', '" & PO_No &
+                                                               "', '" & Invoice_No & "' "
+            RunSQL(sqlStr)
+        Catch ex As Exception
+            Response.Write("ERROR: " & ex.Message)
+        End Try
 
         PopulateGridViewData(TB_Search.Text)
     End Sub
