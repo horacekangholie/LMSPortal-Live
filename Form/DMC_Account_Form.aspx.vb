@@ -1579,7 +1579,7 @@ Partial Class Form_DMC_Account_Form
                          "ORDER BY ISNULL(Synced_dmcstore_userstoreid, SUBSTRING(Store_ID, 8, 4)) + ' - ' + Name "
 
             Case "DDL_Subscription_Duration", "DDL_Subscription_Batch_Duration"
-                sqlStr = "SELECT CAST(Value_2 AS int) AS Duration, Value_1 AS Duration_Option FROM DB_Lookup WHERE Lookup_Name = 'Payment Period' AND Value_3 = '1' ORDER BY Duration "
+                sqlStr = "SELECT CAST(Value_2 AS int) AS Duration, Value_1 AS Duration_Option FROM DB_Lookup WHERE Lookup_Name = 'Payment Period' ORDER BY Duration "
 
             Case "DDL_Adjust_Subscription_Duration"
                 sqlStr = "SELECT CAST(Value_2 AS int) AS Duration, Value_1 AS Duration_Option FROM DB_Lookup WHERE Lookup_Name = 'Payment Period' ORDER BY Duration "
