@@ -1051,6 +1051,7 @@
                             <div>
                                 <asp:TextBox ID="TB_Selected_Adjust_Subscription_Row_Index" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
                                 <asp:TextBox ID="TB_Selected_Adjust_Subscription_ID" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
+
                             </div>
                         </asp:Panel>
                         <asp:LinkButton ID="lnkFakeAdjustSubscriptionPeriod" runat="server"></asp:LinkButton>

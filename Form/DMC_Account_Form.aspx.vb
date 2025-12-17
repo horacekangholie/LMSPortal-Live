@@ -1241,19 +1241,50 @@ Partial Class Form_DMC_Account_Form
         DDL_Adjust_Subscription_Duration.SelectedIndex = 0
         DDL_Adjust_Subscription_Duration.Enabled = True
 
+
+        '' Populate current start date to field
+        Dim query As String = "SELECT MAX(S.Start_Date) AS Curr_Start_Date " &
+                              "FROM DMC_Subscription S " &
+                              "WHERE S.Store_ID = (Select Store_ID From dbo.DMC_Subscription Where Subscription_ID = '" & TB_Selected_Adjust_Subscription_ID.Text & "') "
+
+        Dim Curr_Start_Date As String = Get_Value(query, "Curr_Start_Date").ToString().Trim()
+        TB_New_Start_Date.Text = CDate(Curr_Start_Date).ToString("yyyy-MM-dd")
+
         popupAdjustSubscriptionPeriod.Show()
     End Sub
 
     Protected Sub Save_Adjust_Subscription_Period_Click(ByVal sender As Object, ByVal e As EventArgs) Handles btnSaveAdjustSubscriptionPeriod.Click
+        Dim Subscription_ID As String = TB_Selected_Adjust_Subscription_ID.Text
         Dim Adjusted_Start_Date As String = TB_New_Start_Date.Text
         Dim Duration As String = DDL_Adjust_Subscription_Duration.Text
-        Dim Subscription_ID As String = TB_Selected_Adjust_Subscription_ID.Text
-        Dim sqlStr As String = "UPDATE DMC_Subscription SET Start_Date = '" & Adjusted_Start_Date & "', End_Date = DATEADD(DAY, -1, DATEADD(MONTH, " & Duration & ", '" & Adjusted_Start_Date & "')) WHERE Subscription_ID = '" & Subscription_ID & "' "
+
+        '' Get end date of last subscription
+        Dim query As String = "SELECT MAX(S.End_Date) AS Prev_End_Date " &
+                              "FROM DMC_Subscription S " &
+                              "WHERE S.Store_ID = (Select Store_ID From dbo.DMC_Subscription Where Subscription_ID = '" & Subscription_ID & "') " &
+                              "  AND S.Subscription_ID <> '" & Subscription_ID & "' "
+
+        Dim Prev_End_Date As String = Get_Value(query, "Prev_End_Date").ToString().Trim()
+
         Try
-            RunSQL(sqlStr)
+            Dim sqlStr = "EXEC SP_Adjust_Subscription_Period '" & Subscription_ID & "', '" & Adjusted_Start_Date & "', '" & Duration & "' "
+
+            If Prev_End_Date <> "" Then
+                If CDate(Adjusted_Start_Date) > CDate(Prev_End_Date) Then
+                    RunSQL(sqlStr)
+                Else
+                    ScriptManager.RegisterClientScriptBlock(Me.Page, Me.Page.GetType(), "alert", "alert('New Start Date cannot be earlier than previous end date.');", True)
+                    popupAdjustSubscriptionPeriod.Show()
+                    TB_New_Start_Date.Focus()    '' set focus on the field
+                End If
+            Else
+                RunSQL(sqlStr)
+            End If
+
         Catch ex As Exception
             Response.Write("Error: " & ex.Message)
         End Try
+
         PopulateGridViewData()
     End Sub
 
@@ -1547,7 +1578,10 @@ Partial Class Form_DMC_Account_Form
                 sqlStr = "SELECT Store_ID, ISNULL(Synced_dmcstore_userstoreid, SUBSTRING(Store_ID, 8, 4)) + ' - ' + Name AS Name FROM DMC_Store WHERE Headquarter_ID IN (SELECT Headquarter_ID FROM DMC_Headquarter WHERE Customer_ID = '" & Request.QueryString("Customer_ID") & "') AND Account_Type = '03' " &
                          "ORDER BY ISNULL(Synced_dmcstore_userstoreid, SUBSTRING(Store_ID, 8, 4)) + ' - ' + Name "
 
-            Case "DDL_Subscription_Duration", "DDL_Subscription_Batch_Duration", "DDL_Adjust_Subscription_Duration"
+            Case "DDL_Subscription_Duration", "DDL_Subscription_Batch_Duration"
+                sqlStr = "SELECT CAST(Value_2 AS int) AS Duration, Value_1 AS Duration_Option FROM DB_Lookup WHERE Lookup_Name = 'Payment Period' AND Value_3 = '1' ORDER BY Duration "
+
+            Case "DDL_Adjust_Subscription_Duration"
                 sqlStr = "SELECT CAST(Value_2 AS int) AS Duration, Value_1 AS Duration_Option FROM DB_Lookup WHERE Lookup_Name = 'Payment Period' ORDER BY Duration "
 
             Case "DDL_Subscription_Currency", "DDL_Subscription_Batch_Currency"
