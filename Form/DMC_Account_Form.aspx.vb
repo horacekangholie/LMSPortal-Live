@@ -1069,7 +1069,7 @@ Partial Class Form_DMC_Account_Form
         DDL_Subscription_Store.SelectedIndex = 0
         DDL_Subscription_Store.Enabled = True
 
-        Shared_Dropdownlist_Bind(DDL_Subscription_Duration, GetSQL(DDL_Subscription_Duration, Nothing, Nothing), "Duration_Option", "Duration", "Please select", True)
+        Shared_Dropdownlist_Bind(DDL_Subscription_Duration, GetSQL(DDL_Subscription_Duration, Nothing, "New"), "Duration_Option", "Duration", "Please select", True)
         DDL_Subscription_Duration.SelectedIndex = 0
         DDL_Subscription_Duration.Enabled = True
 
@@ -1117,7 +1117,7 @@ Partial Class Form_DMC_Account_Form
         DDL_Subscription_Store.SelectedIndex = 0
         DDL_Subscription_Store.Enabled = True
 
-        Shared_Dropdownlist_Bind(DDL_Subscription_Duration, GetSQL(DDL_Subscription_Duration, Nothing, Nothing), "Duration_Option", "Duration", "Please select", True)
+        Shared_Dropdownlist_Bind(DDL_Subscription_Duration, GetSQL(DDL_Subscription_Duration, Nothing, "Edit"), "Duration_Option", "Duration", "Please select", True)
         DDL_Subscription_Duration.SelectedIndex = 0
         DDL_Subscription_Duration.Enabled = True
 
@@ -1328,7 +1328,7 @@ Partial Class Form_DMC_Account_Form
         DDL_Subscription_Batch_Headquarter.SelectedIndex = 0    '' reset the selection when adding new record
         DDL_Subscription_Batch_Headquarter.Enabled = True
 
-        Shared_Dropdownlist_Bind(DDL_Subscription_Batch_Duration, GetSQL(DDL_Subscription_Batch_Duration, Nothing, Nothing), "Duration_Option", "Duration", "Please select", True)
+        Shared_Dropdownlist_Bind(DDL_Subscription_Batch_Duration, GetSQL(DDL_Subscription_Batch_Duration, Nothing, "New"), "Duration_Option", "Duration", "Please select", True)
         DDL_Subscription_Batch_Duration.SelectedIndex = 0
         DDL_Subscription_Batch_Duration.Enabled = True
 
@@ -1579,10 +1579,10 @@ Partial Class Form_DMC_Account_Form
                          "ORDER BY ISNULL(Synced_dmcstore_userstoreid, SUBSTRING(Store_ID, 8, 4)) + ' - ' + Name "
 
             Case "DDL_Subscription_Duration", "DDL_Subscription_Batch_Duration"
-                sqlStr = "SELECT CAST(Value_2 AS int) AS Duration, Value_1 AS Duration_Option FROM DB_Lookup WHERE Lookup_Name = 'Payment Period' ORDER BY Duration "
+                sqlStr = "SELECT CAST(Value_2 AS int) AS Duration, Value_1 AS Duration_Option FROM DB_Lookup WHERE Lookup_Name = 'Payment Period' " & IIf(filter = "New", " AND Value_3 = '1' ", Nothing) & " ORDER BY Duration "
 
             Case "DDL_Adjust_Subscription_Duration"
-                sqlStr = "SELECT CAST(Value_2 AS int) AS Duration, Value_1 AS Duration_Option FROM DB_Lookup WHERE Lookup_Name = 'Payment Period' ORDER BY Duration "
+                sqlStr = "Select CAST(Value_2 As int) As Duration, Value_1 As Duration_Option FROM DB_Lookup WHERE Lookup_Name = 'Payment Period' ORDER BY Duration "
 
             Case "DDL_Subscription_Currency", "DDL_Subscription_Batch_Currency"
                 sqlStr = "SELECT DISTINCT(Value_3) AS Currency FROM DB_Lookup WHERE Lookup_Name = 'Country' AND Value_3 in ('SGD', 'USD', 'EUR') "
