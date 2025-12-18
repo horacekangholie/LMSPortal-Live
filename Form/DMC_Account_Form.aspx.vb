@@ -515,53 +515,123 @@ Partial Class Form_DMC_Account_Form
         End If
     End Sub
 
+    'Protected Sub GridView_Store_List_RowCommand(sender As Object, e As GridViewCommandEventArgs) Handles GridView_Store_List.RowCommand
+    '    If e.CommandName = "Select" Then
+    '        btnAddLineItems.Text = "Update"
+
+    '        Dim rowIndex As Integer = Convert.ToInt32(e.CommandArgument)
+    '        Dim selectedRow As GridViewRow = GridView_Store_List.Rows(rowIndex)
+
+    '        '' Get the value from gridviewrow
+    '        Dim Headquarter_ID As String = selectedRow.Cells(0).Text
+    '        Dim Duration As String = selectedRow.Cells(3).Text
+    '        Dim Currency As String = selectedRow.Cells(4).Text
+    '        Dim Subscription_Fee As String = selectedRow.Cells(5).Text
+    '        Dim Subscriber_Group As String = selectedRow.Cells(8).Text
+
+    '        '' Get the Store_ID from Delete button CommandArgument
+    '        Dim DeleteLinkButton As LinkButton = TryCast(selectedRow.FindControl("DeleteLinkButton"), LinkButton)
+    '        Dim DeleteLinkButtonCommandArgument As Array = Split(DeleteLinkButton.CommandArgument, "|")
+    '        Dim Store_ID As String = DeleteLinkButtonCommandArgument(2)
+
+
+    '        '' Get value of each cell of the selected row
+    '        For i = 0 To selectedRow.Cells.Count - 2
+    '            '' Set the selected Headquarter
+    '            DDL_Subscription_Headquarter.SelectedIndex = DDL_Subscription_Headquarter.Items.IndexOf(DDL_Subscription_Headquarter.Items.FindByValue(selectedRow.Cells(0).Text))
+
+    '            '' Bind store based on selected headquarter and set the selected value
+    '            Shared_Dropdownlist_Bind(DDL_Subscription_Store, GetSQL(DDL_Subscription_Store, Nothing, Headquarter_ID), "Store_Name", "Store_ID", "Please select", True)
+    '            DDL_Subscription_Store.SelectedIndex = DDL_Subscription_Store.Items.IndexOf(DDL_Subscription_Store.Items.FindByValue(Store_ID))
+
+    '            '' Bind and set the selected duration and currency
+    '            DDL_Subscription_Duration.SelectedIndex = DDL_Subscription_Duration.Items.IndexOf(DDL_Subscription_Duration.Items.FindByValue(Duration))
+    '            DDL_Subscription_Currency.SelectedIndex = DDL_Subscription_Currency.Items.IndexOf(DDL_Subscription_Currency.Items.FindByValue(Currency))
+    '            TB_Subscription_Fee.Text = Subscription_Fee
+
+    '            '' Bind the subscriber group
+    '            DDL_Subscription_Subscriber_Group.SelectedIndex = DDL_Subscription_Subscriber_Group.Items.IndexOf(DDL_Subscription_Subscriber_Group.Items.FindByText(Subscriber_Group))
+    '        Next
+
+    '        '' Highlight the selected row with color
+    '        For Each row As GridViewRow In GridView_Store_List.Rows
+    '            row.BackColor = If(row.RowIndex.Equals(rowIndex), Drawing.ColorTranslator.FromHtml("#eeeeee"), Drawing.Color.Transparent)
+    '        Next
+    '    Else
+    '        btnAddLineItems.Text = "Add"
+    '    End If
+    '    popupSubscription.Show()
+    'End Sub
+
     Protected Sub GridView_Store_List_RowCommand(sender As Object, e As GridViewCommandEventArgs) Handles GridView_Store_List.RowCommand
         If e.CommandName = "Select" Then
-            btnAddLineItems.Text = "Update"
-
             Dim rowIndex As Integer = Convert.ToInt32(e.CommandArgument)
-            Dim selectedRow As GridViewRow = GridView_Store_List.Rows(rowIndex)
 
-            '' Get the value from gridviewrow
-            Dim Headquarter_ID As String = selectedRow.Cells(0).Text
-            Dim Duration As String = selectedRow.Cells(3).Text
-            Dim Currency As String = selectedRow.Cells(4).Text
-            Dim Subscription_Fee As String = selectedRow.Cells(5).Text
-            Dim Subscriber_Group As String = selectedRow.Cells(8).Text
+            ' Toggle selected row
+            If SelectedLicenceRowIndex = rowIndex Then
+                ' Reset button + ALL related UI controls & grid highlight
+                ClearLineItemSelection()
+            Else
+                '' New row clicked
+                SelectedLicenceRowIndex = rowIndex
+                Dim selectedRow As GridViewRow = GridView_Store_List.Rows(rowIndex)
 
-            '' Get the Store_ID from Delete button CommandArgument
-            Dim DeleteLinkButton As LinkButton = TryCast(selectedRow.FindControl("DeleteLinkButton"), LinkButton)
-            Dim DeleteLinkButtonCommandArgument As Array = Split(DeleteLinkButton.CommandArgument, "|")
-            Dim Store_ID As String = DeleteLinkButtonCommandArgument(2)
+                '' Set button name
+                btnAddLineItems.Text = "Update"
 
+                '' Get the value from selected row
+                Dim Headquarter_ID As String = selectedRow.Cells(0).Text
+                Dim Duration As String = selectedRow.Cells(3).Text
+                Dim Currency As String = selectedRow.Cells(4).Text
+                Dim Subscription_Fee As String = selectedRow.Cells(5).Text
+                Dim Subscriber_Group As String = selectedRow.Cells(8).Text
 
-            '' Get value of each cell of the selected row
-            For i = 0 To selectedRow.Cells.Count - 2
-                '' Set the selected Headquarter
-                DDL_Subscription_Headquarter.SelectedIndex = DDL_Subscription_Headquarter.Items.IndexOf(DDL_Subscription_Headquarter.Items.FindByValue(selectedRow.Cells(0).Text))
+                '' Get the Store_ID from Delete button CommandArgument
+                Dim DeleteLinkButton As LinkButton = TryCast(selectedRow.FindControl("DeleteLinkButton"), LinkButton)
+                Dim DeleteLinkButtonCommandArgument As Array = Split(DeleteLinkButton.CommandArgument, "|")
+                Dim Store_ID As String = DeleteLinkButtonCommandArgument(2)
 
-                '' Bind store based on selected headquarter and set the selected value
-                Shared_Dropdownlist_Bind(DDL_Subscription_Store, GetSQL(DDL_Subscription_Store, Nothing, Headquarter_ID), "Store_Name", "Store_ID", "Please select", True)
-                DDL_Subscription_Store.SelectedIndex = DDL_Subscription_Store.Items.IndexOf(DDL_Subscription_Store.Items.FindByValue(Store_ID))
+                '' Get value of each cell of the selected row
+                For i = 0 To selectedRow.Cells.Count - 2
+                    '' Set the selected Headquarter
+                    DDL_Subscription_Headquarter.SelectedIndex = DDL_Subscription_Headquarter.Items.IndexOf(DDL_Subscription_Headquarter.Items.FindByValue(Headquarter_ID))
 
-                '' Bind and set the selected duration and currency
-                DDL_Subscription_Duration.SelectedIndex = DDL_Subscription_Duration.Items.IndexOf(DDL_Subscription_Duration.Items.FindByValue(Duration))
-                DDL_Subscription_Currency.SelectedIndex = DDL_Subscription_Currency.Items.IndexOf(DDL_Subscription_Currency.Items.FindByValue(Currency))
-                TB_Subscription_Fee.Text = Subscription_Fee
+                    '' Bind store based on selected headquarter and set the selected value
+                    Shared_Dropdownlist_Bind(DDL_Subscription_Store, GetSQL(DDL_Subscription_Store, Nothing, Headquarter_ID), "Store_Name", "Store_ID", "Please select", True)
+                    DDL_Subscription_Store.SelectedIndex = DDL_Subscription_Store.Items.IndexOf(DDL_Subscription_Store.Items.FindByValue(Store_ID))
 
-                '' Bind the subscriber group
-                DDL_Subscription_Subscriber_Group.SelectedIndex = DDL_Subscription_Subscriber_Group.Items.IndexOf(DDL_Subscription_Subscriber_Group.Items.FindByText(Subscriber_Group))
-            Next
+                    '' Bind and set the selected duration and currency
+                    DDL_Subscription_Duration.SelectedIndex = DDL_Subscription_Duration.Items.IndexOf(DDL_Subscription_Duration.Items.FindByValue(Duration))
+                    DDL_Subscription_Currency.SelectedIndex = DDL_Subscription_Currency.Items.IndexOf(DDL_Subscription_Currency.Items.FindByValue(Currency))
+                    TB_Subscription_Fee.Text = Subscription_Fee
 
-            '' Highlight the selected row with color
-            For Each row As GridViewRow In GridView_Store_List.Rows
-                row.BackColor = If(row.RowIndex.Equals(rowIndex), Drawing.ColorTranslator.FromHtml("#eeeeee"), Drawing.Color.Transparent)
-            Next
-        Else
-            btnAddLineItems.Text = "Add"
+                    '' Bind the subscriber group
+                    DDL_Subscription_Subscriber_Group.SelectedIndex = DDL_Subscription_Subscriber_Group.Items.IndexOf(DDL_Subscription_Subscriber_Group.Items.FindByText(Subscriber_Group))
+                Next
+
+                ' Highlight selected row, reset others
+                For Each row As GridViewRow In GridView_Store_List.Rows
+                    row.BackColor = If(row.RowIndex.Equals(rowIndex),
+                                   Drawing.ColorTranslator.FromHtml("#eeeeee"),
+                                   Drawing.Color.Transparent)
+                Next
+            End If
         End If
+
         popupSubscription.Show()
     End Sub
+
+    Private Property SelectedLicenceRowIndex As Integer
+        Get
+            If ViewState("SelectedLicenceRowIndex") IsNot Nothing Then
+                Return CInt(ViewState("SelectedLicenceRowIndex"))
+            End If
+            Return -1   ' no selection
+        End Get
+        Set(value As Integer)
+            ViewState("SelectedLicenceRowIndex") = value
+        End Set
+    End Property
 
     Protected Sub GridView_Store_List_RowCreated(sender As Object, e As GridViewRowEventArgs) Handles GridView_Store_List.RowCreated
         If e.Row.RowType = DataControlRowType.DataRow Then
@@ -1110,7 +1180,7 @@ Partial Class Form_DMC_Account_Form
         ' Bind dropdownlist
         Shared_Dropdownlist_Bind(DDL_Subscription_Headquarter, GetSQL(DDL_Subscription_Headquarter, Nothing, "Edit"), "Headquarter_Name", "Headquarter_ID", "Please select", True)
         DDL_Subscription_Headquarter.SelectedIndex = 0
-        DDL_Subscription_Headquarter.Enabled = True
+        DDL_Subscription_Headquarter.Enabled = False
 
         Dim selected_Headquarter As String = DDL_Subscription_Headquarter.SelectedValue   '' populate store based on headquarter selected
         Shared_Dropdownlist_Bind(DDL_Subscription_Store, GetSQL(DDL_Subscription_Store, Nothing, selected_Headquarter), "Store_Name", "Store_ID", "Please select", True)
@@ -1245,7 +1315,7 @@ Partial Class Form_DMC_Account_Form
         '' Populate current start date to field
         Dim query As String = "SELECT MAX(S.Start_Date) AS Curr_Start_Date " &
                               "FROM DMC_Subscription S " &
-                              "WHERE S.Store_ID = (Select Store_ID From dbo.DMC_Subscription Where Subscription_ID = '" & TB_Selected_Adjust_Subscription_ID.Text & "') "
+                              "WHERE S.Store_ID IN (Select Store_ID From dbo.DMC_Subscription Where Subscription_ID = '" & TB_Selected_Adjust_Subscription_ID.Text & "') "
 
         Dim Curr_Start_Date As String = Get_Value(query, "Curr_Start_Date").ToString().Trim()
         TB_New_Start_Date.Text = CDate(Curr_Start_Date).ToString("yyyy-MM-dd")
@@ -1261,7 +1331,7 @@ Partial Class Form_DMC_Account_Form
         '' Get end date of last subscription
         Dim query As String = "SELECT MAX(S.End_Date) AS Prev_End_Date " &
                               "FROM DMC_Subscription S " &
-                              "WHERE S.Store_ID = (Select Store_ID From dbo.DMC_Subscription Where Subscription_ID = '" & Subscription_ID & "') " &
+                              "WHERE S.Store_ID IN (Select Store_ID From dbo.DMC_Subscription Where Subscription_ID = '" & Subscription_ID & "') " &
                               "  AND S.Subscription_ID <> '" & Subscription_ID & "' "
 
         Dim Prev_End_Date As String = Get_Value(query, "Prev_End_Date").ToString().Trim()
@@ -1273,7 +1343,7 @@ Partial Class Form_DMC_Account_Form
                 If CDate(Adjusted_Start_Date) > CDate(Prev_End_Date) Then
                     RunSQL(sqlStr)
                 Else
-                    ScriptManager.RegisterClientScriptBlock(Me.Page, Me.Page.GetType(), "alert", "alert('New Start Date cannot be earlier than previous end date.');", True)
+                    AlertMessageMsgBox("New Start Date cannot be earlier than previous end date.")
                     popupAdjustSubscriptionPeriod.Show()
                     TB_New_Start_Date.Focus()    '' set focus on the field
                 End If
@@ -1462,18 +1532,38 @@ Partial Class Form_DMC_Account_Form
                                    " WHERE Headquarter_ID = '" & DeleteLinkButtonCommandArgument(1) & "' " &
                                    "   AND Store_ID = '" & DeleteLinkButtonCommandArgument(2) & "' "
             RunSQL(sqlStr)
+            AlertMessageMsgBox("Store record deleted.")
         Catch ex As Exception
-            ScriptManager.RegisterClientScriptBlock(Me.Page, Me.Page.GetType(), "alert", "alert('Record fail to delete.');", True)
+            AlertMessageMsgBox("Record failed to delete")
         End Try
+
+        ' Reset button + ALL related UI controls & grid highlight
+        ClearLineItemSelection()
 
         PopulateListbox()
         popupSubscription.Show()
     End Sub
 
+    Private Sub ClearLineItemSelection()
+        '' Click on same row, it is unselected
+        SelectedLicenceRowIndex = -1
 
+        '' Set button name
+        btnAddLineItems.Text = "Add"
 
+        ' Clear / disable related controls
+        DDL_Subscription_Headquarter.ClearSelection()
+        DDL_Subscription_Store.ClearSelection()
+        DDL_Subscription_Duration.ClearSelection()
+        DDL_Subscription_Currency.ClearSelection()
+        TB_Subscription_Fee.Text = String.Empty
+        DDL_Subscription_Subscriber_Group.ClearSelection()
 
-
+        ' Remove highlight from all rows
+        For Each row As GridViewRow In GridView_Store_List.Rows
+            row.BackColor = Drawing.Color.Transparent
+        Next
+    End Sub
 
 
     '' Account Notes

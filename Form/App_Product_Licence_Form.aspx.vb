@@ -632,36 +632,10 @@ Partial Class Form_App_Product_Licence_Form
 
             ' --- TOGGLE LOGIC ---
             If SelectedLicenceRowIndex = rowIndex Then
-                ' Clicked the same row again → UNSELECT
-
-                SelectedLicenceRowIndex = -1
-
-                ' Clear / disable related controls
-                DDL_Application_Type.ClearSelection()
-                DDL_Application_Type.Enabled = False
-
-                DDL_Sales_Representative.Enabled = False
-
-                DDL_OS_Type.ClearSelection()
-                DDL_OS_Type.Enabled = False
-
-                TB_Email.Text = String.Empty
-                TB_Email.Enabled = False
-
-                TB_Remarks.Text = String.Empty
-                TB_Selected_Licence_Code.Text = String.Empty
-
-                btnUpdateLineItems.Enabled = False
-                btnUpdateLineItems.CssClass = "btn btn-secondary"  ' or whatever "disabled" look you prefer
-
-                ' Remove highlight from all rows
-                For Each row As GridViewRow In GridView_Licence_List.Rows
-                    row.BackColor = Drawing.Color.Transparent
-                Next
-
+                ' Reset button + ALL related UI controls & grid highlight
+                ClearLineItemSelection()
             Else
                 ' New row selected → LOAD DATA
-
                 SelectedLicenceRowIndex = rowIndex
                 Dim selectedRow As GridViewRow = GridView_Licence_List.Rows(rowIndex)
 
@@ -1245,10 +1219,6 @@ Partial Class Form_App_Product_Licence_Form
             Response.Write("Error: " & ex.Message)
         End Try
 
-        ' Reset the udpate button
-        'btnUpdateLineItems.Enabled = False
-        'btnUpdateLineItems.CssClass = "btn btn-secondary disabled"
-
         ' Reset button + ALL related UI controls & grid highlight
         ClearLineItemSelection()
 
@@ -1258,7 +1228,7 @@ Partial Class Form_App_Product_Licence_Form
 
     Private Sub ClearLineItemSelection()
         ' If you have a ViewState-tracked index, reset it here (optional)
-        'SelectedLicenceRowIndex = -1
+        SelectedLicenceRowIndex = -1
 
         ' Application type
         DDL_Application_Type.ClearSelection()
