@@ -993,7 +993,7 @@ Partial Class Form_Module_Licence_Form
                 AlertMessageMsgBox("PO No. " & PO_No.Text & " exists, please check the record")
             Else
                 Try
-                    Dim sqlStr As String = " EXEC SP_CRUD_LMS_Module_Licence N'" & EscapeChar(PO_No.Text) &
+                    Dim sqlStr As String = " EXEC SP_CRUD_LMS_Module_Licence N'" & EscapeChar(PO_No.Text).Trim() &
                                                                           "', '" & PO_Date.Text &
                                                                           "', '" & Chargeable.SelectedValue &
                                                                           "', '" & EscapeChar(Remarks.Text) &
@@ -1695,7 +1695,7 @@ Partial Class Form_Module_Licence_Form
             If UploadedRecordCount > 0 Then
                 Try
                     Dim sqlStr As String = " EXEC SP_CRUD_LMS_Licence '" & Customer_ID &
-                                                                 "', N'" & PO_No.Text.Trim() &
+                                                                 "', N'" & EscapeChar(PO_No.Text).Trim() &
                                                                   "', '" & PO_Date.Text &
                                                                   "', '" & Application_Type.Text &
                                                                   "', '" & Sales_Representative_ID.Text &
