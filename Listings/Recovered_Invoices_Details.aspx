@@ -184,13 +184,13 @@
                 </table>
                 <!-- Hidden field -->
                 <div>
-                    <asp:TextBox ID="TB_Selected_Row_Index" runat="server" CssClass="form-control" Visible="true"></asp:TextBox>
-                    <asp:TextBox ID="TB_Selected_Item_Code" runat="server" CssClass="form-control" Visible="true"></asp:TextBox>
-                    <asp:TextBox ID="TB_Selected_Invoice_No" runat="server" CssClass="form-control" Visible="true"></asp:TextBox>
-                    <asp:TextBox ID="TB_Selected_Invoice_Date" runat="server" CssClass="form-control" Visible="true"></asp:TextBox>
-                    <asp:TextBox ID="TB_Selected_Currency" runat="server" CssClass="form-control" Visible="true"></asp:TextBox>
-                    <asp:TextBox ID="TB_Selected_Amount" runat="server" CssClass="form-control" Visible="true"></asp:TextBox>
-                    <asp:TextBox ID="TB_Selected_PO_No" runat="server" CssClass="form-control" Visible="true"></asp:TextBox>
+                    <asp:TextBox ID="TB_Selected_Row_Index" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
+                    <asp:TextBox ID="TB_Selected_Item_Code" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
+                    <asp:TextBox ID="TB_Selected_Invoice_No" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
+                    <asp:TextBox ID="TB_Selected_Invoice_Date" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
+                    <asp:TextBox ID="TB_Selected_Currency" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
+                    <asp:TextBox ID="TB_Selected_Amount" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
+                    <asp:TextBox ID="TB_Selected_PO_No" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
                 </div>
             </asp:Panel>
             <asp:LinkButton ID="lnkFakeBilledItem" runat="server"></asp:LinkButton>
