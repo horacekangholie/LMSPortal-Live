@@ -78,7 +78,7 @@ Partial Class Listings_DMC_Subscription
         GridView1.Columns.Clear()
 
         Dim ColData() As String = {"Subscription ID", "Invoice Bill To", "Headquarter ID", "Headquarter Name", "Invoice No", "Invoice Date", "Currency", "Total Amount", "Status"}
-        Dim ColSize() As Integer = {50, 200, 50, 100, 100, 50, 50, 50, 50}
+        Dim ColSize() As Integer = {50, 200, 50, 100, 50, 50, 50, 50, 50}
 
         '' add template field for the nested gridview
         Dim Expandfield As TemplateField = New TemplateField()
@@ -141,6 +141,10 @@ Partial Class Listings_DMC_Subscription
             Dim InvoiceDownloadLink As HyperLink = New HyperLink()
             InvoiceDownloadLink.ID = "lnkDownload"
 
+            '' Link to recovored invoice subpage
+            Dim RecoveredInvoiceLink As HyperLink = New HyperLink()
+            RecoveredInvoiceLink.ID = "lnkRecoveredInvoice"
+
             '' Validate the invoice format
             Dim isInvoiceFormatMatch As Boolean = Regex.IsMatch(drv("Invoice No"), "^TWS/", RegexOptions.IgnoreCase)
 
@@ -150,6 +154,15 @@ Partial Class Listings_DMC_Subscription
                     InvoiceDownloadLink.Text = drv("Invoice No")
                     InvoiceDownloadLink.NavigateUrl = String.Format("/Download/DownloadFile.aspx?Inv_Ref_No={0}", drv("Invoice No"))
                     InvoiceDownloadLink.Target = "_blank"
+
+                    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Controls.Add(New LiteralControl("<span class='text-muted mx-2'></span>"))
+
+                    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Controls.Add(RecoveredInvoiceLink)
+                    RecoveredInvoiceLink.Text = "<i class='bi bi-box-arrow-up-right'></i>"
+                    RecoveredInvoiceLink.NavigateUrl = String.Format("/Listings/Recovered_Invoices_Details.aspx?Invoice_No={0}&Subpage={1}", drv("Invoice No"), "1")
+                    RecoveredInvoiceLink.ToolTip = "Edit"
+                    RecoveredInvoiceLink.CssClass = "btn btn-xs btn-light border"
+                    RecoveredInvoiceLink.Target = "_blank"
                 Else
                     e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Text = drv("Invoice No").ToString.ToUpper()
                     e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Style.Add("font-style", "italic")
@@ -204,7 +217,7 @@ Partial Class Listings_DMC_Subscription
                 If drv("Status") <> "Cancelled" Then
                     If DateTime.TryParse(subscriptionDate, createdDate) Then
                         If createdDate > DateTime.Today.AddMonths(-3) Then
-                            ResetLinkButton.Text = "<i class='bi bi-arrow-counterclockwise'></i>"
+                            ResetLinkButton.Text = "<i class='bi bi-arrow-90deg-left'></i>"
                             ResetLinkButton.CssClass = "btn btn-xs btn-secondary"
                             ResetLinkButton.Visible = True
                         Else

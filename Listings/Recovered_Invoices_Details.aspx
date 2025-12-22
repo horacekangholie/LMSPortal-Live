@@ -100,14 +100,28 @@
                 <h3 style="padding: 10px 0px 20px 20px"><asp:Label ID="ModalHeaderBilledItem" runat="server"></asp:Label></h3>
                 <table border="0" class="modalPopupTable" style="width: 100%">
                     <tr style="vertical-align: top">
-                        <td style="width: 800px; padding: 0px 10px 20px 0px" colspan="3">
+                        <td style="width: 300px; padding: 0px 10px 0px 0px" colspan="2">
+                            <label>Invoice No</label>
+                            <asp:TextBox ID="TB_Invoice_No" runat="server" CssClass="form-control"></asp:TextBox>
+                        </td>
+                        <td style="width: 500px; padding: 0px 10px 0px 0px" colspan="2">
                             <label>Item Code</label>
-                            <asp:TextBox ID="TB_Old_Item_Code" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
-                            <asp:DropDownList ID="DDL_Item_Code" runat="server" CssClass="form-control"></asp:DropDownList>
+                            <asp:DropDownList ID="DDL_Item_Code" runat="server" CssClass="form-control" AppendDataBoundItems="true">
+                                <asp:ListItem Text="" Value="-1"></asp:ListItem>
+                            </asp:DropDownList>
+                            <asp:CompareValidator ID="CompareValidator_DDL_Item_Code" runat="server" ValidationGroup="BilledItem"
+                                ErrorMessage="Please select bill item" CssClass="invalid-feedback"
+                                Display="Dynamic"
+                                SetFocusOnError="true"
+                                Operator="NotEqual" ValueToCompare="-1"
+                                ControlToValidate="DDL_Item_Code" Type="String">
+                            </asp:CompareValidator>
                         </td>
                     </tr>
+                </table>
+                <table border="0" class="modalPopupTable" style="width: 100%">
                     <tr style="vertical-align: top">
-                        <td style="width: 200px; padding: 0px 10px 20px 0px">
+                        <td style="width: 150px; padding: 0px 10px 20px 0px">
                             <label>Invoice Date</label>
                             <asp:TextBox ID="TB_Invoice_Date" runat="server" CssClass="form-control" TextMode="Date"></asp:TextBox>
                             <asp:RequiredFieldValidator ID="RequiredField_TB_Invoice_Date" runat="server" ValidationGroup="BilledItem"
@@ -117,11 +131,33 @@
                                 ControlToValidate="TB_Invoice_Date">
                             </asp:RequiredFieldValidator>
                         </td>
-                        <td style="width: 100px; padding: 0px 10px 20px 0px">
-                            <label>Currency</label>
-                            <asp:DropDownList ID="DDL_Currency" runat="server" CssClass="form-control"></asp:DropDownList>
+                        <td style="width: 350px; padding: 0px 10px 20px 0px">
+                            <label>PO No</label>
+                            <asp:DropDownList ID="DDL_PO_No" runat="server" CssClass="form-control" AppendDataBoundItems="true">
+                                <asp:ListItem Text="" Value="-1"></asp:ListItem>
+                            </asp:DropDownList>
+                            <asp:CompareValidator ID="CompareValidator_DDL_PO_No" runat="server" ValidationGroup="BilledItem"
+                                ErrorMessage="Please select" CssClass="invalid-feedback"
+                                Display="Dynamic"
+                                SetFocusOnError="true"
+                                Operator="NotEqual" ValueToCompare="-1"
+                                ControlToValidate="DDL_PO_No" Type="String">
+                            </asp:CompareValidator>
                         </td>
-                        <td style="width: 500px; padding: 0px 10px 20px 0px">
+                        <td style="width: 150px; padding: 0px 10px 20px 0px">
+                            <label>Currency</label>
+                            <asp:DropDownList ID="DDL_Currency" runat="server" CssClass="form-control" AppendDataBoundItems="true">
+                                <asp:ListItem Text="" Value="-1"></asp:ListItem>
+                            </asp:DropDownList>
+                            <asp:CompareValidator ID="CompareValidator_DDL_Currency" runat="server" ValidationGroup="BilledItem"
+                                ErrorMessage="Please select currency" CssClass="invalid-feedback"
+                                Display="Dynamic"
+                                SetFocusOnError="true"
+                                Operator="NotEqual" ValueToCompare="-1"
+                                ControlToValidate="DDL_Currency" Type="String">
+                            </asp:CompareValidator>
+                        </td>
+                        <td style="width: 150px; padding: 0px 10px 20px 0px">
                             <label>Amount</label>
                             <asp:TextBox ID="TB_Amount" runat="server" CssClass="form-control" placeholder="0.00"></asp:TextBox>
                             <asp:RequiredFieldValidator ID="RequiredField_TB_Amount" runat="server" ValidationGroup="BilledItem"
@@ -140,12 +176,22 @@
                         </td>
                     </tr>
                     <tr style="vertical-align: bottom">
-                        <td style="width: 800px; padding: 10px 10px 10px 0px" colspan="2">
+                        <td style="width: 800px; padding: 10px 10px 10px 0px" colspan="4">
                             <asp:Button ID="btnSaveBilledItem" runat="server" CssClass="btn btn-sm btn-default" ValidationGroup="BilledItem" />
                             <asp:Button ID="btnCancelBilledItem" runat="server" CssClass="btn btn-sm btn-default" CausesValidation="false" OnClientClick="return Hidepopup()" />
                         </td>
                     </tr>
                 </table>
+                <!-- Hidden field -->
+                <div>
+                    <asp:TextBox ID="TB_Selected_Row_Index" runat="server" CssClass="form-control" Visible="true"></asp:TextBox>
+                    <asp:TextBox ID="TB_Selected_Item_Code" runat="server" CssClass="form-control" Visible="true"></asp:TextBox>
+                    <asp:TextBox ID="TB_Selected_Invoice_No" runat="server" CssClass="form-control" Visible="true"></asp:TextBox>
+                    <asp:TextBox ID="TB_Selected_Invoice_Date" runat="server" CssClass="form-control" Visible="true"></asp:TextBox>
+                    <asp:TextBox ID="TB_Selected_Currency" runat="server" CssClass="form-control" Visible="true"></asp:TextBox>
+                    <asp:TextBox ID="TB_Selected_Amount" runat="server" CssClass="form-control" Visible="true"></asp:TextBox>
+                    <asp:TextBox ID="TB_Selected_PO_No" runat="server" CssClass="form-control" Visible="true"></asp:TextBox>
+                </div>
             </asp:Panel>
             <asp:LinkButton ID="lnkFakeBilledItem" runat="server"></asp:LinkButton>
             <cc1:ModalPopupExtender ID="popupBilledItem" runat="server" DropShadow="false"

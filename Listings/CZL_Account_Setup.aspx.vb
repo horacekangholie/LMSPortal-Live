@@ -129,6 +129,13 @@ Partial Class Listings_CZL_Account_Setup
             Dim InvoiceDownloadLink As HyperLink = New HyperLink()
             InvoiceDownloadLink.ID = "lnkDownload"
 
+            '' Link to recovored invoice subpage and refresh page
+            Dim RecoveredInvoiceLink As HyperLink = New HyperLink()
+            RecoveredInvoiceLink.ID = "lnkRecoveredInvoice"
+
+            Dim RefreshInvoiceLink As HyperLink = New HyperLink()
+            RefreshInvoiceLink.ID = "lnkRefreshInvoice"
+
             '' Validate the invoice format
             Dim isInvoiceFormatMatch As Boolean = Regex.IsMatch(drv("Invoice No"), "^TWS/", RegexOptions.IgnoreCase)
 
@@ -138,6 +145,23 @@ Partial Class Listings_CZL_Account_Setup
                     InvoiceDownloadLink.Text = drv("Invoice No")
                     InvoiceDownloadLink.NavigateUrl = String.Format("/Download/DownloadFile.aspx?Inv_Ref_No={0}", drv("Invoice No"))
                     InvoiceDownloadLink.Target = "_blank"
+
+                    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Controls.Add(New LiteralControl("<span class='text-muted mx-2'></span>"))
+
+                    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Controls.Add(RecoveredInvoiceLink)
+                    RecoveredInvoiceLink.Text = "<i class='bi bi-box-arrow-up-right'></i>"
+                    RecoveredInvoiceLink.NavigateUrl = String.Format("/Listings/Recovered_Invoices_Details.aspx?Invoice_No={0}&Subpage={1}", drv("Invoice No"), "1")
+                    RecoveredInvoiceLink.ToolTip = "Edit"
+                    RecoveredInvoiceLink.CssClass = "btn btn-xs btn-light border"
+                    RecoveredInvoiceLink.Target = "_blank"
+
+                    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Controls.Add(New LiteralControl("<span class='text-muted mx-1'></span>"))
+
+                    e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Controls.Add(RefreshInvoiceLink)
+                    RefreshInvoiceLink.Text = "<i class='bi bi-arrow-repeat'></i>"
+                    RefreshInvoiceLink.NavigateUrl = ResolveUrl(Request.Url.PathAndQuery)
+                    RefreshInvoiceLink.ToolTip = "Refresh"
+                    RefreshInvoiceLink.CssClass = "btn btn-xs btn-light border"
                 Else
                     '' if the order is cancelled then display Cancelled
                     e.Row.Cells(GetColumnIndexByName(e.Row, "Invoice No")).Text = drv("Invoice No")
@@ -193,7 +217,7 @@ Partial Class Listings_CZL_Account_Setup
                 If drv("Invoice No") <> UCase("Cancelled") Then
                     If DateTime.TryParse(createdDateText, createdDate) Then
                         If createdDate > DateTime.Today.AddMonths(-3) Then
-                            ResetLinkButton.Text = "<i class='bi bi-arrow-counterclockwise'></i>"
+                            ResetLinkButton.Text = "<i class='bi bi-arrow-90deg-left'></i>"
                             ResetLinkButton.CssClass = "btn btn-xs btn-secondary"
                             ResetLinkButton.Visible = True
                         Else

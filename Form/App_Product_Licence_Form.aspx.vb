@@ -1315,13 +1315,9 @@ Partial Class Form_App_Product_Licence_Form
         Dim GridView_Licence_List As GridView = pnlAddEditAppProductLicence.FindControl("GridView_Licence_List")
         Dim UploadedRecordCount As Integer = GridView_Licence_List.Rows.Count
 
-        ' If the pending updating a row
+        ' If the pending updating the selected row
         If btnUpdateLineItems.Enabled Then
-            ScriptManager.RegisterStartupScript(Me, Me.GetType(),
-                                        "msgBox1",
-                                        "alert('Please update the selected row.');",
-                                        True)
-
+            AlertMessageMsgBox("Please update the selected row.")
             popupAppProductLicence.Show()
             hiddenModalVisible.Value = True
             Exit Sub

@@ -1,4 +1,7 @@
 ﻿
+Imports AjaxControlToolkit.HtmlEditor.ToolbarButtons
+Imports NPOI.SS.Formula.Functions
+
 Partial Class Listings_Recovered_Invoices_Details
     Inherits LMSPortalBaseCode
 
@@ -23,9 +26,9 @@ Partial Class Listings_Recovered_Invoices_Details
 
     Protected Sub PopulateGridViewData()
         Try
-            Dim sqlStr() As String = {" SELECT Invoice_No, Invoice_Date, Item_Code, Description, Currency, SUM(Amount) As Amount " &
+            Dim sqlStr() As String = {" SELECT PO_No, Invoice_No, Invoice_Date, Item_Code, Description, Currency, SUM(Amount) As Amount " &
                                       " FROM I_DB_Recovered_Invoice WHERE Invoice_No = '" & Request.QueryString("Invoice_No") & "' " &
-                                      " GROUP BY Invoice_No, Invoice_Date, Item_Code, Description, Currency "}
+                                      " GROUP BY PO_No, Invoice_No, Invoice_Date, Item_Code, Description, Currency "}
 
             BuildGridView(GridView1, "GridView1", "Invoice_No")
             GridView1.DataSource = GetDataTable(sqlStr(0))
@@ -80,13 +83,13 @@ Partial Class Listings_Recovered_Invoices_Details
                 GridViewObj.AllowPaging = True
                 GridViewObj.PageSize = 50
                 GridViewObj.Columns.Clear()
-                Dim ColData() As String = {"Invoice_Date", "Item_Code", "Description", "Currency", "Amount"}
-                Dim ColSize() As Integer = {50, 100, 400, 50, 50}
+                Dim ColData() As String = {"Invoice_Date", "PO_No", "Item_Code", "Description", "Currency", "Amount"}
+                Dim ColSize() As Integer = {50, 50, 100, 400, 50, 50}
 
                 For i = 0 To ColData.Length - 1
                     Dim Bfield As BoundField = New BoundField()
                     Bfield.DataField = ColData(i)
-                    Bfield.HeaderText = Replace(ColData(i), "_", " ")
+                    Bfield.HeaderText = ColData(i).Replace("_", " ")
                     Bfield.HeaderStyle.Width = ColSize(i)
                     If Bfield.HeaderText.Contains("Date") Then
                         Bfield.DataFormatString = "{0:dd MMM yy}"
@@ -110,6 +113,7 @@ Partial Class Listings_Recovered_Invoices_Details
     End Sub
 
 
+
     '' Gridview control
     Protected Sub GridView1_RowDataBound(ByVal sender As Object, ByVal e As GridViewRowEventArgs) Handles GridView1.RowDataBound
         If e.Row.RowType = DataControlRowType.Header Then
@@ -119,12 +123,27 @@ Partial Class Listings_Recovered_Invoices_Details
         ElseIf e.Row.RowType = DataControlRowType.DataRow Then
             '' Create Edit button at the last column
             Dim drv As System.Data.DataRowView = e.Row.DataItem
+
             Dim CtrlCellIndex As Integer = e.Row.Cells.Count - 1
             Dim EditLinkButton As LinkButton = TryCast(e.Row.Cells(CtrlCellIndex).Controls(0), LinkButton)
+            EditLinkButton.CommandArgument = e.Row.RowIndex & "|" & drv("Invoice_No") & "|" & drv("Invoice_Date") & "|" & drv("Item_Code") & "|" & drv("Currency") & "|" & drv("Amount") & "|" & drv("PO_No")
+            EditLinkButton.CausesValidation = False
+            AddHandler EditLinkButton.Click, AddressOf Edit_BilledItem_Click
+
+            EditLinkButton.Style.Add("margin-right", "5px")   '' add separator between button
+
             Dim DeleteLinkButton As LinkButton = TryCast(e.Row.Cells(CtrlCellIndex).Controls(1), LinkButton)
+            DeleteLinkButton.CommandArgument = e.Row.RowIndex & "|" & drv("Invoice_No") & "|" & drv("Invoice_Date") & "|" & drv("Item_Code") & "|" & drv("Currency") & "|" & drv("Amount") & "|" & drv("PO_No")
+            DeleteLinkButton.CausesValidation = False
+            DeleteLinkButton.OnClientClick = "return confirm('Are you sure to delete record?')"
+            AddHandler DeleteLinkButton.Click, AddressOf Delete_BilledItem_Click
+
+
+            Dim lockedCodes As String() = {"DMC004", "DMC005", "DMC013"}
+            Dim isLockedItem As Boolean = lockedCodes.Contains(drv("Item_Code").ToString())
 
             '' Lock record if invoice has been recovered
-            If drv("Item_Code") <> "DMC004" And drv("Item_Code") <> "DMC005" And drv("Item_Code") <> "DMC013" Then
+            If Not isLockedItem Then
                 EditLinkButton.Text = "<i class='bi bi-pencil-fill'></i>"
                 EditLinkButton.CssClass = "btn btn-xs btn-info"
                 EditLinkButton.Enabled = True
@@ -144,15 +163,6 @@ Partial Class Listings_Recovered_Invoices_Details
                 DeleteLinkButton.Visible = False
             End If
 
-            EditLinkButton.CausesValidation = False
-            AddHandler EditLinkButton.Click, AddressOf Edit_BilledItem_Click
-
-            DeleteLinkButton.CausesValidation = False
-            DeleteLinkButton.OnClientClick = "return confirm('Are you sure to delete record?')"
-            AddHandler DeleteLinkButton.Click, AddressOf Delete_BilledItem_Click
-
-            EditLinkButton.Style.Add("margin-right", "5px")   '' add separator between button
-
             '' Total Amount
             TotalAmount += CDec(DataBinder.Eval(e.Row.DataItem, "Amount"))
 
@@ -163,11 +173,11 @@ Partial Class Listings_Recovered_Invoices_Details
             e.Row.Cells(GetColumnIndexByName(e.Row, "Amount")).Style.Add("text-align", "right !important")
 
         ElseIf e.Row.RowType = DataControlRowType.Footer Then
-            e.Row.Cells(2).Text = "Total"
-            e.Row.Cells(2).HorizontalAlign = HorizontalAlign.Right
-            e.Row.Cells(2).Style.Add("padding-right", "30px")
-            e.Row.Cells(3).Text = Currency
-            e.Row.Cells(4).Text = TotalAmount.ToString("#,##0.00")
+            e.Row.Cells(GetColumnIndexByName(e.Row, "Description")).Text = "Total"
+            e.Row.Cells(GetColumnIndexByName(e.Row, "Description")).HorizontalAlign = HorizontalAlign.Right
+            e.Row.Cells(GetColumnIndexByName(e.Row, "Description")).Style.Add("padding-right", "30px")
+            e.Row.Cells(GetColumnIndexByName(e.Row, "Currency")).Text = Currency
+            e.Row.Cells(GetColumnIndexByName(e.Row, "Amount")).Text = TotalAmount.ToString("#,##0.00")
 
             e.Row.Cells(GetColumnIndexByName(e.Row, "Currency")).Style.Add("text-align", "right !important")
             e.Row.Cells(GetColumnIndexByName(e.Row, "Amount")).Style.Add("text-align", "right !important")
@@ -181,21 +191,12 @@ Partial Class Listings_Recovered_Invoices_Details
     End Sub
 
 
+
     '' Modal control
     Protected Sub DDL_Item_Code_Load(sender As Object, e As EventArgs) Handles DDL_Item_Code.Load
         If Not IsPostBack Then
             Try
-                Dim sqlStr = " SELECT Value_1 As [Item Code], Value_1 + ' - ' + Value_2 AS [Item Description] " &
-                             " FROM DB_Lookup " &
-                             " WHERE Lookup_Name = 'Bill Items' " &
-                             "   AND Value_1 NOT IN ('DMC004', 'DMC005', 'DMC013', '00000', '00002') " &
-                             "   AND Value_4 NOT IN ('Module Licence Key') " &
-                             " ORDER BY Value_4, Value_1 "
-
-                DDL_Item_Code.DataSource = GetDataTable(sqlStr)
-                DDL_Item_Code.DataTextField = "Item Description"
-                DDL_Item_Code.DataValueField = "Item Code"
-                DDL_Item_Code.DataBind()
+                BindDropDownList_Custom_Default_Value(DDL_Item_Code, GetSQL(DDL_Item_Code), "Item Description", "Item Code", "", "-1", True)
             Catch ex As Exception
                 Response.Write("Error: " & ex.Message)
             End Try
@@ -205,11 +206,18 @@ Partial Class Listings_Recovered_Invoices_Details
     Protected Sub DDL_Currency_Load(sender As Object, e As EventArgs) Handles DDL_Currency.Load
         If Not IsPostBack Then
             Try
-                Dim sqlStr As String = " SELECT DISTINCT(Value_3) AS Currency FROM DB_Lookup WHERE Lookup_Name = 'Country' AND Value_3 in ('SGD', 'USD', 'EUR') "
-                DDL_Currency.DataSource = GetDataTable(sqlStr)
-                DDL_Currency.DataTextField = "Currency"
-                DDL_Currency.DataValueField = "Currency"
-                DDL_Currency.DataBind()
+                BindDropDownList_Custom_Default_Value(DDL_Currency, GetSQL(DDL_Currency), "Currency", "Currency", "", "-1", True)
+            Catch ex As Exception
+                Response.Write("Error: " & ex.Message)
+            End Try
+        End If
+    End Sub
+
+    Protected Sub DDL_PO_No_Load(sender As Object, e As EventArgs) Handles DDL_PO_No.Load
+        If Not IsPostBack Then
+            Try
+                Dim Invoice_No As String = Request.QueryString("Invoice_No")
+                BindDropDownList_Custom_Default_Value(DDL_PO_No, GetSQL(DDL_PO_No, Invoice_No), "PO_No", "PO_No", "", "-1", True)
             Catch ex As Exception
                 Response.Write("Error: " & ex.Message)
             End Try
@@ -221,21 +229,16 @@ Partial Class Listings_Recovered_Invoices_Details
         btnSaveBilledItem.Text = "Save"
         btnCancelBilledItem.Text = "Cancel"
 
-        '' Initialize the field
-        DDL_Item_Code.Enabled = True
-        TB_Invoice_Date.Text = CDate(Get_Value("SELECT TOP 1 Invoice_Date FROM I_DB_Recovered_Invoice WHERE Invoice_No = '" & Request.QueryString("Invoice_No") & "' ", "Invoice_Date")).ToString("dd MMM yy")
-        TB_Invoice_Date.Enabled = False
-        TB_Invoice_Date.TextMode = TextBoxMode.SingleLine
+        ' Initialiaze the hidden fields
+        Dim HiddenFields As Array = {TB_Selected_Row_Index, TB_Selected_Invoice_No, TB_Selected_Invoice_Date, TB_Selected_Item_Code, TB_Selected_Currency, TB_Selected_Amount, TB_Selected_PO_No}
 
-        Dim CurrencySelected As String = Get_Value("SELECT TOP 1 Currency FROM I_DB_Recovered_Invoice WHERE Invoice_No = '" & Request.QueryString("Invoice_No") & "' ", "Currency")
-        DDL_Currency.SelectedValue = IIf(CurrencySelected = "", "SGD", CurrencySelected)
-        'DDL_Currency.Enabled = False
+        For i = 0 To HiddenFields.Length - 1
+            HiddenFields(i).Text = String.Empty
+        Next
 
-        TB_Amount.Text = String.Empty
-        RequiredField_TB_Invoice_Date.Enabled = True
-        RequiredField_TB_Amount.Enabled = True
+        ' Reinitialize field based on new/edit mode
+        ReInitializeField(btnSaveBilledItem.Text)
 
-        popupBilledItem.Show()
     End Sub
 
     Protected Sub Edit_BilledItem_Click(ByVal sender As Object, ByVal e As EventArgs)
@@ -243,27 +246,72 @@ Partial Class Listings_Recovered_Invoices_Details
         btnSaveBilledItem.Text = "Update"
         btnCancelBilledItem.Text = "Cancel"
 
-        Dim row As GridViewRow = CType(CType(sender, LinkButton).Parent.Parent, GridViewRow)
-        TB_Old_Item_Code.Text = HttpUtility.HtmlDecode(row.Cells(1).Text)
-        DDL_Item_Code.SelectedValue = HttpUtility.HtmlDecode(row.Cells(1).Text)
-        DDL_Item_Code.Enabled = False
+        '' Get row command argument
+        Dim EditLinkButton As LinkButton = TryCast(sender, LinkButton)
+        Dim EditLinkButtonCommandArgument As Array = Split(EditLinkButton.CommandArgument, "|")
 
-        Dim CurrencySelected As String = Get_Value("SELECT TOP 1 Currency FROM I_DB_Recovered_Invoice WHERE Invoice_No = '" & Request.QueryString("Invoice_No") & "' ", "Currency")
-        DDL_Currency.SelectedValue = IIf(CurrencySelected = "", "SGD", CurrencySelected)
-        'DDL_Currency.Enabled = False
+        Dim HiddenFields As Array = {TB_Selected_Row_Index, TB_Selected_Invoice_No, TB_Selected_Invoice_Date, TB_Selected_Item_Code, TB_Selected_Currency, TB_Selected_Amount, TB_Selected_PO_No}
 
-        TB_Amount.Text = Trim(HttpUtility.HtmlDecode(row.Cells(4).Text))
+        '' file value to hidden fields
+        For i = 0 To EditLinkButtonCommandArgument.Length - 1
+            HiddenFields(i).Text = EditLinkButtonCommandArgument(i)
+        Next
 
-        TB_Invoice_Date.Text = HttpUtility.HtmlDecode(row.Cells(0).Text)
-        If TB_Invoice_Date.Text <> "" Then
-            TB_Invoice_Date.TextMode = TextBoxMode.SingleLine
-            TB_Invoice_Date.Enabled = False
-            RequiredField_TB_Invoice_Date.Enabled = False
-        Else
-            TB_Invoice_Date.TextMode = TextBoxMode.Date
-            TB_Invoice_Date.Enabled = True
-            RequiredField_TB_Invoice_Date.Enabled = True
-        End If
+        ' Reinitialize field based on new/edit mode
+        ReInitializeField(btnSaveBilledItem.Text)
+
+    End Sub
+
+    Protected Sub ReInitializeField(ByVal currmode As String)
+        Dim oMode As String = IIf(currmode = "Save", "New", "Edit")
+        Dim modalFields As New List(Of Control) From {TB_Invoice_No, TB_Invoice_Date, DDL_Item_Code, DDL_PO_No, DDL_Currency, TB_Amount, CompareValidator_DDL_PO_No}
+
+        For Each ctrl As Control In modalFields
+            Select Case True
+                Case TypeOf ctrl Is TextBox
+                    Dim tb As TextBox = CType(ctrl, TextBox)
+                    Select Case tb.ID
+                        Case "TB_Invoice_No"
+                            tb.Text = IIf(oMode = "New", Request.QueryString("Invoice_No"), TB_Selected_Invoice_No.Text)
+                            tb.Enabled = False
+
+                        Case "TB_Invoice_Date"
+                            tb.Text = If(oMode = "New",
+                                         CDate(Get_Value("SELECT TOP 1 Invoice_Date FROM I_DB_Recovered_Invoice WHERE Invoice_No = '" & Request.QueryString("Invoice_No") & "' ", "Invoice_Date")).ToString("yyyy-MM-dd"),
+                                         CDate(TB_Selected_Invoice_Date.Text).ToString("yyyy-MM-dd"))
+                            tb.Enabled = False
+                            tb.TextMode = TextBoxMode.SingleLine
+
+                        Case "TB_Amount"
+                            tb.Text = If(oMode = "New", String.Empty, Math.Round(CDec(TB_Selected_Amount.Text), 2).ToString("0.00"))
+                            tb.Enabled = True
+
+                    End Select
+                Case TypeOf ctrl Is DropDownList
+                    Dim ddl As DropDownList = CType(ctrl, DropDownList)
+                    Select Case ddl.ID
+                        Case "DDL_Item_Code"
+                            ddl.SelectedIndex = IIf(oMode = "New", -1, ddl.Items.IndexOf(ddl.Items.FindByValue(TB_Selected_Item_Code.Text)))
+                            ddl.Enabled = (oMode = "New")
+
+                        Case "DDL_Currency"
+                            Dim CurrencySelected As String = Get_Value("SELECT TOP 1 Currency FROM I_DB_Recovered_Invoice WHERE Invoice_No = '" & Request.QueryString("Invoice_No") & "' ", "Currency")
+                            ddl.SelectedIndex = IIf(oMode = "New", -1, ddl.Items.IndexOf(ddl.Items.FindByValue(CurrencySelected)))
+                            ddl.Enabled = True
+
+                        Case "DDL_PO_No"
+                            Dim PO_No_Selected As String = Get_Value("SELECT DISTINCT PO_No FROM I_DB_Recovered_Invoice WHERE Invoice_No = '" & Request.QueryString("Invoice_No") & "' AND PO_No != '' ", "PO_No")
+                            ddl.SelectedIndex = IIf(oMode = "New", -1, ddl.Items.IndexOf(ddl.Items.FindByValue(PO_No_Selected)))
+                            ddl.Enabled = (oMode = "New" And DDL_PO_No.Items.Cast(Of ListItem)().Count(Function(i) i.Value <> "-1") > 0)
+
+                    End Select
+
+                Case TypeOf ctrl Is CompareValidator
+                    Dim cpv As CompareValidator = CType(ctrl, CompareValidator)
+                    cpv.Enabled = IIf(DDL_PO_No.Items.Cast(Of ListItem)().Count(Function(i) i.Value <> "-1") > 0, True, False)
+
+            End Select
+        Next
 
         popupBilledItem.Show()
     End Sub
@@ -271,54 +319,118 @@ Partial Class Listings_Recovered_Invoices_Details
     Protected Sub Save_BilledItem_Click(ByVal sender As Object, ByVal e As EventArgs) Handles btnSaveBilledItem.Click
         Dim Invoice_No As String = Request.QueryString("Invoice_No")
         Dim Invoice_Date As TextBox = pnlAddEditBilledItem.FindControl("TB_Invoice_Date")
-        Dim Old_Item_Code As TextBox = pnlAddEditBilledItem.FindControl("TB_Old_Item_Code")
         Dim Item_Code As DropDownList = pnlAddEditBilledItem.FindControl("DDL_Item_Code")
         Dim Currency As DropDownList = pnlAddEditBilledItem.FindControl("DDL_Currency")
         Dim Amount As TextBox = pnlAddEditBilledItem.FindControl("TB_Amount")
+        Dim PO_No As String = IIf(btnSaveBilledItem.Text = "Save", DDL_PO_No.SelectedItem.Text, TB_Selected_PO_No.Text)
+
+
+        '' Handle invoice data format
+        Dim formattedInvoiceDate As String = ""
+        If Not String.IsNullOrWhiteSpace(Invoice_Date.Text) Then
+            Dim parsedDate As DateTime
+            If DateTime.TryParse(Invoice_Date.Text, parsedDate) Then
+                formattedInvoiceDate = parsedDate.ToString("yyyy-MM-dd")
+            Else
+                Throw New Exception("Invalid date format.")
+            End If
+        End If
 
         Try
-            Dim formattedDate As String = ""
-            If Not String.IsNullOrWhiteSpace(Invoice_Date.Text) Then
-                Dim parsedDate As DateTime
-                If DateTime.TryParse(Invoice_Date.Text, parsedDate) Then
-                    formattedDate = parsedDate.ToString("yyyy-MM-dd")
-                Else
-                    Throw New Exception("Invalid date format.")
-                End If
-            End If
-
             Dim sqlStr As String = "EXEC SP_CRUD_Recovered_Invoice_Bill_Items N'" & Invoice_No &
-                                                                          "', N'" & formattedDate &
-                                                                          "', N'" & Old_Item_Code.Text &
+                                                                          "', N'" & formattedInvoiceDate &
                                                                           "', N'" & Item_Code.SelectedValue &
                                                                           "', N'" & Currency.SelectedValue &
-                                                                          "', N'" & Amount.Text & "' "
+                                                                          "', N'" & Amount.Text &
+                                                                          "', N'" & PO_No & "' "
 
             RunSQL(sqlStr)
         Catch ex As Exception
             Response.Write("Error:  " & ex.Message)
         End Try
-        Response.Redirect("~/Listings/Recovered_Invoices_Details.aspx?Invoice_No=" & Request.QueryString("Invoice_No"))
+
+        HandleSplitRouting()
         PopulateGridViewData()
     End Sub
 
     Protected Sub Delete_BilledItem_Click(ByVal sender As Object, ByVal e As EventArgs)
-        Dim row As GridViewRow = CType(CType(sender, LinkButton).Parent.Parent, GridViewRow)
-        Dim Invoice_No As String = Request.QueryString("Invoice_No")
-        Dim Item_Code As String = HttpUtility.HtmlDecode(row.Cells(1).Text)
+        '' Get row command argument
+        Dim EditLinkButton As LinkButton = TryCast(sender, LinkButton)
+        Dim EditLinkButtonCommandArgument As Array = Split(EditLinkButton.CommandArgument, "|")
+
+        Dim HiddenFields As Array = {TB_Selected_Row_Index, TB_Selected_Invoice_No, TB_Selected_Invoice_Date, TB_Selected_Item_Code, TB_Selected_Currency, TB_Selected_Amount, TB_Selected_PO_No}
+
+        '' file value to hidden fields
+        For i = 0 To EditLinkButtonCommandArgument.Length - 1
+            HiddenFields(i).Text = EditLinkButtonCommandArgument(i)
+        Next
+
+        Dim PO_No As String = TB_Selected_PO_No.Text
+        Dim Invoice_No As String = TB_Selected_Invoice_No.Text
+        Dim Item_Code As String = TB_Selected_Item_Code.Text
         Try
-            Dim sqlStr As String = " DELETE FROM DB_Recovered_Invoice WHERE Invoice_No ='" & Invoice_No & "' AND Item_Code = '" & Item_Code & "' "
+            Dim sqlStr As String = "DELETE FROM DB_Recovered_Invoice WHERE Invoice_No ='" & Invoice_No & "' AND Item_Code = '" & Item_Code & "' AND PO_No LIKE '" & TB_Selected_PO_No.Text & "' "
             RunSQL(sqlStr)
         Catch ex As Exception
             Response.Write("Error:  " & ex.Message)
         End Try
-        Response.Redirect("~/Listings/Recovered_Invoices_Details.aspx?Invoice_No=" & Request.QueryString("Invoice_No"))
+
+        HandleSplitRouting()
         PopulateGridViewData()
     End Sub
 
+    Protected Sub HandleSplitRouting()
+        If Request.QueryString("Subpage") Is Nothing Then
+            Response.Redirect("~/Listings/Recovered_Invoices_Details.aspx?Invoice_No=" & Request.QueryString("Invoice_No"))
+        Else
+            Response.Redirect(String.Format("/Listings/Recovered_Invoices_Details.aspx?Invoice_No={0}&Subpage={1}", Request.QueryString("Invoice_No"), "1"))
+        End If
+    End Sub
+
+
+    '' common
+    Protected Function GetSQL(ByVal controlObj As Object, Optional ByVal keyword As String = Nothing, Optional ByVal filter As String = Nothing) As String
+        Dim sqlStr As String = Nothing
+        Dim objID As String = String.Empty
+        Dim Search_Keyword As String = EscapeChar(keyword)
+
+        ' Check if the object has an ID property or field
+        Dim idProperty = controlObj.GetType().GetProperty("ID")
+        If idProperty IsNot Nothing AndAlso idProperty.PropertyType Is GetType(String) Then
+            objID = idProperty.GetValue(controlObj)?.ToString()
+        End If
+
+        ' Form SQL String based on control object ID
+        Select Case objID
+            Case "DDL_Item_Code"
+                sqlStr = " SELECT Value_1 As [Item Code], Value_1 + ' - ' + Value_2 AS [Item Description] " &
+                         " FROM DB_Lookup " &
+                         " WHERE Lookup_Name = 'Bill Items' " &
+                         "   AND Value_1 NOT IN ('DMC004', 'DMC005', 'DMC013', '00000', '00002') " &
+                         "   AND Value_4 NOT IN ('Module Licence Key') " &
+                         " ORDER BY Value_4, Value_1 "
+
+            Case "DDL_Currency"
+                sqlStr = " SELECT DISTINCT(Value_3) AS Currency FROM DB_Lookup WHERE Lookup_Name = 'Country' AND Value_3 in ('SGD', 'USD', 'EUR') "
+
+            Case "DDL_PO_No"
+                sqlStr = " SELECT DISTINCT PO_No FROM I_DB_Recovered_Invoice " &
+                         " WHERE Invoice_No = '" & Search_Keyword & "' AND PO_No != '' " &
+                         " ORDER BY PO_No"
+
+        End Select
+
+        Return sqlStr
+    End Function
+
+
     '' Bottom control button
     Protected Sub BT_Close_Click(ByVal sender As Object, ByVal e As EventArgs) Handles BT_Close.Click
-        Response.Redirect("~/Listings/Recovered_Invoices.aspx")
+        If Request.QueryString("Subpage") Is Nothing Then
+            Response.Redirect("~/Listings/Recovered_Invoices.aspx")
+        Else
+            Response.Write("<script>window.close();</script>")
+        End If
     End Sub
 
 End Class
