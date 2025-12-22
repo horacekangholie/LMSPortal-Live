@@ -178,7 +178,13 @@
                             </asp:RegularExpressionValidator>
                         </td>
                     </tr>
-                </table>           
+                </table>
+                <!-- Hidden fields -->
+                <div>
+                    <asp:TextBox ID="TB_Selected_Row_Index" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
+                    <asp:TextBox ID="TB_Selected_PO_No" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
+                    <asp:TextBox ID="TB_Selected_PO_Date" runat="server" CssClass="form-control" Visible="false"></asp:TextBox>
+                </div>
                 <table border="0" class="modalPopupTable" style="width: 100%">
                     <tr style="vertical-align: bottom">
                         <td style="width: 800px; padding: 10px 10px 10px 0px">

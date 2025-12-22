@@ -142,7 +142,7 @@ Partial Class Listings_CZL_Model_Upgrade
             Dim EditLinkButton As LinkButton = TryCast(e.Row.Cells(EditctrlCellIndex).Controls(0), LinkButton)
             EditLinkButton.Text = "<i class='bi bi-pencil-fill'></i>"
             EditLinkButton.CssClass = "btn btn-xs btn-info"
-            EditLinkButton.CommandArgument = drv("CZL Account ID") & "|" & drv("UID")
+            EditLinkButton.CommandArgument = e.Row.RowIndex & "|" & drv("CZL Account ID") & "|" & drv("UID") & "|" & drv("PO No") & "|" & drv("PO Date")
             EditLinkButton.CausesValidation = False
             AddHandler EditLinkButton.Click, AddressOf Edit_RecoverCZLModelUpgradeFee_Click
 
@@ -221,11 +221,14 @@ Partial Class Listings_CZL_Model_Upgrade
 
         Dim EditLinkButton As LinkButton = TryCast(sender, LinkButton)
         Dim EditLinkButtonCommandArgument As Array = Split(EditLinkButton.CommandArgument, "|")  '' pass eCmmandArgument to array
-        TB_CZL_Account_Unique_ID.Text = EditLinkButtonCommandArgument(0)
-        TB_UID.Text = EditLinkButtonCommandArgument(1)
+        TB_CZL_Account_Unique_ID.Text = EditLinkButtonCommandArgument(1)
+        TB_UID.Text = EditLinkButtonCommandArgument(2)
 
-        TB_PO_No.Text = String.Empty
-        TB_PO_Date.Text = String.Empty
+        TB_PO_No.Text = EditLinkButtonCommandArgument(3)
+        TB_PO_No.Enabled = False
+        TB_PO_Date.Text = CDate(EditLinkButtonCommandArgument(4)).ToString("yyyy-MM-dd")
+        TB_PO_Date.Enabled = False
+
         TB_Invoice_No.Text = String.Empty
         TB_Invoice_Date.Text = String.Empty
         TB_Fee.Text = String.Empty

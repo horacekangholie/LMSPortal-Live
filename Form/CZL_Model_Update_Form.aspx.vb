@@ -212,11 +212,21 @@ Partial Class Form_CZL_Model_Update_Form
 
         If validateRecord(CInt(TB_New_Model.Text), CInt(LB_Current_Model.Text), CDate(TB_Effective_Date.Text), CDate(LB_Current_Effective_Date.Text), Trim(TB_Bind_Key.Text.ToUpper)) Then
             Try
-                Dim sqlStr As String = "EXEC SP_CRUD_CZL_Model_Update N'" & CZL_Account_Unique_ID & "', N'" & TB_New_Model.Text & "', N'" & TB_Effective_Date.Text & "', N'" & TB_Bind_Key.Text & "', N'" & TB_Remarks.Text & "', N'" & By_Who & "' "
+                Dim sqlStr As String = "EXEC SP_CRUD_CZL_Model_Update N'" & CZL_Account_Unique_ID &
+                                                                  "', N'" & TB_New_Model.Text &
+                                                                  "', N'" & TB_Effective_Date.Text &
+                                                                  "', N'" & TB_Bind_Key.Text &
+                                                                  "', N'" & TB_Remarks.Text &
+                                                                  "', N'" & By_Who & "' "
                 RunSQL(sqlStr)
 
                 '' Model Update chargeable section
-                Dim sqlStr1 As String = "EXEC SP_CRUD_CZL_Model_Update_Charge N'" & CZL_Account_Unique_ID & "', N'" & Client_ID & "', N'" & TB_New_Model.Text & "', N'" & EscapeChar(TB_PO_No.Text) & "', N'" & TB_PO_Date.Text & "', N'" & TB_Bind_Key.Text.ToUpper & "' "
+                Dim sqlStr1 As String = "EXEC SP_CRUD_CZL_Model_Update_Charge N'" & CZL_Account_Unique_ID &
+                                                                          "', N'" & Client_ID &
+                                                                          "', N'" & TB_New_Model.Text &
+                                                                          "', N'" & EscapeChar(TB_PO_No.Text.ToUpper()) &
+                                                                          "', N'" & TB_PO_Date.Text &
+                                                                          "', N'" & TB_Bind_Key.Text.ToUpper() & "' "
 
                 '' if model update after grace period or else model update request already more than 4 times
                 '' then it is chargeable and need to provide PO No.
@@ -240,6 +250,11 @@ Partial Class Form_CZL_Model_Update_Form
 
         PopulateFormViewData()
         PopulateGridViewData()
+    End Sub
+
+    Protected Sub TB_PO_No_TextChanged(sender As Object, e As EventArgs) Handles TB_PO_No.TextChanged
+        TB_PO_Date.Enabled = IIf(TB_PO_No.Text.ToUpper() <> "NA", True, False)
+        RequiredField_TB_PO_Date.Enabled = IIf(TB_PO_No.Text.ToUpper() <> "NA", True, False)
     End Sub
 
     Protected Function validateRecord(ByVal newModel As String, ByVal currentModel As String, ByVal newEffectiveDate As Date, ByVal currentEffective_date As Date, ByVal bindKey As String) As Boolean

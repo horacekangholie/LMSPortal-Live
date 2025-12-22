@@ -150,7 +150,7 @@
                 <tr style="vertical-align: top">
                     <td style="width: 50%; padding: 20px 5px 0px 0px">
                         <label>PO No.</label>
-                        <asp:TextBox ID="TB_PO_No" runat="server" CssClass="form-control"></asp:TextBox>
+                        <asp:TextBox ID="TB_PO_No" runat="server" CssClass="form-control" AutoPostBack="true"></asp:TextBox>
                         <asp:RequiredFieldValidator ID="RequiredField_TB_PO_No" runat="server" ValidationGroup="CZLModelUpdate"
                             ErrorMessage="Field cannot be blank" CssClass="invalid-feedback"
                             Display="Dynamic"
