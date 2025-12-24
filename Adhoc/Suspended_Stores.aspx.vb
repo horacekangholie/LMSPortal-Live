@@ -217,7 +217,7 @@ Partial Class Adhoc_Suspended_Stores
                                    "   SET Is_Active = (CASE WHEN (SELECT COUNT(*) FROM DMC_Store WHERE Headquarter_ID = '" & DDL_Headquarter.SelectedValue & "' AND Is_Active = 1) = 0 THEN 0 ELSE Is_Active END) " &
                                    " , Inactive_Date = GETDATE() " &
                                    "WHERE Headquarter_ID = '" & DDL_Headquarter.SelectedValue & "' AND Is_Active = 1; "
-            'RunSQL(sqlStr)
+            RunSQL(sqlStr)
         Catch ex As Exception
             Response.Write("ERROR: " & ex.Message)
         End Try
